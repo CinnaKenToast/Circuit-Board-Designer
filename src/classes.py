@@ -9,7 +9,6 @@ class Component:
         self.connections: {int:int}
         self.path = [int][int][int]
         self.schematic = Schematic
-    
        
     def Component(self, id, s_pos, s_oreint, schematic):
         self.label = str()
@@ -49,6 +48,8 @@ class Schematic:
         self.components = [Component()]
         self.comments = [Comment()]
     
+    from ._monty import monte_carlo, a_star
+
     def addWire(self, component1, component2):
         index1 = self.components.index(component1)
         index2 = self.components.index(component2)
