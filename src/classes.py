@@ -2,29 +2,32 @@ class Component:
     def __init__(self):
         self.label = str()
         self.id = int
-        self.s_pos = (int,int)
-        self.s_orient = [int][int]
-        self.p_pos = (int, int)
-        self.p_orirent = [int][int]
+        self.sPos = (int,int)
+        self.sOrient = [int][int]
+        self.pPos = (int, int)
+        self.pOrient = [int][int]
         self.connections: {int:int}
         self.path = [int][int][int]
         self.schematic = Schematic
        
-    def Component(self, id, s_pos, s_oreint, schematic):
+    def Component(self, id, sPos, sOreint, schematic):
         self.label = str()
         self.id = id
-        self.s_pos = s_pos
-        self.s_orient = s_orient
-        self.p_pos = (int, int)
-        self.p_orirent = [int][int]
+        self.sPos = sPos
+        self.sOrient = sOrient
+        self.pPos = (int, int)
+        self.pOrient = [int][int]
         self.connections: {int:int}
         self.path = [int][int][int]
         self.schematic = Schematic
-    
+
     def addLabel(self, label):
-         raise NotImplementedError("Abstract method")
+        raise NotImplementedError("Abstract method")
 
     def draw(self):
+        raise NotImplementedError("Abstract method")
+    
+    def toDict(self):
         raise NotImplementedError("Abstract method")
 
 class Comment:
@@ -47,9 +50,9 @@ class Schematic:
     def __init__(self):
         self.components = [Component()]
         self.comments = [Comment()]
-        self.imported_components_for_monte_carlo = False
+        self.importedComponentsForMonteCarlo = False
     
-    from ._monty import monte_carlo, a_star
+    from ._monty import monteCarlo, checkGood, aStar
 
     def addWire(self, component1, component2):
         index1 = self.components.index(component1)
@@ -60,8 +63,8 @@ class Schematic:
     def snipWire(self, component1, component2):
         pass
 
-    def addComponent(self, id, s_pos, s_orient):
-        self.components.append(Component(id, s_pos, s_orient))
+    def addComponent(self, id, sPos, sOrient):
+        self.components.append(Component(id, sPos, sOrient))            
 
     def deleteComponent(self, component):
         self.components.remove(component)
@@ -70,8 +73,9 @@ class Schematic:
         index = self.components.index(component)
         self.components[index].addLabel(label)
 
-    def save(self):
-        pass
+    def save(self, filename):
+        with open(filename) as saveFile:
+            pass
 
     def load(self):
         pass

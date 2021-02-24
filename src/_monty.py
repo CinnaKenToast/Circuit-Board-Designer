@@ -1,16 +1,18 @@
 import json
 
-
 # Metropolis' Monte Carlo method.
-def monte_carlo(self, filename):
-    component_list = {}
-    if not self.imported_components:
-        component_list = json.loads(filename)
-        self.imported_components = True
+def monteCarlo(self, filename):
+    componentList = [Component()]
+    # if we haven't imported the components from the json input file, do that
+    if not self.importedComponentsForMonteCarlo:
+        componentList = json.loads(filename)
+        self.importedComponentsForMonteCarlo = True
     
-
+    
+def checkGood(self):
+    aStar(self.componentList)
 
 
 # A* as defined on https://en.wikipedia.org/wiki/A*_search_algorithm
-def a_star(self, component_list):
+def aStar(self):
     print("What's up?")
