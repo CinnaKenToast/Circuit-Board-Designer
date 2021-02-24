@@ -47,6 +47,7 @@ class Schematic:
     def __init__(self):
         self.components = [Component()]
         self.comments = [Comment()]
+        self.imported_components_for_monte_carlo = False
     
     from ._monty import monte_carlo, a_star
 
