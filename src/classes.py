@@ -26,9 +26,6 @@ class Component:
 
     def draw(self):
         raise NotImplementedError("Abstract method")
-    
-    def toDict(self):
-        raise NotImplementedError("Abstract method")
 
 class Comment:
     def __init__(self):
@@ -74,11 +71,14 @@ class Schematic:
         self.components[index].addLabel(label)
 
     def save(self, filename):
+        schematic = vars(self)
+        json_object = json.dumps(schematic, indent = 4)
         with open(filename) as saveFile:
-            pass
+            saveFile.write(json_object)
 
-    def load(self):
-        pass
+    def load(self, filename):
+        with open(filename) as loadFile:
+            json_object = json.load(filename)
 
     def draw(self):
         for component in self.components:
