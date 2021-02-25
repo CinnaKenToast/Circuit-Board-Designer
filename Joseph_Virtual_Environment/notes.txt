@@ -1,0 +1,21 @@
+NOTES:
+======
+- Run VSCode as Admin
+- Run XLaunch
+- Move to proper directory
+- Open Virtual Machine by going to directory and doing Command ".\Script\activate"
+
+- In order to make "Joseph_Virtual_Environment" work on other devices (I think) all you need to do after downloading
+is change the location in the "settings.json" under the .vscode folder.
+
+
+
+
+
+COMMANDS:
+=========
+"start-process PowerShell -verb runas" - Start a new PowerShell as Admin
+"pyuic5 -x <Designer File Name>.ui -o <Output File Name>.py" - Convert Designer save to Python file
+"Get-History |  Select-String -Pattern "Example" " - Searches command history for anything with "Example"
+"deactivate" - Will deactivate the current virtual machine and bring back normal PowerShell
+"pip3 install PyQt5Designer" - Installs a folder with Qt Designer in it. QTDesigner Folder contains the application.
