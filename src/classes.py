@@ -15,6 +15,7 @@ class Component:
         # list of a list of strings: the first dim will be the pin, the second is the pinID that the pin the first dim corresponds to connects to
         self.connections = [[str]]
         self.schematic = Schematic
+        self.path = [int][int][int]
 
     def Component(self, id, sPos, sOrient=np.identity(2), schematic):
         self.label = str()
@@ -25,6 +26,7 @@ class Component:
         # list of a list of strings: the first dim will be the pin, the second is the pinID that the pin the first dim corresponds to connects to
         self.connections = [[str]]
         self.schematic = schematic
+        self.path = [int][int][int]
 
     def getID(self):
         return self.id
@@ -74,7 +76,7 @@ class PCB(Schematic):
     MAX_ITER = 10
 
     def __init__(self):
-        self.connections = []
+        self.connections = [[str]]
         self.comments = [Comment()]
         self.importedComponentsForMonteCarlo = False
         self.paths = [[int]]
@@ -159,8 +161,8 @@ class Schematic:
 
 
 class Resistor(Component):
-    def addLabel(self, label):
-        self.label = label
+    # def addLabel(self, label):
+    #     self.label = label
 
     def draw(self):
         pass
