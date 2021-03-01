@@ -200,8 +200,6 @@ class PCB(Schematic):
 
     def __init__(self):
         self.connections = []
-        self.comments = [Comment()]
-        self.importedComponentsForMonteCarlo = False
         self.paths = [[int]]
         self.lastRun = np.inf
         self.thisRun = float
@@ -213,22 +211,18 @@ class PCB(Schematic):
         # ran.seed(dt.now())
         # rn = ran.random() # rn is now a random number between 0 and 1
 
-        # if we haven't imported the components from the json input file, do that
-        if not self.importedComponentsForMonteCarlo:
-            componentList = self.load(filename)
-            self.importedComponentsForMonteCarlo = True
-
-        self.initializeConnectionsArray(componentList)
+        connectionList = self.connections
+        self.initializeConnectionsArray(connectionList)
 
         i = 0
         while i < self.MAX_ITER:
             i += 1
             pass
 
-    def initializeConnectionsArray(self, componentList):
+    def initializeConnectionsArray(self, connectionList): # for A*
         print("Hi!")
     
-    def monteCarlo(self):
+    def monteCarlo(self): # the actual algorithm
         print("Hello, friend!")
 
     # A* as defined on https://en.wikipedia.org/wiki/A*_search_algorithm
