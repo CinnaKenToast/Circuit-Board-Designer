@@ -1,32 +1,16 @@
 import numpy as np
 import json
 
-
 class Component:
-    def __init__(self):
-        self.label = str()
-        self.id = int
-        # will be used as a vector to hold the x and y coordinate of the component
-        self.sPos = [int]
-        self.sOrient = np.ndarray
-        # will be used as a vector to hold the x and y coordinate of the component
-        self.pPos = [int]
-        self.pOrient = np.ndarray
-        # list of a list of strings: the first dim will be the pin, the second is the pinID that the pin the first dim corresponds to connects to
-        self.connections = [[str]]
-        self.schematic = Schematic
-        self.path = [int][int][int]
-
-    def Component(self, schematic, id, sPos, sOrient=np.identity(2)):
-        self.label = str()
+    def __init__(self, schematic, id, sPos, sOrient=np.identity(2)):
+        self.label = ""
         self.id = id
-        self.sPos = sPos
+        self.sPos = sPos # will be used as a vector to hold the x and y coordinate of the component
         self.sOrient = sOrient
-        self.pPos = [int]
-        # list of a list of strings: the first dim will be the pin, the second is the pinID that the pin the first dim corresponds to connects to
-        self.connections = [[str]]
+        self.pPos = []
+        self.pOrient = np.identity(2)
+        self.connections = [[]] # list of a list of strings: the first dim will be the pin, the second is the pinID that the pin the first dim corresponds to connects to
         self.schematic = schematic
-        self.path = [int][int][int]
 
     def getID(self):
         return self.id
@@ -46,6 +30,9 @@ class Component:
 
     def draw(self):
         raise NotImplementedError("Abstract method")
+
+    def toDict(self):
+        return {"label": self.label, "id": self.id, "sPos": self.sPos, "sOrient": self.sOrient.tolist(), "pPos": self.pPos, "pOrient": self.pOrient.tolist(), "connections": self.connections}
 
 class Resistor(Component):
     # def addLabel(self, label):
@@ -127,14 +114,9 @@ class VoltageSource(Component):
         pass
 
 class Comment:
-    def __init__(self):
-        self.comment = str()
-        self.location = [int]
-        self.schematic = Schematic
-
-    def Comment(self, comment, schematic):
+    def __init__(self, comment, schematic):
         self.comment = comment
-        self.location = [int]
+        self.location = []
         self.schematic = schematic
 
     def editComment(self, comment):
@@ -147,15 +129,17 @@ class Comment:
     def draw(self):
         pass
 
+    def toDict(self):
+        return {"comment": self.comment, "location": self.location}
+
 class Schematic:
     COMPONENT_TYPES = {'Resistor': Resistor, 'Capacitor': Capacitor, 'Inductor': Inductor,
                        'NpnTransistor': NpnTransistor, 'PnpTransistor': PnpTransistor, 'Switch': Switch, 'Diode': Diode, 'LED': LED, 'Ground': Ground, 'VoltageSource': VoltageSource}
 
     def __init__(self):
-        self.components = [Component()]
-        self.comments = [Comment()]
-        self.importedComponentsForMonteCarlo = False
-
+        self.components = []
+        self.comments = []
+    
     def addWire(self, component1, component1PinNumber, component2, component2PinNumber):
         component1PinId = "{0}_{1}".format(component1.id, component1PinNumber)
         component2PinId = "{0}_{1}".format(component2.id, component2PinNumber)
@@ -170,8 +154,9 @@ class Schematic:
         component1.disconnect(component1PinNumber, component2PinId)
         component2.disconnect(component2PinNumber, component1PinId)
 
-    def addComponent(self, typeOfComponent, id, sPos, sOrient):
-        self.components.append(self.COMPONENT_TYPES[typeOfComponent](id, sPos, sOrient))
+    def addComponent(self, schematic, typeOfComponent, id, sPos, sOrient = np.identity(2)):
+        component = self.COMPONENT_TYPES[typeOfComponent](schematic, id, sPos, sOrient)
+        self.components.append(component)
 
     def deleteComponent(self, component):
         self.components.remove(component)
@@ -180,21 +165,29 @@ class Schematic:
         index = self.components.index(component)
         self.components[index].addLabel(label)
 
-    def save(self, filename):
-        schematic = vars(self)
-        json_object = json.dumps(schematic, indent=4)
-        with open(filename) as saveFile:
-            saveFile.write(json_object)
-
-    def load(self, filename):  # implement some safegard to be sure that the user wants to load in something (in case they had not saved the current schematic)
-        with open(filename) as loadFile:
-            json_object = json.load(filename)
-
     def draw(self):
         for component in self.components:
             component.draw()
         for comment in self.comments:
             comment.draw()
+
+    def toDict(self):
+        numComponents = len(self.components)
+        numComments = len(self.comments)
+
+        return {"Components": { k:v.toDict() for (k,v) in zip(["Component{}".format(key) for key in range(numComponents)], self.components)}, "Comments": { k:v.toDict() for (k,v) in zip(["Comment{}".format(key) for key in range(numComments)], self.comments)}}
+    
+    def save(self, filename):
+        schematic = self.toDict()
+        json_object = json.dumps(schematic, indent=4)
+
+        f = open(filename, "x")
+        f.write(json_object)
+        f.close()
+
+    # def load(self, filename):  # implement some safegard to be sure that the user wants to load in something (in case they had not saved the current schematic)
+        # f = open(filename, "r")
+        # json_object = json.load(filename)
 
 # This class will hold the Monte Carlo, A*, and toImage methods
 class PCB(Schematic):
