@@ -1,16 +1,17 @@
 import numpy as np
 import json
+import os.path
 
 class Component:
-    def __init__(self, schematic, id, sPos, sOrient=np.identity(2)):
-        self.label = ""
+    def __init__(self, schematic, label="", id=-1, sPos=[0, 0], sOrient=np.identity(2), pPos=[], pOrient=np.identity(2), connections=[[]]):
+        self.schematic = schematic
+        self.label = label
         self.id = id
         self.sPos = sPos # will be used as a vector to hold the x and y coordinate of the component
         self.sOrient = sOrient
-        self.pPos = []
-        self.pOrient = np.identity(2)
-        self.connections = [[]] # list of a list of strings: the first dim will be the pin, the second is the pinID that the pin the first dim corresponds to connects to
-        self.schematic = schematic
+        self.pPos = pPos
+        self.pOrient = pOrient
+        self.connections = connections # list of a list of strings: the first dim will be the pin, the second is the pinID that the pin the first dim corresponds to connects to
 
     def getID(self):
         return self.id
@@ -35,7 +36,7 @@ class Component:
         return {"label": self.label, "id": self.id, "sPos": self.sPos, "sOrient": self.sOrient.tolist(), "pPos": self.pPos, "pOrient": self.pOrient.tolist(), "connections": self.connections}
 
 class Resistor(Component):
-    # def addLabel(self, label):
+    # def addLabel(self, label): See comment on this function in the Component class (-Jason)
     #     self.label = label
 
     def draw(self):
@@ -43,7 +44,7 @@ class Resistor(Component):
 
 
 class Capacitor(Component):
-    # def addLabel(self, label):
+    # def addLabel(self, label): See comment on this function in the Component class (-Jason)
     #     self.label = label
 
     def draw(self):
@@ -51,7 +52,7 @@ class Capacitor(Component):
 
 
 class Inductor(Component):
-    # def addLabel(self, label):
+    # def addLabel(self, label): See comment on this function in the Component class (-Jason)
     #     self.label = label
 
     def draw(self):
@@ -59,7 +60,7 @@ class Inductor(Component):
 
 
 class NpnTransistor(Component):
-    # def addLabel(self, label):
+    # def addLabel(self, label): See comment on this function in the Component class (-Jason)
     #     self.label = label
 
     def draw(self):
@@ -67,7 +68,7 @@ class NpnTransistor(Component):
 
 
 class PnpTransistor(Component):
-    # def addLabel(self, label):
+    # def addLabel(self, label): See comment on this function in the Component class (-Jason)
     #     self.label = label
 
     def draw(self):
@@ -75,7 +76,7 @@ class PnpTransistor(Component):
 
 
 class Switch(Component):
-    # def addLabel(self, label):
+    # def addLabel(self, label): See comment on this function in the Component class (-Jason)
     #     self.label = label
 
     def draw(self):
@@ -83,7 +84,7 @@ class Switch(Component):
 
 
 class Diode(Component):
-    # def addLabel(self, label):
+    # def addLabel(self, label): See comment on this function in the Component class (-Jason)
     #     self.label = label
 
     def draw(self):
@@ -91,7 +92,7 @@ class Diode(Component):
 
 
 class LED(Component):
-    # def addLabel(self, label):
+    # def addLabel(self, label): See comment on this function in the Component class (-Jason)
     #     self.label = label
 
     def draw(self):
@@ -99,7 +100,7 @@ class LED(Component):
 
 
 class Ground(Component):
-    # def addLabel(self, label):
+    # def addLabel(self, label): See comment on this function in the Component class (-Jason)
     #     self.label = label
 
     def draw(self):
@@ -107,14 +108,14 @@ class Ground(Component):
 
 
 class VoltageSource(Component):
-    # def addLabel(self, label):
+    # def addLabel(self, label): See comment on this function in the Component class (-Jason)
     #     self.label = label
 
     def draw(self):
         pass
 
 class Comment:
-    def __init__(self, comment, schematic):
+    def __init__(self, schematic, comment="Type something here", location=[0, 0]):
         self.comment = comment
         self.location = []
         self.schematic = schematic
@@ -133,12 +134,28 @@ class Comment:
         return {"comment": self.comment, "location": self.location}
 
 class Schematic:
-    COMPONENT_TYPES = {'Resistor': Resistor, 'Capacitor': Capacitor, 'Inductor': Inductor,
-                       'NpnTransistor': NpnTransistor, 'PnpTransistor': PnpTransistor, 'Switch': Switch, 'Diode': Diode, 'LED': LED, 'Ground': Ground, 'VoltageSource': VoltageSource}
+    COMPONENT_TYPES = {'Resistor': Resistor, 'Capacitor': Capacitor, 'Inductor': Inductor, 'NpnTransistor': NpnTransistor, 'PnpTransistor': PnpTransistor, 'Switch': Switch, 'Diode': Diode, 'LED': LED, 'Ground': Ground, 'VoltageSource': VoltageSource}
+    MAX_ITER = 10
 
     def __init__(self):
         self.components = []
         self.comments = []
+        self.paths = [[]]
+        self.iterationNum = 0
+        self.lastRunScore = 1.0
+        self.thisRunScore = 0.0
+        self.nGridSpaces = 5
+    
+    # I'm using this to set a new schematic to a loaded one (-Jason)
+    def Schematic(self, schematicDict):
+        pass
+        # self.components = components
+        # self.comments = comments
+        # self.paths = paths
+        # self.iterationNum = iterationNum
+        # self.lastRunScore = lastRunScore
+        # self.thisRunScore = thisRunScore
+        # self.nGridSpaces = nGridSpaces
     
     def addWire(self, component1, component1PinNumber, component2, component2PinNumber):
         component1PinId = "{0}_{1}".format(component1.id, component1PinNumber)
@@ -150,12 +167,12 @@ class Schematic:
     def snipWire(self, component1, component1PinNumber, component2, component2PinNumber):
         component1PinId = "{0}_{1}".format(component1.id, component1PinNumber)
         component2PinId = "{0}_{1}".format(component2.id, component2PinNumber)
-
         component1.disconnect(component1PinNumber, component2PinId)
         component2.disconnect(component2PinNumber, component1PinId)
 
     def addComponent(self, schematic, typeOfComponent, id, sPos, sOrient = np.identity(2)):
-        component = self.COMPONENT_TYPES[typeOfComponent](schematic, id, sPos, sOrient)
+        kwargs = {'schematic': schematic, 'id': id, 'sPos': sPos, 'sOrient': sOrient}
+        component = self.COMPONENT_TYPES[typeOfComponent](**kwargs)
         self.components.append(component)
 
     def deleteComponent(self, component):
@@ -174,52 +191,57 @@ class Schematic:
     def toDict(self):
         numComponents = len(self.components)
         numComments = len(self.comments)
+        components = []
+        comments = []
+        schematicDict = {}
 
-        return {"Components": { k:v.toDict() for (k,v) in zip(["Component{}".format(key) for key in range(numComponents)], self.components)}, "Comments": { k:v.toDict() for (k,v) in zip(["Comment{}".format(key) for key in range(numComments)], self.comments)}}
-    
-    def save(self, filename):
-        schematic = self.toDict()
-        json_object = json.dumps(schematic, indent=4)
+        for component in self.components:
+            components.append(component.toDict())
 
-        f = open(filename, "x")
-        f.write(json_object)
-        f.close()
+        for comment in self.comments:
+            comments.append(comment.toDict())
 
-    # def load(self, filename):  # implement some safegard to be sure that the user wants to load in something (in case they had not saved the current schematic)
-        # f = open(filename, "r")
-        # json_object = json.load(filename)
+        schematic = {
+            "components": components,
+            "comments": comments,
+            "paths": self.paths,
+            "iterationNum": self.iterationNum,
+            "lastRunScore": self.lastRunScore,
+            "thisRunScore": self.thisRunScore,
+            "nGridSpaces": self.nGridSpaces
+            }
 
-# This class will hold the Monte Carlo, A*, and toImage methods
-class PCB(Schematic):
-    MAX_ITER = 10
+        return schematic
 
-    def __init__(self):
-        self.connections = []
-        self.paths = [[int]]
-        self.lastRun = np.inf
-        self.thisRun = float
+    def save(self, filename): # need to implement some safegard to be sure that the user wants to save over something (in case the file already exists) (-Jason)
+        if not os.path.exists(filename):
+            schematicDict = self.toDict()
+            with open(filename, 'x') as f:
+                json.dump(schematicDict, f)
+        else: # notify user that file exists and ask if they want to overwrite it/choose a different name
+             pass
 
-    # Metropolis' Monte Carlo method.
+    def load(self, filename):  # need to implement some safegard to be sure that the user wants to load in something (in case they had not saved the current schematic) (-Jason)
+        f = open(filename, "r")
+        schematicDict = json.load(f)
+        Schematic(schematicDict)
+
+    # Metropolis' Monte Carlo method. (-Jason)
     def monteCarloMaster(self, filename):
-
-        # Example of how to get a random number:
-        # ran.seed(dt.now())
-        # rn = ran.random() # rn is now a random number between 0 and 1
-
-        connectionList = self.connections
-        self.initializeConnectionsArray(connectionList)
+        connections = self.initializeMonteArray()
 
         i = 0
         while i < self.MAX_ITER:
             i += 1
             pass
-
-    def initializeConnectionsArray(self, connectionList): # for A*
-        print("Hi!")
     
-    def monteCarlo(self): # the actual algorithm
-        print("Hello, friend!")
+    def initializeMonteArray(self):
+        allPinIds = []
+        return {}
 
-    # A* as defined on https://en.wikipedia.org/wiki/A*_search_algorithm
+    def monteCarlo(self): # the helper function for Monte Carlo (-Jason)
+        rn = np.ceil(np.random.rand() * self.nGridSpaces)
+
+    # A* as defined on https://en.wikipedia.org/wiki/A*_search_algorithm (-Jason)
     def aStar(self):
         print("What's up?")
