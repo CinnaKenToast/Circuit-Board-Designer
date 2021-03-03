@@ -13,9 +13,9 @@ if __name__ == "__main__":
     test_schematic_1.add_component(**kwargs)
     
     # Test adding a label to components
-    test_schematic_1.add_label(84, "V1")
-    test_schematic_1.add_label(42, "R1")
-    test_schematic_1.add_label(21, "C1")
+    test_schematic_1.change_label(84, "V1")
+    test_schematic_1.change_label(42, "R1")
+    test_schematic_1.change_label(21, "C1")
 
     # Test adding connections to components
     test_schematic_1.add_connection(84, 0, 21, 1)
