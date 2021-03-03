@@ -1,11 +1,52 @@
 import classes
 
 if __name__ == "__main__":
-    testSchematic1 = classes.Schematic()
-    kwargs = {'schematic': testSchematic1, 'typeOfComponent': "VoltageSource", 'id': 84, 'sPos': [0, 4]}
-    testSchematic1.addComponent(**kwargs)
-    kwargs = {'schematic': testSchematic1, 'typeOfComponent': "Resistor", 'id': 42, 'sPos': [0, 0]}
-    testSchematic1.addComponent(**kwargs)
-    kwargs = {'schematic': testSchematic1, 'typeOfComponent': "Capacitor", 'id': 21, 'sPos': [0, 2]}
-    testSchematic1.addComponent(**kwargs)
-    testSchematic1.save('test.json')
+    # Create a schematic
+    test_schematic_1 = classes.Schematic()
+
+    # Setup the inital states of the components and test adding them to the schematic
+    kwargs = {'schematic': test_schematic_1, 'component_type': "VoltageSource", 'id': 84, 'schem_position': [0, 4]}
+    test_schematic_1.add_component(**kwargs)
+    kwargs = {'schematic': test_schematic_1, 'component_type': "Resistor", 'id': 42, 'schem_position': [0, 0]}
+    test_schematic_1.add_component(**kwargs)
+    kwargs = {'schematic': test_schematic_1, 'component_type': "Capacitor", 'id': 21, 'schem_position': [0, 2]}
+    test_schematic_1.add_component(**kwargs)
+    
+    # Test adding a label to components
+    test_schematic_1.add_label(84, "V1")
+    test_schematic_1.add_label(42, "R1")
+    test_schematic_1.add_label(21, "C1")
+
+    # Test adding connections to components
+    test_schematic_1.add_connection(84, 0, 21, 1)
+    test_schematic_1.add_connection(84, 1, 42, 0)
+
+    # Short out voltage source and then unshort its pins
+    test_schematic_1.add_connection(84, 1, 84, 0)
+    test_schematic_1.remove_connection(84, 1, 84, 0)
+
+    # Continue testing adding connections
+    test_schematic_1.add_connection(42, 0, 84, 1)
+    test_schematic_1.add_connection(21, 0, 42, 1)
+    test_schematic_1.add_connection(42, 1, 21, 0)
+    test_schematic_1.add_connection(21, 1, 84, 0)
+
+    # Setup the initial states of the comments and test adding them to the schematic
+    kwargs = {'schematic': test_schematic_1, 'id': 0, 'text':"Hello, world!", 'position':[10, 0]}
+    test_schematic_1.add_comment(**kwargs)
+    kwargs = {'schematic': test_schematic_1, 'id': 1, 'text':"Hello, 2nd world!", 'position':[10, 5]}
+    test_schematic_1.add_comment(**kwargs)
+
+    # Test the save function (output to test1.json)
+    test_schematic_1.save('test1.json')
+
+    # delete the schematic
+    del test_schematic_1
+
+    # Test the load function (from test1.json) into a new schematic
+    test_schematic_2 = classes.Schematic()
+    test_schematic_2.load('test1.json')
+
+    # To see how everything worked (save as test2.json)
+    test_schematic_2.save('test2.jason')
+
