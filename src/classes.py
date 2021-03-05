@@ -3,116 +3,101 @@ import json
 import os.path
 
 class Component:
-    def __init__(self, schematic, label="", id=-1, schem_position=[0, 0], schem_orientation=np.identity(2), pcb_position=[], pcb_orientation=np.identity(2), connections=[[]]):
-        self.schematic = schematic # Why does a component need a schematic? Doesn't this copy the entire schematic object? (-Jason)
-        self.label = label
+    # The component type field is what determines which sprite will be used
+    # and what component fields to pull from the .json database. As long as the
+    # database has the dimensions corresponding to type: component type,
+    # and the spritesheet has a picture for it, the component can be used.
+    # This is very important for any amount of scalability (we don't have to
+    # make a load of classes for each specific type)
+    def __init__(self, id=-1, component_type="", label="", schem_position=[0, 0], schem_orientation=np.identity(2), pcb_position=np.array([1, 0]), pcb_orientation=np.identity(2), connections={}):
         self.id = id # >= 0 and unique
-        self.schem_position = schem_position # will be used as a vector to hold the x and y coordinate of the component (-Jason)
-        self.schem_orientation = schem_orientation
-        self.pcb_position = pcb_position
-        self.pcb_orientation = pcb_orientation
-        self.connections = connections # list of a list of strings: the first dim will be the pin, the second is the pinID that the pin the first dim corresponds to connects to (-Jason)
+        self.component_type = component_type
+        self.label = label
+        self.schem_position = schem_position # will be used as a vector to hold the x and y coordinate of the component's sprite (-Jason)
+        self.schem_orientation = schem_orientation # rotated clockwise, counterclockwise, etc.
+        self.pcb_position = pcb_position # for gridspace in pcb layout generation
+        self.pcb_orientation = pcb_orientation # rotate clockwise or counterclockwise using [[0, 1], [1, 0]] and [[0, -1], [1, 0]] respectively (you multiply the pcb_position vector with this to rotate it)
+        self.connections = connections # dictionary whose keys are the pin ids for each pin and whose values are a list of pin_ids that they're connected to. (-Jason)
+        self.physical_dimenstions = {"central_position_sprite": [], "pin_positions_sprite": [], "sprite_index": -1, "solder_pad_positions": [], "solder_pad_dim": 1} # pulled from the .json database (pin/solder pad postions are relative to a central position)
+        # self.sprite # eventually a png once I figure it out
 
-    def connect(self, this_pin_number, that_pin_id):
-        if len(self.connections)-1 >= this_pin_number:
-            self.connections[this_pin_number].append(that_pin_id)
+    def connect(self, this_pin_id, that_pin_id):
+        if this_pin_id in self.connections:
+            self.connections[this_pin_id].append(that_pin_id)
         else:
-            self.connections.append([that_pin_id])
-
-    def disconnect(self, this_pin_number, that_pin_id):
-        self.connections[this_pin_number].remove(that_pin_id)
+            self.connections[this_pin_id] = [that_pin_id]
+    
+    def disconnect(self, this_pin_id, that_pin_id):
+        self.connections[this_pin_id].remove(that_pin_id)
 
     def change_label(self, text=""):
-        # raise NotImplementedError("Abstract method") # I think since every one of the labels will be drawn the same, we should be able to implement this here in the parent class. (-Jason)
         self.label = text
 
     def draw(self):
-        raise NotImplementedError("Abstract method")
+        pass
 
     def to_dict(self):
+        if type(self.schem_orientation) == np.ndarray:
+            schem_orientation = self.schem_orientation.tolist()
+        else:
+            schem_orientation = self.schem_orientation
+        
+        if type(self.pcb_position) == np.ndarray:
+            pcb_position = self.pcb_position.tolist()
+        else:
+            pcb_position = self.pcb_position
+        
+        if type(self.pcb_orientation) == np.ndarray:
+            pcb_orientation = self.pcb_orientation.tolist()
+        else:
+            pcb_orientation = self.pcb_orientation
+
         component_dict = {
-            "type": self.__class__.__name__,
-            "label": self.label,
             "id": self.id,
+            "component_type": self.component_type,
+            "label": self.label,
             "schem_position": self.schem_position,
-            "schem_orientation": self.schem_orientation.tolist(),
-            "pcb_position": self.pcb_position,
-            "pcb_orientation": self.pcb_orientation.tolist(),
+            "schem_orientation": schem_orientation,
+            "pcb_position": pcb_position,
+            "pcb_orientation": pcb_orientation,
             "connections": self.connections
             }
         return component_dict
-    
-class Resistor(Component):
-    def draw(self):
-        pass
-
-class Capacitor(Component):
-    def draw(self):
-        pass
-
-class Inductor(Component):
-    def draw(self):
-        pass
-
-class NpnTransistor(Component):
-    def draw(self):
-        pass
-
-class PnpTransistor(Component):
-    def draw(self):
-        pass
-
-class Switch(Component):
-    def draw(self):
-        pass
-
-class Diode(Component):
-    def draw(self):
-        pass
-
-class LED(Component):
-    def draw(self):
-        pass
-
-class Ground(Component):
-    def draw(self):
-        pass
-
-class VoltageSource(Component):
-    def draw(self):
-        pass
 
 class Comment:
-    def __init__(self, schematic, id, text="Type something here", position=[0, 0]):
-        self.schematic = schematic # Why does a comment need a copy of the schematic? (-Jason)
+    def __init__(self, id, text="Type something here", position=[0, 0]):
         self.id = id
         self.text = text
         self.position = position
 
     def edit_text(self, text):
         self.text = text
-        self.schematic.draw()
 
     def set_position(self, position):
         self.location = position
-        self.schematic.draw()
 
     def draw(self):
         pass
 
     def to_dict(self):
-        comment_dict = {"text": self.text, "position": self.position}
+        comment_dict = {
+            "id": self.id,
+            "text": self.text,
+            "position": self.position
+            }
         return comment_dict
 
 class Schematic:
-    COMPONENT_TYPES = {'Resistor': Resistor, 'Capacitor': Capacitor, 'Inductor': Inductor, 'NpnTransistor': NpnTransistor, 'PnpTransistor': PnpTransistor, 'Switch': Switch, 'Diode': Diode, 'LED': LED, 'Ground': Ground, 'VoltageSource': VoltageSource}
     MAX_ITER = 10
 
     def __init__(self):
-        self.components = []
-        self.comments = []
-        self.paths = [[]]
+        self.components = {}
+        self.comments = {}
+        self.paths = []
         self.iteration_num = 0
+        self.h = []
+        self.g = []
+        self.f = []
         self.last_run_score = 1.0
         self.this_run_score = 0.0
         self.n_grid_spaces = 5
@@ -120,77 +105,64 @@ class Schematic:
     # I'm using this to set a new schematic to a loaded one (-Jason)
     def Schematic(self, schematic_dict):
         components_dict = schematic_dict["components"]
-        comments_dict = schematic_dict["comments"]
-
         for component in components_dict:
-            kwargs = {"schematic": self} | component
-            self.add_component(**kwargs)
+            self.add_component(**component)
 
+        comments_dict = schematic_dict["comments"]
         for comment in comments_dict:
-            kwargs = {"schematic": self} | comment
-            self.add_comment(**kwargs)
+            self.add_comment(**comment)
 
         self.paths = schematic_dict["paths"]
         self.iteration_num = schematic_dict["iteration_num"]
+        self.h = schematic_dict["h"]
+        self.g = schematic_dict["g"]
+        self.f = schematic_dict["f"]
         self.last_run_score = schematic_dict["last_run_score"]
         self.this_run_score = schematic_dict["this_run_score"]
         self.n_grid_spaces = schematic_dict["n_grid_spaces"]
     
-    def find_component(self, id):
-        for component in self.components:
-            if component.id == id:
-                return component
-        else:
-            raise RuntimeError("Component not found") # if the components were not found
-
-    def add_component(self, schematic, component_type, label="", id=-1, schem_position=[0, 0], schem_orientation=np.identity(2), pcb_position=[], pcb_orientation=np.identity(2), connections=[[]]):
-        kwargs = {'schematic': schematic, 'label': label, 'id': id, 'schem_position': schem_position, 'schem_orientation': schem_orientation, 'pcb_position': pcb_position, 'pcb_orientation': pcb_orientation, 'connections': connections}
-        component = self.COMPONENT_TYPES[component_type](**kwargs)
-        self.components.append(component)
+    def add_component(self, component_type="", label="", id=-1, schem_position=[0, 0], schem_orientation=np.identity(2), pcb_position=np.array([1, 0]), pcb_orientation=np.identity(2), connections={}):
+        kwargs = {
+            'id': id,
+            'component_type': component_type,
+            'label': label,
+            'schem_position': schem_position,
+            'schem_orientation': schem_orientation,
+            'pcb_position': pcb_position,
+            'pcb_orientation': pcb_orientation,
+            'connections': connections
+            }
+        component = Component(**kwargs)
+        self.components[component.id] = (component)
 
     def delete_component(self, id):
-        component_to_remove = self.find_component(id)
-        self.components.remove(component_to_remove)
+        self.components.pop(id)
 
-    def add_connection(self, component_1_id, component_1_pin_number, component_2_id, component_2_pin_number): # should only need the pin_id since it holds the component id in it. (-Jason)
-        component_1 = self.find_component(component_1_id)
-        component_2 = self.find_component(component_2_id)
-        component_1_pin_id = "{0}_{1}".format(component_1_id, component_1_pin_number)
-        component_2_pin_id = "{0}_{1}".format(component_2_id, component_2_pin_number)
-        component_1_index = self.components.index(component_1)
-        component_2_index = self.components.index(component_2)
-        self.components[component_1_index].connect(component_1_pin_number, component_2_pin_id)
-        self.components[component_2_index].connect(component_2_pin_number, component_1_pin_id)
-
-    def remove_connection(self, component_1_id, component_1_pin_number, component_2_id, component_2_pin_number):
-        component_1 = self.find_component(component_1_id)
-        component_2 = self.find_component(component_2_id)
-        component_1_pin_id = "{0}_{1}".format(component_1_id, component_1_pin_number)
-        component_2_pin_id = "{0}_{1}".format(component_2_id, component_2_pin_number)
-        component_1_index = self.components.index(component_1)
-        component_2_index = self.components.index(component_2)
-        self.components[component_1_index].disconnect(component_1_pin_number, component_2_pin_id)
-        self.components[component_2_index].disconnect(component_2_pin_number, component_1_pin_id)
+    def add_connection(self, component_1_pin_id, component_2_pin_id):
+        component_1_id = int(component_1_pin_id.split("_")[0])
+        component_2_id = int(component_2_pin_id.split("_")[0])
+        self.components[component_1_id].connect(component_1_pin_id, component_2_pin_id)
+        self.components[component_2_id].connect(component_2_pin_id, component_1_pin_id)
+        
+    def remove_connection(self, component_1_pin_id, component_2_pin_id):
+        component_1_id = int(component_1_pin_id.split("_")[0])
+        component_2_id = int(component_2_pin_id.split("_")[0])
+        self.components[component_1_id].disconnect(component_1_pin_id, component_2_pin_id)
+        self.components[component_2_id].disconnect(component_2_pin_id, component_1_pin_id)
 
     def change_label(self, component_id, text):
-        component = self.find_component(component_id)
-        component_index = self.components.index(component)
-        self.components[component_index].change_label(text)
+        self.components[component_id].change_label(text)
 
-    def find_comment(self, id):
-        for comment in self.comments:
-            if comment.id == id:
-                return comment
-        else:
-            raise RuntimeError("Comment not found") # if the comment was not found
-
-    def add_comment(self, schematic, id, text, position=[0, 0]):
-        kwargs = {"schematic": self, "id": id, "text": text, "position": position}
-        self.comments.append(Comment(**kwargs))
+    def add_comment(self, id, text, position=[0, 0]):
+        kwargs = {
+            "id": id,
+            "text": text,
+            "position": position
+            }
+        self.comments[id](Comment(**kwargs))
 
     def remove_comment(self, id):
-        comment_to_remove = self.find_comment(id)
-        self.comments.remove(comment_to_remove)
+        self.comments.pop(id)
 
     def draw(self):
         for component in self.components:
@@ -199,21 +171,24 @@ class Schematic:
             comment.draw()
 
     def to_dict(self):
-        components = []
-        comments = []
+        components = {}
+        comments = {}
         schematic_dict = {}
 
-        for component in self.components:
-            components.append(component.to_dict())
+        for component_id in self.components:
+            components[component_id] = self.components[component_id].to_dict()
 
-        for comment in self.comments:
-            comments.append(comment.to_dict())
+        for comment_id in self.comments:
+            comments[comment_id] = self.comments[comment_id].to_dict()
 
         schematic_dict = {
             "components": components,
             "comments": comments,
             "paths": self.paths,
             "iteration_num": self.iteration_num,
+            "h": self.h,
+            "g": self.g,
+            "f": self.f,
             "last_run_score": self.last_run_score,
             "this_run_score": self.this_run_score,
             "n_grid_spaces": self.n_grid_spaces
@@ -237,28 +212,28 @@ class Schematic:
         else: # notify user that file does not exist and ask if they want to reenter a filename
             pass
 
-    # Metropolis' Monte Carlo method. (-Jason)
-    def monte_carlo(self):
-        connections = self.initialize_connections_array()
+    # # Metropolis' Monte Carlo method. (-Jason)
+    # def monte_carlo(self):
+    #     connections = self.initialize_connections_array()
 
-        i = 0
-        while i < self.MAX_ITER:
-            rn = np.ceil(np.random.rand() * self.n_grid_spaces)
-            i += 1
+    #     i = 0
+    #     while i < self.MAX_ITER:
+    #         rn = np.ceil(np.random.rand() * self.n_grid_spaces)
+    #         i += 1
     
-    def initialize_connections_array(self):
-        conns = []
-        for component in self.components:
-            # conns.append(component.)
-            pass
+    # def initialize_connections_array(self):
+    #     conns = []
+    #     for component in self.components:
+    #         # conns.append(component.)
+    #         pass
         
-        return {}        
+    #     return {}        
 
-    def calculate_score(self):
-        pass
+    # def calculate_score(self):
+    #     pass
 
-    # A* as defined on https://en.wikipedia.org/wiki/A*_search_algorithm (-Jason)
-    def a_star(self):
-        h = [[],[]]
-        g = [[],[]]
-        f = [[],[]]
+    # # A* as defined on https://en.wikipedia.org/wiki/A*_search_algorithm (-Jason)
+    # def a_star(self):
+    #     h = [[],[]]
+    #     g = [[],[]]
+    #     f = [[],[]]
