@@ -5,12 +5,12 @@ if __name__ == "__main__":
     test_schematic_1 = classes.Schematic()
 
     ## Setup the inital states of the components and test adding them to the schematic
-    kwargs = {'id': 84, 'component_type': "VoltageSource", 'schem_position': [0, 4]}
-    test_schematic_1.add_component(**kwargs)
-    kwargs = {'id': 42, 'component_type': "Resistor", 'schem_position': [0, 0]}
-    test_schematic_1.add_component(**kwargs)
-    # kwargs = {'id': 21, 'component_type': "Capacitor", 'schem_position': [0, 2]}
-    # test_schematic_1.add_component(**kwargs)
+    vs1_kwargs = {'id': 84, 'component_type': "VoltageSource", 'schem_position': [0, 0]}
+    test_schematic_1.add_component(vs1_kwargs)
+    r1_kwargs = {'id': 42, 'component_type': "Resistor", 'schem_position': [0, 0]}
+    test_schematic_1.add_component(r1_kwargs)
+    # c1_kwargs = {'id': 21, 'component_type': "Capacitor", 'schem_position': [0, 2]}
+    # test_schematic_1.add_component(c1_kwargs)
     
     ## Test adding a label to components
     test_schematic_1.change_label(84, "V1")
@@ -27,13 +27,13 @@ if __name__ == "__main__":
     # test_schematic_1.remove_connection("84_1", "84_0")
 
     ## Setup the initial states of the comments and test adding them to the schematic
-    # kwargs = {test_schematic_1, 'id': 0, 'text':"Hello, world!", 'position':[10, 0]}
-    # test_schematic_1.add_comment(**kwargs)
-    # kwargs = {'id': 1, 'text':"Hello, 2nd world!", 'position':[10, 5]}
-    # test_schematic_1.add_comment(**kwargs)
+    # comm1_kwargs = {test_schematic_1, 'id': 0, 'text':"Hello, world!", 'position':[10, 0]}
+    # test_schematic_1.add_comment(**comm1_kwargs)
+    # comm2_kwargs = {'id': 1, 'text':"Hello, 2nd world!", 'position':[10, 5]}
+    # test_schematic_1.add_comment(**comm2_kwargs)
 
     ## Test the save function (output to test1.json)
-    test_schematic_1.save('test1.json')
+    test_schematic_1.save(input("filename"))
 
     ## delete the schematic
     del test_schematic_1

@@ -9,17 +9,49 @@ class Component:
     # and the spritesheet has a picture for it, the component can be used.
     # This is very important for any amount of scalability (we don't have to
     # make a load of classes for each specific type)
-    def __init__(self, id=-1, component_type="", label="", schem_position=[0, 0], schem_orientation=np.identity(2), pcb_position=np.array([1, 0]), pcb_orientation=np.identity(2), connections={}):
-        self.id = id # >= 0 and unique
-        self.component_type = component_type
-        self.label = label
-        self.schem_position = schem_position # will be used as a vector to hold the x and y coordinate of the component's sprite (-Jason)
-        self.schem_orientation = schem_orientation # rotated clockwise, counterclockwise, etc.
-        self.pcb_position = pcb_position # for gridspace in pcb layout generation
-        self.pcb_orientation = pcb_orientation # rotate clockwise or counterclockwise using [[0, 1], [1, 0]] and [[0, -1], [1, 0]] respectively (you multiply the pcb_position vector with this to rotate it)
-        self.connections = connections # dictionary whose keys are the pin ids for each pin and whose values are a list of pin_ids that they're connected to. (-Jason)
-        self.physical_dimenstions = {"central_position_sprite": [], "pin_positions_sprite": [], "sprite_index": -1, "solder_pad_positions": [], "solder_pad_dim": 1} # pulled from the .json database (pin/solder pad postions are relative to a central position)
-        # self.sprite # eventually a png once I figure it out
+    def __init__(self, label="", schem_position=[0, 0], schem_orientation=np.identity(2), pcb_position=np.array([1, 0]), pcb_orientation=np.identity(2)):
+        if self.valid_input({"schem_position": schem_position, "schem_orientation": schem_orientation, "pcb_position": pcb_position, "pcb_orientation": pcb_orientation}):
+            self.label = label
+            self.schem_position = schem_position # will be used as a vector to hold the x and y coordinate of the component's sprite (-Jason)
+            self.schem_orientation = schem_orientation # rotated clockwise, counterclockwise, etc.
+            self.pcb_position = pcb_position # for gridspace in pcb layout generation
+            self.pcb_orientation = pcb_orientation # rotate clockwise or counterclockwise using [[0, 1], [1, 0]] and [[0, -1], [1, 0]] respectively (you multiply the pcb_position vector with this to rotate it)
+            self.physical_dimenstions = {"central_position_sprite": [], "pin_positions_sprite": [], "sprite_index": -1, "solder_pad_positions": [], "solder_pad_dim": 1} # pulled from the .json database (pin/solder pad postions are relative to a central position)
+            # self.sprite # eventually a png once I figure it out
+
+    def valid_input(self, input_kwargs):
+        for key in input_kwargs:
+            if key == "id":
+                if type(input_kwargs[key]) != int:
+                    raise TypeError("Invalid id type")
+                if input_kwargs[key] < 0:
+                    raise ValueError("Invalid id value")
+            elif key == "label":
+                if type(input_kwargs[key]) != str:
+                    raise TypeError("Invalid label type")
+                if input_kwargs[key] == "":
+                    raise ValueError("Invalid label text")
+            elif key == "schem_position":
+                if type(input_kwargs[key]) != list:
+                    raise TypeError("Invalid position type")
+                if len(input_kwargs[key]) != 2:
+                    raise ValueError("Invalid shape for schematic position vector")
+            elif key == "schem_orientation":
+                if type(input_kwargs[key]) != np.ndarray:
+                    raise TypeError("Invalid orientation type")
+                if np.shape(input_kwargs[key]) != (2,2):
+                    raise ValueError("Invalid shape for schematic position vector")
+            elif key == "pcb_position":
+                if type(input_kwargs[key]) != np.ndarray:
+                    raise TypeError("Invalid position type")
+                if np.shape(input_kwargs[key]) != (2,):
+                    raise ValueError("Invalid shape for pcb position vector")
+            elif key == "pcb_orientation":
+                if type(input_kwargs[key]) != np.ndarray:
+                    raise TypeError("Invalid orientation type")
+                if np.shape(input_kwargs[key]) != (2,2):
+                    raise ValueError("Invalid shape for pcb orientation matrix")
+        return True
 
     def connect(self, this_pin_id, that_pin_id):
         if this_pin_id in self.connections:
@@ -31,17 +63,14 @@ class Component:
         self.connections[this_pin_id].remove(that_pin_id)
 
     def change_label(self, text=""):
+        if text == "":
+            raise ValueError("Invalid label text")
         self.label = text
 
     def draw(self):
-        pass
+        raise NotImplementedError("Abstract method")
 
     def to_dict(self):
-        if type(self.schem_orientation) == np.ndarray:
-            schem_orientation = self.schem_orientation.tolist()
-        else:
-            schem_orientation = self.schem_orientation
-        
         if type(self.pcb_position) == np.ndarray:
             pcb_position = self.pcb_position.tolist()
         else:
@@ -54,27 +83,148 @@ class Component:
 
         component_dict = {
             "id": self.id,
-            "component_type": self.component_type,
+            "component_type": self.__class__.__name__,
             "label": self.label,
             "schem_position": self.schem_position,
-            "schem_orientation": schem_orientation,
+            "schem_orientation": self.schem_orientation,
             "pcb_position": pcb_position,
             "pcb_orientation": pcb_orientation,
             "connections": self.connections
             }
         return component_dict
 
+class Resistor(Component):
+    def __init__(self, id=-1):
+        if self.valid_input({"id": id}):
+            self.id = id
+            self.num_pins = 2
+            self.connections = {f"{id}_0":[], f"{id}_1":[]}
+
+    def draw(self):
+        pass
+
+class Capacitor(Component):
+    def __init__(self, id=-1):
+        if self.valid_input({"id": id}):
+            self.id = id
+            self.num_pins = 2
+            self.connections = {f"{id}_0":[], f"{id}_1":[]}
+
+    def draw(self):
+        pass
+
+class Inductor(Component):
+    def __init__(self, id=-1):
+        if self.valid_input({"id": id}):
+            self.id = id
+            self.num_pins = 2
+            self.connections = {f"{id}_0":[], f"{id}_1":[]}
+
+    def draw(self):
+        pass
+
+class NpnTransistor(Component):
+    def __init__(self, id=-1):
+        if self.valid_input({"id": id}):
+            self.id = id
+            self.num_pins = 3
+            self.connections = {f"{id}_0":[], f"{id}_1":[], f"{id}_2":[]}
+
+    def draw(self):
+        pass
+    
+class PnpTransistor(Component):
+    def __init__(self, id=-1):
+        if self.valid_input({"id": id}):
+            self.id = id
+            self.num_pins = 3
+            self.connections = {f"{id}_0":[], f"{id}_1":[], f"{id}_2":[]}
+
+    def draw(self):
+        pass
+
+class Diode(Component):
+    def __init__(self, id=-1):
+        if self.valid_input({"id": id}):
+            self.id = id
+            self.num_pins = 2
+            self.connections = {f"{id}_0":[], f"{id}_1":[]}
+
+    def draw(self):
+        pass
+
+class Led(Component):
+    def __init__(self, id=-1):
+        if self.valid_input({"id": id}):
+            self.id = id
+            self.num_pins = 2
+            self.connections = {f"{id}_0":[], f"{id}_1":[]}
+
+    def draw(self):
+        pass
+
+class Switch(Component):
+    def __init__(self, id=-1):
+        if self.valid_input({"id": id}):
+            self.id = id
+            self.num_pins = 2
+            self.connections = {f"{id}_0":[], f"{id}_1":[]}
+
+    def draw(self):
+        pass
+
+class VoltageSource(Component):
+    def __init__(self, id=-1):
+        if self.valid_input({"id": id}):
+            self.id = id
+            self.num_pins = 2
+            self.connections = {f"{id}_0":[], f"{id}_1":[]}
+
+    def draw(self):
+        pass
+
+class Ground(Component):
+    def __init__(self, id=-1):
+        if self.valid_input({"id": id}):
+            self.id = id
+            self.num_pins = 1
+            self.connections = {f"{id}_0":[]}
+
+    def draw(self):
+        pass
+    
+
 class Comment:
     def __init__(self, id, text="Type something here", position=[0, 0]):
-        self.id = id
-        self.text = text
-        self.position = position
+        if self.valid_input({"id": id, "text": text, "position": position}):
+            self.id = id
+            self.text = text
+            self.position = position
+
+    def valid_input(self, input_kwargs):
+        for key in input_kwargs:
+            if key == "id":
+                if type(input_kwargs[key]) != int:
+                    raise TypeError("Invalid id type")
+                if input_kwargs[key] < 0:
+                    raise ValueError("Invalid id value")
+            if key == "text":
+                if type(input_kwargs[key]) != str:
+                    raise TypeError("Invalid text type")
+            if key == "position":
+                if type(input_kwargs[key]) != list:
+                    raise TypeError("Invalid position type")
+                if len(input_kwargs[key]) != 2:
+                    raise ValueError("invalid position shape")
+        return True
 
     def edit_text(self, text):
-        self.text = text
+        if self.valid_input({"text": text}):
+            self.text = text
 
     def set_position(self, position):
-        self.location = position
+        if self.valid_input({"position": position}):
+            self.location = position
 
     def draw(self):
         pass
@@ -89,6 +239,18 @@ class Comment:
 
 class Schematic:
     MAX_ITER = 10
+    COMPONENT_CLASSES = {
+        "Resistor": Resistor,
+        "Capacitor": Capacitor,
+        "Inductor": Inductor,
+        "NpnTransistor": NpnTransistor,
+        "PnpTransistor": PnpTransistor,
+        "Diode": Diode,
+        "Led": Led,
+        "Switch": Switch,
+        "VoltageSource": VoltageSource,
+        "Ground": Ground
+        }
 
     def __init__(self):
         self.components = {}
@@ -102,14 +264,25 @@ class Schematic:
         self.this_run_score = 0.0
         self.n_grid_spaces = 5
     
+    # Checks an id versus the list of component ids that exist and tells whether its unique
+    def unique_component_id(self, id):
+        if len(self.components) < 1:
+            return True
+        else:
+            return not (id in [component.id for component in self.components])
+    
+    def unique_comment_id(self, id):
+        if len(self.comments) < 1:
+            return True
+        else:
+            return not (id in [comment.id for comment in self.comments])
+
     # I'm using this to set a new schematic to a loaded one (-Jason)
     def Schematic(self, schematic_dict):
-        components_dict = schematic_dict["components"]
-        for component in components_dict:
+        for component in schematic_dict["components"]:
             self.add_component(**component)
 
-        comments_dict = schematic_dict["comments"]
-        for comment in comments_dict:
+        for comment in schematic_dict["comments"]:
             self.add_comment(**comment)
 
         self.paths = schematic_dict["paths"]
@@ -121,19 +294,14 @@ class Schematic:
         self.this_run_score = schematic_dict["this_run_score"]
         self.n_grid_spaces = schematic_dict["n_grid_spaces"]
     
-    def add_component(self, component_type="", label="", id=-1, schem_position=[0, 0], schem_orientation=np.identity(2), pcb_position=np.array([1, 0]), pcb_orientation=np.identity(2), connections={}):
-        kwargs = {
-            'id': id,
-            'component_type': component_type,
-            'label': label,
-            'schem_position': schem_position,
-            'schem_orientation': schem_orientation,
-            'pcb_position': pcb_position,
-            'pcb_orientation': pcb_orientation,
-            'connections': connections
-            }
-        component = Component(**kwargs)
-        self.components[component.id] = (component)
+    def add_component(self, component_dict):
+        if self.unique_component_id(component_dict["id"]):
+            component_type = component_dict["component_type"]
+            component_dict.pop("component_type")
+            component = self.COMPONENT_CLASSES[component_type](**component_dict)
+            self.components[component.id] = (component)
+        else:
+            raise ValueError("Component id not unique")
 
     def delete_component(self, id):
         self.components.pop(id)
@@ -153,13 +321,11 @@ class Schematic:
     def change_label(self, component_id, text):
         self.components[component_id].change_label(text)
 
-    def add_comment(self, id, text, position=[0, 0]):
-        kwargs = {
-            "id": id,
-            "text": text,
-            "position": position
-            }
-        self.comments[id](Comment(**kwargs))
+    def add_comment(self, comment_dict):
+        if self.unique_comment_id(comment_dict["id"]):
+            self.comments[id] = Comment(**comment_dict)
+        else:
+            raise ValueError("Comment id not unique")
 
     def remove_comment(self, id):
         self.comments.pop(id)
