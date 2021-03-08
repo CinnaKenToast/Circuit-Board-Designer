@@ -323,11 +323,13 @@ class Schematic:
 
     # I'm using this to set a new schematic to a loaded one (-Jason)
     def Schematic(self, schematic_dict):
+        # print(schematic_dict)
+
         for component in schematic_dict["components"]:
-            self.add_component(**component)
+            self.add_component(component)
 
         for comment in schematic_dict["comments"]:
-            self.add_comment(**comment)
+            self.add_comment(comment)
 
         self.paths = schematic_dict["paths"]
         self.iteration_num = schematic_dict["iteration_num"]
@@ -344,40 +346,41 @@ class Schematic:
             component_dict.pop("component_type")
             component = self.COMPONENT_CLASSES[component_type](
                 **component_dict)
-            self.components[component.id] = (component)
+            self.components[f"component_{component.id}"] = (component)
         else:
             raise ValueError("Component id not unique")
 
     def delete_component(self, id):
-        self.components.pop(id)
+        self.components.pop(f"component_{id}")
 
     def add_connection(self, component_1_pin_id, component_2_pin_id):
         component_1_id = int(component_1_pin_id.split("_")[0])
         component_2_id = int(component_2_pin_id.split("_")[0])
-        self.components[component_1_id].connect(
+        self.components[f"component_{component_1_id}"].connect(
             component_1_pin_id, component_2_pin_id)
-        self.components[component_2_id].connect(
+        self.components[f"component_{component_2_id}"].connect(
             component_2_pin_id, component_1_pin_id)
 
     def remove_connection(self, component_1_pin_id, component_2_pin_id):
         component_1_id = int(component_1_pin_id.split("_")[0])
         component_2_id = int(component_2_pin_id.split("_")[0])
-        self.components[component_1_id].disconnect(
+        self.components[f"component_{component_1_id}"].disconnect(
             component_1_pin_id, component_2_pin_id)
-        self.components[component_2_id].disconnect(
+        self.components[f"component_{component_2_id}"].disconnect(
             component_2_pin_id, component_1_pin_id)
 
     def change_label(self, component_id, text):
-        self.components[component_id].change_label(text)
+        self.components[f"component_{component_id}"].change_label(text)
 
     def add_comment(self, comment_dict):
         if self.unique_comment_id(comment_dict["id"]):
-            self.comments[id] = Comment(**comment_dict)
+            comment = Comment(**comment_dict)
+            self.comments[f"comment_{comment.id}"] = comment
         else:
             raise ValueError("Comment id not unique")
 
     def remove_comment(self, id):
-        self.comments.pop(id)
+        self.comments.pop(f"comment_{id}")
 
     def draw(self):
         for component in self.components:
@@ -391,10 +394,12 @@ class Schematic:
         schematic_dict = {}
 
         for component_id in self.components:
-            components[component_id] = self.components[component_id].to_dict()
+            components[f"component_{component_id}"] = self.components[component_id].to_dict(
+            )
 
         for comment_id in self.comments:
-            comments[comment_id] = self.comments[comment_id].to_dict()
+            comments[f"comment_{comment_id}"] = self.comments[comment_id].to_dict(
+            )
 
         schematic_dict = {
             "components": components,
@@ -417,7 +422,7 @@ class Schematic:
             with open(file_name, 'x') as f:
                 json.dump(schematic_dict, f)
         else:  # notify user that file exists and ask if they want to overwrite it/choose a different name
-            pass
+            raise FileExistsError(f"\"{file_name}\" already exists")
 
     def load(self, file_name):  # need to implement some safegard to be sure that the user wants to load in something (in case they had not saved the current schematic) (-Jason)
         if os.path.exists(file_name):
@@ -425,7 +430,7 @@ class Schematic:
             schematic_dict = json.load(f)
             self.Schematic(schematic_dict)
         else:  # notify user that file does not exist and ask if they want to reenter a filename
-            pass
+            raise FileNotFoundError(f"No file \"{file_name}\"")
 
     # # Metropolis' Monte Carlo method. (-Jason)
     # def monte_carlo(self):
