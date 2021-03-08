@@ -1,0 +1,91 @@
+{
+    "components": {
+        "84": {
+            "id": 84,
+            "component_type": "VoltageSource",
+            "label": "V1",
+            "schem_position": [
+                0,
+                0
+            ],
+            "schem_orientation": [
+                [
+                    1.0,
+                    0.0
+                ],
+                [
+                    0.0,
+                    1.0
+                ]
+            ],
+            "pcb_position": [
+                1,
+                0
+            ],
+            "pcb_orientation": [
+                [
+                    1.0,
+                    0.0
+                ],
+                [
+                    0.0,
+                    1.0
+                ]
+            ],
+            "connections": {
+                "84_0": [],
+                "84_1": [
+                    "42_0"
+                ]
+            }
+        },
+        "42": {
+            "id": 42,
+            "component_type": "Resistor",
+            "label": "R1",
+            "schem_position": [
+                0,
+                0
+            ],
+            "schem_orientation": [
+                [
+                    1.0,
+                    0.0
+                ],
+                [
+                    0.0,
+                    1.0
+                ]
+            ],
+            "pcb_position": [
+                1,
+                0
+            ],
+            "pcb_orientation": [
+                [
+                    1.0,
+                    0.0
+                ],
+                [
+                    0.0,
+                    1.0
+                ]
+            ],
+            "connections": {
+                "42_0": [
+                    "84_1"
+                ],
+                "42_1": []
+            }
+        }
+    },
+    "comments": {},
+    "paths": [],
+    "iteration_num": 0,
+    "h": [],
+    "g": [],
+    "f": [],
+    "last_run_score": 1.0,
+    "this_run_score": 0.0,
+    "n_grid_spaces": 5
+}
