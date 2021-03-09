@@ -15,14 +15,15 @@ class Component:
             self.label = label
             # will be used as a vector to hold the x and y coordinate of the component's sprite (-Jason)
             self.schem_position = schem_position
-            # rotated clockwise, counterclockwise, etc.
+            # rotated clockwise, counterclockwise, etc. (-Jason)
             self.schem_orientation = schem_orientation
-            self.pcb_position = pcb_position  # for gridspace in pcb layout generation
-            # rotate clockwise or counterclockwise using [[0, 1], [1, 0]] and [[0, -1], [1, 0]] respectively (you multiply the pcb_position vector with this to rotate it)
+            # for gridspace in pcb layout generation (-Jason)
+            self.pcb_position = pcb_position
+            # rotate clockwise or counterclockwise using [[0, 1], [1, 0]] and [[0, -1], [1, 0]] respectively (you multiply the pcb_position vector with this to rotate it) (-Jason)
             self.pcb_orientation = pcb_orientation
             self.physical_dimensions = {"central_position_sprite": [], "pin_positions_sprite": [], "sprite_index": -1, "solder_pad_positions": [
-            ], "solder_pad_dim": 1}  # pulled from the .json database (pin/solder pad postions are relative to a central position)
-            # self.sprite # eventually a png once I figure it out
+            ], "solder_pad_dim": 1}  # pulled from the .json database (pin/solder pad postions are relative to a central position) (-Jason)
+            # self.sprite # eventually a png once I figure it out (-Jason)
 
     def valid_input(self, input_kwargs):
         for key in input_kwargs:
@@ -39,7 +40,7 @@ class Component:
             elif key == "schem_position":
                 if type(input_kwargs[key]) != list:
                     raise TypeError("Invalid position type")
-                if len(input_kwargs[key]) != 2:
+                if np.shape(input_kwargs[key]) != (2,):
                     raise ValueError(
                         "Invalid shape for schematic position vector")
             elif key == "schem_orientation":
@@ -47,7 +48,7 @@ class Component:
                     raise TypeError("Invalid orientation type")
                 if np.shape(input_kwargs[key]) != (2, 2):
                     raise ValueError(
-                        "Invalid shape for schematic position vector")
+                        f"Invalid shape for schematic orientation matrix: {np.shape(input_kwargs[key])}")
             elif key == "pcb_position":
                 if type(input_kwargs[key]) != np.ndarray:
                     raise TypeError("Invalid position type")
@@ -114,7 +115,13 @@ class Resistor(Component):
                              schem_orientation, pcb_position, pcb_orientation)
             self.id = id
             self.num_pins = 2
-            self.connections = {f"{id}_0": [], f"{id}_1": []}
+            self.connections = {f"{self.id}_0": [], f"{self.id}_1": []}
+
+    def set_connections(self, connections={}):
+        if len(connections) == 0:
+            self.connections = {f"{self.id}_0": [], f"{self.id}_1": []}
+        else:
+            self.connections = connections
 
     def draw(self):
         pass
@@ -127,7 +134,13 @@ class Capacitor(Component):
                              schem_orientation, pcb_position, pcb_orientation)
             self.id = id
             self.num_pins = 2
-            self.connections = {f"{id}_0": [], f"{id}_1": []}
+            self.connections = {f"{self.id}_0": [], f"{self.id}_1": []}
+
+    def set_connections(self, connections={}):
+        if len(connections) == 0:
+            self.connections = {f"{self.id}_0": [], f"{self.id}_1": []}
+        else:
+            self.connections = connections
 
     def draw(self):
         pass
@@ -140,7 +153,13 @@ class Inductor(Component):
                              schem_orientation, pcb_position, pcb_orientation)
             self.id = id
             self.num_pins = 2
-            self.connections = {f"{id}_0": [], f"{id}_1": []}
+            self.connections = {f"{self.id}_0": [], f"{self.id}_1": []}
+
+    def set_connections(self, connections={}):
+        if len(connections) == 0:
+            self.connections = {f"{self.id}_0": [], f"{self.id}_1": []}
+        else:
+            self.connections = connections
 
     def draw(self):
         pass
@@ -153,7 +172,15 @@ class NpnTransistor(Component):
                              schem_orientation, pcb_position, pcb_orientation)
             self.id = id
             self.num_pins = 3
-            self.connections = {f"{id}_0": [], f"{id}_1": [], f"{id}_2": []}
+            self.connections = {f"{self.id}_0": [],
+                                f"{self.id}_1": [], f"{self.id}_2": []}
+
+    def set_connections(self, connections={}):
+        if len(connections) == 0:
+            self.connections = {f"{self.id}_0": [],
+                                f"{self.id}_1": [], f"{self.id}_2": []}
+        else:
+            self.connections = connections
 
     def draw(self):
         pass
@@ -166,7 +193,15 @@ class PnpTransistor(Component):
                              schem_orientation, pcb_position, pcb_orientation)
             self.id = id
             self.num_pins = 3
-            self.connections = {f"{id}_0": [], f"{id}_1": [], f"{id}_2": []}
+            self.connections = {f"{self.id}_0": [],
+                                f"{self.id}_1": [], f"{self.id}_2": []}
+
+    def set_connections(self, connections={}):
+        if len(connections) == 0:
+            self.connections = {f"{self.id}_0": [],
+                                f"{self.id}_1": [], f"{self.id}_2": []}
+        else:
+            self.connections = connections
 
     def draw(self):
         pass
@@ -179,7 +214,13 @@ class Diode(Component):
                              schem_orientation, pcb_position, pcb_orientation)
             self.id = id
             self.num_pins = 2
-            self.connections = {f"{id}_0": [], f"{id}_1": []}
+            self.connections = {f"{self.id}_0": [], f"{self.id}_1": []}
+
+    def set_connections(self, connections={}):
+        if len(connections) == 0:
+            self.connections = {f"{self.id}_0": [], f"{self.id}_1": []}
+        else:
+            self.connections = connections
 
     def draw(self):
         pass
@@ -192,7 +233,13 @@ class Led(Component):
                              schem_orientation, pcb_position, pcb_orientation)
             self.id = id
             self.num_pins = 2
-            self.connections = {f"{id}_0": [], f"{id}_1": []}
+            self.connections = {f"{self.id}_0": [], f"{self.id}_1": []}
+
+    def set_connections(self, connections={}):
+        if len(connections) == 0:
+            self.connections = {f"{self.id}_0": [], f"{self.id}_1": []}
+        else:
+            self.connections = connections
 
     def draw(self):
         pass
@@ -205,7 +252,13 @@ class Switch(Component):
                              schem_orientation, pcb_position, pcb_orientation)
             self.id = id
             self.num_pins = 2
-            self.connections = {f"{id}_0": [], f"{id}_1": []}
+            self.connections = {f"{self.id}_0": [], f"{self.id}_1": []}
+
+    def set_connections(self, connections={}):
+        if len(connections) == 0:
+            self.connections = {f"{self.id}_0": [], f"{self.id}_1": []}
+        else:
+            self.connections = connections
 
     def draw(self):
         pass
@@ -218,7 +271,13 @@ class VoltageSource(Component):
                              schem_orientation, pcb_position, pcb_orientation)
             self.id = id
             self.num_pins = 2
-            self.connections = {f"{id}_0": [], f"{id}_1": []}
+            self.connections = {f"{self.id}_0": [], f"{self.id}_1": []}
+
+    def set_connections(self, connections={}):
+        if len(connections) == 0:
+            self.connections = {f"{self.id}_0": [], f"{self.id}_1": []}
+        else:
+            self.connections = connections
 
     def draw(self):
         pass
@@ -231,7 +290,13 @@ class Ground(Component):
                              schem_orientation, pcb_position, pcb_orientation)
             self.id = id
             self.num_pins = 1
-            self.connections = {f"{id}_0": []}
+            self.connections = {f"{self.id}_0": []}
+
+    def set_connections(self, connections={}):
+        if len(connections) == 0:
+            self.connections = {f"{self.id}_0": []}
+        else:
+            self.connections = connections
 
     def draw(self):
         pass
@@ -323,12 +388,10 @@ class Schematic:
 
     # I'm using this to set a new schematic to a loaded one (-Jason)
     def Schematic(self, schematic_dict):
-        # print(schematic_dict)
-
-        for component in schematic_dict["components"]:
+        for component in schematic_dict["components"].values():
             self.add_component(component)
 
-        for comment in schematic_dict["comments"]:
+        for comment in schematic_dict["comments"].values():
             self.add_comment(comment)
 
         self.paths = schematic_dict["paths"]
@@ -342,10 +405,28 @@ class Schematic:
 
     def add_component(self, component_dict):
         if self.unique_component_id(component_dict["id"]):
+            if "connections" in component_dict:
+                connections = component_dict.pop("connections")
+            else:
+                connections = {}
+
+            if "schem_orientation" in component_dict and type(component_dict["schem_position"]) == list:
+                component_dict["schem_orientation"] = np.array(
+                    component_dict["schem_orientation"])
+
+            if "pcb_position" in component_dict and type(component_dict["pcb_position"]) == list:
+                component_dict["pcb_position"] = np.array(
+                    component_dict["pcb_position"])
+
+            if "pcb_orientation" in component_dict and type(component_dict["pcb_orientation"]) == list:
+                component_dict["pcb_orientation"] = np.array(
+                    component_dict["pcb_orientation"])
+
             component_type = component_dict["component_type"]
             component_dict.pop("component_type")
             component = self.COMPONENT_CLASSES[component_type](
                 **component_dict)
+            component.set_connections(connections)
             self.components[f"component_{component.id}"] = (component)
         else:
             raise ValueError("Component id not unique")
@@ -394,11 +475,11 @@ class Schematic:
         schematic_dict = {}
 
         for component_id in self.components:
-            components[f"component_{component_id}"] = self.components[component_id].to_dict(
+            components[component_id] = self.components[component_id].to_dict(
             )
 
         for comment_id in self.comments:
-            comments[f"comment_{comment_id}"] = self.comments[comment_id].to_dict(
+            comments[comment_id] = self.comments[comment_id].to_dict(
             )
 
         schematic_dict = {

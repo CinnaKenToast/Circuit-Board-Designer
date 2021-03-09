@@ -11,7 +11,8 @@ if __name__ == "__main__":
     r1_kwargs = {"id": 42, "component_type": "Resistor",
                  "schem_position": [0, 0]}
     test_schematic_1.add_component(r1_kwargs)
-    c1_kwargs = {'id': 21, 'component_type': "Capacitor", 'schem_position': [0, 2]}
+    c1_kwargs = {'id': 21, 'component_type': "Capacitor",
+                 'schem_position': [0, 2]}
     test_schematic_1.add_component(c1_kwargs)
 
     # Test adding a label to components
@@ -29,20 +30,20 @@ if __name__ == "__main__":
     test_schematic_1.remove_connection("84_1", "84_0")
 
     # Setup the initial states of the comments and test adding them to the schematic
-    comm1_kwargs = {"id": 0, "text":"Hello, world!", "position":[10, 0]}
+    comm1_kwargs = {"id": 0, "text": "Hello, world!", "position": [10, 0]}
     test_schematic_1.add_comment(comm1_kwargs)
-    comm2_kwargs = {"id": 1, "text":"Hello, 2nd world!", "position":[10, 5]}
+    comm2_kwargs = {"id": 1, "text": "Hello, 2nd world!", "position": [10, 5]}
     test_schematic_1.add_comment(comm2_kwargs)
 
     # Test the save function (output to test1.json)
-    test_schematic_1.save(input("save to?\t"))
+    test_schematic_1.save("test_in.json")
 
     # delete the schematic
     del test_schematic_1
 
     # Test the load function (from test1.json) into a new schematic
     test_schematic_2 = classes.Schematic()
-    test_schematic_2.load(input("load from?\t"))
+    test_schematic_2.load("test_in.json")
 
     # To see how everything worked (save as test2.json)
-    # test_schematic_2.save(input("save to?\t"))
+    test_schematic_2.save("test_out.json")

@@ -1,6 +1,6 @@
 {
     "components": {
-        "84": {
+        "component_84": {
             "id": 84,
             "component_type": "VoltageSource",
             "label": "V1",
@@ -33,13 +33,15 @@
                 ]
             ],
             "connections": {
-                "84_0": [],
+                "84_0": [
+                    "21_1"
+                ],
                 "84_1": [
                     "42_0"
                 ]
             }
         },
-        "42": {
+        "component_42": {
             "id": 42,
             "component_type": "Resistor",
             "label": "R1",
@@ -75,11 +77,71 @@
                 "42_0": [
                     "84_1"
                 ],
-                "42_1": []
+                "42_1": [
+                    "21_0"
+                ]
+            }
+        },
+        "component_21": {
+            "id": 21,
+            "component_type": "Capacitor",
+            "label": "C1",
+            "schem_position": [
+                0,
+                2
+            ],
+            "schem_orientation": [
+                [
+                    1.0,
+                    0.0
+                ],
+                [
+                    0.0,
+                    1.0
+                ]
+            ],
+            "pcb_position": [
+                1,
+                0
+            ],
+            "pcb_orientation": [
+                [
+                    1.0,
+                    0.0
+                ],
+                [
+                    0.0,
+                    1.0
+                ]
+            ],
+            "connections": {
+                "21_0": [
+                    "42_1"
+                ],
+                "21_1": [
+                    "84_0"
+                ]
             }
         }
     },
-    "comments": {},
+    "comments": {
+        "comment_0": {
+            "id": 0,
+            "text": "Hello, world!",
+            "position": [
+                10,
+                0
+            ]
+        },
+        "comment_1": {
+            "id": 1,
+            "text": "Hello, 2nd world!",
+            "position": [
+                10,
+                5
+            ]
+        }
+    },
     "paths": [],
     "iteration_num": 0,
     "h": [],
