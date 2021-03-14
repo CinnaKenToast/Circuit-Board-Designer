@@ -1,69 +1,72 @@
 {
     "Resistor": {
-        "central_position_sprite": [],
+        "central_position_sprite": [100, 100],
         "pin_positions_sprite": [],
         "sprite_index": -1,
         "solder_pad_positions": [],
         "solder_pad_dim": 1
     },
     "Capacitor": {
-        "central_position_sprite": [],
+        "central_position_sprite": [100, 100],
         "pin_positions_sprite": [],
         "sprite_index": -1,
         "solder_pad_positions": [],
         "solder_pad_dim": 1
     },
     "Inductor": {
-        "central_position_sprite": [],
+        "central_position_sprite": [100, 100],
         "pin_positions_sprite": [],
         "sprite_index": -1,
         "solder_pad_positions": [],
         "solder_pad_dim": 1
     },
     "NpnTransistor": {
-        "central_position_sprite": [],
+        "central_position_sprite": [100, 100],
         "pin_positions_sprite": [],
         "sprite_index": -1,
         "solder_pad_positions": [],
         "solder_pad_dim": 1
     },
     "PnpTransistor": {
-        "central_position_sprite": [],
+        "central_position_sprite": [100, 100],
         "pin_positions_sprite": [],
         "sprite_index": -1,
         "solder_pad_positions": [],
         "solder_pad_dim": 1
     },
     "Diode": {
-        "central_position_sprite": [],
-        "pin_positions_sprite": [],
+        "central_position_sprite": [100, 100],
+        "pin_positions_sprite": [
+            [],
+            []
+        ],
         "sprite_index": -1,
         "solder_pad_positions": [],
         "solder_pad_dim": 1
     },
     "Led": {
-        "central_position_sprite": [],
+        "central_position_sprite": [100, 100],
         "pin_positions_sprite": [],
         "sprite_index": -1,
         "solder_pad_positions": [],
         "solder_pad_dim": 1
     },
     "Switch": {
-        "central_position_sprite": [],
+        "central_position_sprite": [100, 100],
         "pin_positions_sprite": [],
         "sprite_index": -1,
         "solder_pad_positions": [],
         "solder_pad_dim": 1
     },
     "VoltageSource": {
-        "central_position_sprite": [],
+        "central_position_sprite": [100, 100],
         "pin_positions_sprite": [],
         "sprite_index": -1,
         "solder_pad_positions": [],
         "solder_pad_dim": 1
     },
     "Ground": {
-        "central_position_sprite": [],
+        "central_position_sprite": [100, 100],
         "pin_positions_sprite": [],
         "sprite_index": -1,
         "solder_pad_positions": [],
