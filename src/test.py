@@ -1,5 +1,8 @@
 import classes
 
+# If you ever need to know how to add and remove stuff from a schematic
+# look in here.
+
 if __name__ == "__main__":
     # Create a schematic
     test_schematic_1 = classes.Schematic()
