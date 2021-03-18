@@ -8,8 +8,6 @@ class Component:
     # and what component fields to pull from the .json database. As long as the
     # database has the dimensions corresponding to type: component type,
     # and the spritesheet has a picture for it, the component can be used.
-    # This is very important for any amount of scalability (we don't have to
-    # make a load of classes for each specific type)
     def __init__(self, label, schem_position, schem_orientation, pcb_position, pcb_orientation):
         if self.valid_input({"schem_position": schem_position, "schem_orientation": schem_orientation, "pcb_position": pcb_position, "pcb_orientation": pcb_orientation}):
             self.label = label
@@ -347,7 +345,6 @@ class Comment:
 
 
 class Schematic:
-    MAX_ITER = 10
     COMPONENT_CLASSES = {
         "Resistor": Resistor,
         "Capacitor": Capacitor,
@@ -364,22 +361,31 @@ class Schematic:
     def __init__(self):
         self.components = {}
         self.comments = {}
-        self.paths = []
-        self.iteration_num = 0
-        self.h = []
-        self.g = []
-        self.f = []
+        self.paths = {}
+        self.iteration_num = -1
+        self.connection_num = -1
+        self.path_lock = -1
+        self.H = []
+        self.G = []
+        self.F = []
         self.last_run_score = 1.0
-        self.this_run_score = 0.0
+        self.curr_run_score = 0.0
         self.n_grid_spaces = 5
+        self.max_iters = 10
 
-    # Checks an id versus the list of component ids that exist and tells whether its unique
+    # Allows for setting the monte carlo params so it can continue
+    def set_monte_carlo_parameters(self, n_grid_spaces=5, max_iters=10):
+        self.n_grid_spaces = n_grid_spaces
+        self.max_iters = max_iters
+
+    # Checks an id versus the list of component ids that exist and tells whether its unique (-Jason)
     def unique_component_id(self, id):
         if len(self.components) < 1:
             return True
         else:
             return not (id in [component_id for component_id in self.components])
 
+    # Checks an id versus the list of comment ids that exist and tells whether its unique (-Jason)
     def unique_comment_id(self, id):
         if len(self.comments) < 1:
             return True
@@ -396,12 +402,15 @@ class Schematic:
 
         self.paths = schematic_dict["paths"]
         self.iteration_num = schematic_dict["iteration_num"]
-        self.h = schematic_dict["h"]
-        self.g = schematic_dict["g"]
-        self.f = schematic_dict["f"]
+        self.connection_num = schematic_dict["connection_num"]
+        self.path_lock = schematic_dict["path_lock"]
+        self.H = schematic_dict["H"]
+        self.G = schematic_dict["G"]
+        self.F = schematic_dict["F"]
         self.last_run_score = schematic_dict["last_run_score"]
         self.this_run_score = schematic_dict["this_run_score"]
         self.n_grid_spaces = schematic_dict["n_grid_spaces"]
+        self.max_iters = schematic_dict["max_iters"]
 
     def add_component(self, component_dict):
         if self.unique_component_id(component_dict["id"]):
@@ -487,12 +496,15 @@ class Schematic:
             "comments": comments,
             "paths": self.paths,
             "iteration_num": self.iteration_num,
-            "h": self.h,
-            "g": self.g,
-            "f": self.f,
+            "connection_num": self.connection_num,
+            "path_lock": self.path_lock,
+            "H": self.H,
+            "G": self.G,
+            "F": self.F,
             "last_run_score": self.last_run_score,
             "this_run_score": self.this_run_score,
-            "n_grid_spaces": self.n_grid_spaces
+            "n_grid_spaces": self.n_grid_spaces,
+            "max_iters": self.max_iters
         }
 
         return schematic_dict
@@ -502,7 +514,8 @@ class Schematic:
             schematic_dict = self.to_dict()
             with open(file_name, 'x') as f:
                 json.dump(schematic_dict, f)
-        else:  # notify user that file exists and ask if they want to overwrite it/choose a different name
+        # notify user that file exists and ask if they want to overwrite it/choose a different name (-Jason)
+        else:
             raise FileExistsError(f"\"{file_name}\" already exists")
 
     def load(self, file_name):  # need to implement some safegard to be sure that the user wants to load in something (in case they had not saved the current schematic) (-Jason)
@@ -510,31 +523,32 @@ class Schematic:
             f = open(file_name, "r")
             schematic_dict = json.load(f)
             self.Schematic(schematic_dict)
-        else:  # notify user that file does not exist and ask if they want to reenter a filename
+        # notify user that file does not exist and ask if they want to reenter a filename (-Jason)
+        else:
             raise FileNotFoundError(f"No file \"{file_name}\"")
 
-    # # Metropolis' Monte Carlo method. (-Jason)
-    # def monte_carlo(self):
-    #     connections = self.initialize_connections_array()
+    # Metropolis' Monte Carlo method. (-Jason)
+    def monte_carlo(self):
+        for i in range(1, self.max_iters+1):
+            for component in self.components:
+                rn = np.floor(np.random.rand() * (self.n_grid_spaces+1))
 
-    #     i = 0
-    #     while i < self.MAX_ITER:
-    #         rn = np.ceil(np.random.rand() * self.n_grid_spaces)
-    #         i += 1
+    def get_connections_list(self):
+        for component in self.components:
+            pass
+        return {}
 
-    # def initialize_connections_array(self):
-    #     conns = []
-    #     for component in self.components:
-    #         # conns.append(component.)
-    #         pass
+    def initialize_paths(self):
+        connections_list = self.get_connections_list()
+        for connection in connections_list:
+            pass
 
-    #     return {}
+    def calculate_score(self):
+        min_path_length = len(self.paths[0])
+        for path in self.paths[1:]:
+            if np.min(min_path_length, len(path)) != min_path_length:
+                min_path_length = len(path)
 
-    # def calculate_score(self):
-    #     pass
-
-    # # A* as defined on https://en.wikipedia.org/wiki/A*_search_algorithm (-Jason)
-    # def a_star(self):
-    #     h = [[],[]]
-    #     g = [[],[]]
-    #     f = [[],[]]
+    # A* as defined on https://en.wikipedia.org/wiki/A*_search_algorithm (-Jason)
+    def a_star(self, h, g, f):
+        pass
