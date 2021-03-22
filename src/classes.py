@@ -409,8 +409,7 @@ class Schematic:
         self.F = schematic_dict["F"]
         self.last_run_score = schematic_dict["last_run_score"]
         self.this_run_score = schematic_dict["this_run_score"]
-        self.n_grid_spaces = schematic_dict["n_grid_spaces"]
-        self.max_iters = schematic_dict["max_iters"]
+        self.set_monte_carlo_parameters(schematic_dict["n_grid_spaces"], schematic_dict["max_iters"])
 
     def add_component(self, component_dict):
         if self.unique_component_id(component_dict["id"]):
@@ -527,11 +526,14 @@ class Schematic:
         else:
             raise FileNotFoundError(f"No file \"{file_name}\"")
 
+    # LOOK AT force base graph layout algorithms as an alternative to this
     # Metropolis' Monte Carlo method. (-Jason)
     def monte_carlo(self):
         for i in range(1, self.max_iters+1):
             for component in self.components:
-                rn = np.floor(np.random.rand() * (self.n_grid_spaces+1))
+                rn_pos = int(np.floor(np.random.rand() * (self.n_grid_spaces+1)))
+                rn_orient = int(np.floor(np.random.rand() * 2))
+
 
     def get_connections_list(self):
         for component in self.components:
@@ -543,7 +545,7 @@ class Schematic:
         for connection in connections_list:
             pass
 
-    def calculate_score(self):
+    def lock_a_path(self):
         min_path_length = len(self.paths[0])
         for path in self.paths[1:]:
             if np.min(min_path_length, len(path)) != min_path_length:
