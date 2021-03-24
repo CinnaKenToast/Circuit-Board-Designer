@@ -6,77 +6,40 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>924</width>
-    <height>692</height>
+    <width>1104</width>
+    <height>858</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="pressMe">
     <property name="geometry">
      <rect>
-      <x>214</x>
-      <y>370</y>
-      <width>301</width>
-      <height>131</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>None-Functional Button</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label">
-    <property name="geometry">
-     <rect>
-      <x>130</x>
-      <y>70</y>
-      <width>221</width>
+      <x>240</x>
+      <y>450</y>
+      <width>261</width>
       <height>141</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <pointsize>36</pointsize>
+     </font>
+    </property>
     <property name="text">
-     <string>This is a label</string>
+     <string>Press Me!</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label_2">
+   <widget class="QLineEdit" name="lineEdit1">
     <property name="geometry">
      <rect>
-      <x>600</x>
-      <y>190</y>
-      <width>161</width>
-      <height>101</height>
+      <x>270</x>
+      <y>280</y>
+      <width>133</width>
+      <height>20</height>
      </rect>
-    </property>
-    <property name="text">
-     <string>This is another label</string>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="checkBox">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>160</y>
-      <width>81</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Check 1</string>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="checkBox_2">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>190</y>
-      <width>81</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Check 2</string>
     </property>
    </widget>
   </widget>
@@ -85,43 +48,69 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>924</width>
+     <width>1104</width>
      <height>21</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuMenu_Stuff">
+   <widget class="QMenu" name="menuAdd_File">
     <property name="title">
-     <string>Menu Stuff</string>
+     <string>Menu</string>
     </property>
-    <addaction name="actionA_button"/>
-    <addaction name="actionAnother_button"/>
+    <addaction name="actionSave"/>
+    <addaction name="actionSave_as"/>
+    <addaction name="actionLoad"/>
+    <addaction name="actionNew_project"/>
    </widget>
-   <widget class="QMenu" name="menuOther_Stuff">
+   <widget class="QMenu" name="menuFeatures">
     <property name="title">
-     <string>Other Stuff</string>
+     <string>Features</string>
     </property>
-    <addaction name="actionYet_another_button"/>
    </widget>
-   <addaction name="menuMenu_Stuff"/>
-   <addaction name="menuOther_Stuff"/>
+   <addaction name="menuAdd_File"/>
+   <addaction name="menuFeatures"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="actionA_button">
+  <action name="actionSave">
    <property name="text">
-    <string>A button</string>
+    <string>Save</string>
+   </property>
+   <property name="statusTip">
+    <string>THIS IS A TIP</string>
    </property>
   </action>
-  <action name="actionAnother_button">
+  <action name="actionSave_as">
    <property name="text">
-    <string>Another button</string>
+    <string>Save as...</string>
    </property>
   </action>
-  <action name="actionYet_another_button">
+  <action name="actionLoad">
    <property name="text">
-    <string>Yet another button</string>
+    <string>Load</string>
+   </property>
+  </action>
+  <action name="actionNew_project">
+   <property name="text">
+    <string>New project</string>
    </property>
   </action>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>pressMe</sender>
+   <signal>clicked()</signal>
+   <receiver>lineEdit1</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>28</x>
+     <y>534</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>46</x>
+     <y>277</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

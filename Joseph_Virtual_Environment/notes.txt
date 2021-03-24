@@ -3,7 +3,7 @@ NOTES:
 - Run VSCode as Admin
 - Run XLaunch
 - Move to proper directory
-- Open Virtual Machine by going to directory and doing Command ".\Script\activate"
+- Open Virtual Machine by going to directory and doing Command ".\Scripts\activate"
 
 - In order to make "Joseph_Virtual_Environment" work on other devices (I think) all you need to do after downloading
 is change the location in the "settings.json" under the .vscode folder.
@@ -19,3 +19,21 @@ COMMANDS:
 "Get-History |  Select-String -Pattern "Example" " - Searches command history for anything with "Example"
 "deactivate" - Will deactivate the current virtual machine and bring back normal PowerShell
 "pip3 install PyQt5Designer" - Installs a folder with Qt Designer in it. QTDesigner Folder contains the application.
+
+
+
+QT CODE COMMANDS:
+=================
+"widget.signal.connect(slot_function)" - Create a signal/slot connection 
+-> Example is "b1.clicked.connect(b1_clicked())"
+"QWidget.setGeometry(xpos, ypos, width, height)" - Changes the Geometry of the widget. It is referencing the main window.
+"canvas.fill(QtGui.QColor("white"))" - Changes the canvas color in the event of Black Box
+
+
+
+
+RANDOM IDEAS:
+=============
+-QToolBar: May help with menus
+-QDock: May help with pallet wheels
+-QDialog: Help with the inputs such as Label when an item is dropped onto workspace.
