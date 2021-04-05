@@ -6,11 +6,7 @@ from PySide2.QtGui import (QBrush, QColor, QConicalGradient, QCursor, QFont, QFo
 from PySide2.QtWidgets import *
 
 # GUI FILE
-<<<<<<< HEAD
-from ui_test import Ui_MainWindow
-=======
 from ui_main import Ui_MainWindow
->>>>>>> 6e53023bac87574a1ea40d0e50549132f53e0a3b
 
 # IMPORT FUNCTIONS
 # from ui_functions import *
