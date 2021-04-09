@@ -3,10 +3,11 @@ from PyQt5.QtCore import Qt, QMimeData
 from PyQt5.QtGui import QDrag
 
 class DragButton(QtWidgets.QPushButton):
-
+    
     def mousePressEvent(self, event):
         self.__mousePressPos = None
         self.__mouseMovePos = None
+        self.matrix = None
         if event.button() == QtCore.Qt.LeftButton:
             self.__mousePressPos = event.globalPos()
             self.__mouseMovePos = event.globalPos()
@@ -70,9 +71,9 @@ class Ui_drag_drop(object):
         self.andg.setGeometry(QtCore.QRect(10, 0, 91, 50))
         self.andg.setText("")
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("and.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(".\images\Diode.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.andg.setIcon(icon)
-        self.andg.setIconSize(QtCore.QSize(100, 50))
+        self.andg.setIconSize(QtCore.QSize(100, 90))
         self.andg.setObjectName("andg")
         #
         self.andg.clicked.connect(self.andgdrag)
@@ -83,9 +84,9 @@ class Ui_drag_drop(object):
         self.nand.setGeometry(QtCore.QRect(40, 50, 91, 50))
         self.nand.setText("")
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap("nand.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon1.addPixmap(QtGui.QPixmap(".\images\Diode.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.nand.setIcon(icon1)
-        self.nand.setIconSize(QtCore.QSize(100, 50))
+        self.nand.setIconSize(QtCore.QSize(100, 90))
         self.nand.setObjectName("nand")
 
         # notg
@@ -93,9 +94,9 @@ class Ui_drag_drop(object):
         self.notg.setGeometry(QtCore.QRect(10, 110, 91, 50))
         self.notg.setText("")
         icon2 = QtGui.QIcon()
-        icon2.addPixmap(QtGui.QPixmap("not.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon2.addPixmap(QtGui.QPixmap(".\images\Diode.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.notg.setIcon(icon2)
-        self.notg.setIconSize(QtCore.QSize(100, 50))
+        self.notg.setIconSize(QtCore.QSize(100, 90))
         self.notg.setObjectName("notg")
 
         # org
@@ -103,7 +104,7 @@ class Ui_drag_drop(object):
         self.org.setGeometry(QtCore.QRect(40, 170, 91, 50))
         self.org.setText("")
         icon3 = QtGui.QIcon()
-        icon3.addPixmap(QtGui.QPixmap("or.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon3.addPixmap(QtGui.QPixmap(".\images\Diode.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.org.setIcon(icon3)
         self.org.setIconSize(QtCore.QSize(100, 90))
         self.org.setObjectName("org")
@@ -113,9 +114,9 @@ class Ui_drag_drop(object):
         self.nor.setGeometry(QtCore.QRect(10, 230, 91, 50))
         self.nor.setText("")
         icon4 = QtGui.QIcon()
-        icon4.addPixmap(QtGui.QPixmap("nor.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon4.addPixmap(QtGui.QPixmap(".\images\Diode.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.nor.setIcon(icon4)
-        self.nor.setIconSize(QtCore.QSize(120, 60))
+        self.nor.setIconSize(QtCore.QSize(120, 90))
         self.nor.setObjectName("nor")
 
         # exor
@@ -123,9 +124,9 @@ class Ui_drag_drop(object):
         self.exor.setGeometry(QtCore.QRect(40, 290, 91, 50))
         self.exor.setText("")
         icon5 = QtGui.QIcon()
-        icon5.addPixmap(QtGui.QPixmap("exor.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon5.addPixmap(QtGui.QPixmap(".\images\Diode.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.exor.setIcon(icon5)
-        self.exor.setIconSize(QtCore.QSize(110, 60))
+        self.exor.setIconSize(QtCore.QSize(110, 90))
         self.exor.setObjectName("exor")
 
         # exnor
@@ -133,15 +134,15 @@ class Ui_drag_drop(object):
         self.exnor.setGeometry(QtCore.QRect(10, 350, 91, 50))
         self.exnor.setText("")
         icon6 = QtGui.QIcon()
-        icon6.addPixmap(QtGui.QPixmap("exnor.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon6.addPixmap(QtGui.QPixmap(".\images\Diode.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.exnor.setIcon(icon6)
-        self.exnor.setIconSize(QtCore.QSize(110, 60))
+        self.exnor.setIconSize(QtCore.QSize(110, 90))
         self.exnor.setObjectName("exnor")
 
         # canvas
         self.canvas = QtWidgets.QLabel(self.centralwidget)
         self.canvas.lower()
-        self.canvas.setGeometry(QtCore.QRect(140, 10, 421, 351))
+        self.canvas.setGeometry(QtCore.QRect(140, 10, 821, 651))
         self.canvas.setMouseTracking(True)
         self.canvas.setAutoFillBackground(False)
         self.canvas.setStyleSheet("color: rgb(255, 255, 255);\n"
