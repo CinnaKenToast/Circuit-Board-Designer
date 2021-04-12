@@ -13,13 +13,15 @@ if __name__ == "__main__":
     test_schematic_1.add_component(vs1_kwargs)
     r1_kwargs = {"id": 42, "label": "r1", "component_type": "Resistor"}
     test_schematic_1.add_component(r1_kwargs)
-    # c1_kwargs = {'id': 21, "label": "c1", 'component_type': "Capacitor"}
-    # test_schematic_1.add_component(c1_kwargs)
+    c1_kwargs = {'id': 21, "label": "c1", 'component_type': "Capacitor"}
+    test_schematic_1.add_component(c1_kwargs)
 
-    # # Test adding a label to components
-    # test_schematic_1.change_label(84, "V1")
-    # test_schematic_1.change_label(42, "R1")
-    # test_schematic_1.change_label(21, "C1")
+    test_schematic_1.remove_component(c1_kwargs['id'])
+
+    # Test adding a label to components
+    test_schematic_1.edit_label(84, "V1")
+    test_schematic_1.edit_label(42, "R1")
+    # test_schematic_1.edit_label(21, "C1")
 
     # # Test adding connections between 3 components
     # test_schematic_1.add_connection("84_0", "21_1")
@@ -41,7 +43,7 @@ if __name__ == "__main__":
     # test_schematic_1.add_comment(comm2_kwargs)
 
     # # Testing randomize_layout
-    test_schematic_1.set_monte_carlo_parameters(3, 10)
+    test_schematic_1.set_monte_carlo_parameters(2, 10)
     not_allowed_spots = test_schematic_1.not_allowed_pcb_spots()
     test_schematic_1.randomize_layout(not_allowed_spots)
 
@@ -51,8 +53,8 @@ if __name__ == "__main__":
 
     # # Test the save function (output to test1.json)
     # file_name_1 = input("Filename:   ") + ".json"
-    # file_name_1 = "test_output1.json"
-    # test_schematic_1.save(file_name_1)
+    file_name_1 = "test_output1.json"
+    test_schematic_1.save(file_name_1)
 
     # delete the schematic
     del test_schematic_1

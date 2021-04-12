@@ -300,8 +300,8 @@ class Schematic:
         self.H = schematic_dict["H"]
         self.G = schematic_dict["G"]
         self.F = schematic_dict["F"]
-        self.last_run_score = schematic_dict["last_run_score"]
-        self.curr_run_score = schematic_dict["curr_run_score"]
+        self.last_run_score = schematic_dict["last_runs_score"]
+        self.curr_run_score = schematic_dict["curr_runs_score"]
         self.set_monte_carlo_parameters(
             schematic_dict["n_grid_spaces"], schematic_dict["max_iters"])
 
@@ -321,11 +321,11 @@ class Schematic:
         else:
             raise ValueError("Component id not unique")
 
-    def delete_component(self, component_id):
+    def remove_component(self, component_id):
         self.components.pop(f"component_{component_id}")
 
-    def change_label(self, component_id, text):
-        self.components[f"component_{component_id}"].change_label(text)
+    def edit_label(self, component_id, new_text):
+        self.components[f"component_{component_id}"].change_label(new_text)
 
     def add_connection(self, component_1_pin_id, component_2_pin_id):
         component_1_id = int(component_1_pin_id.split("_")[0])
@@ -349,6 +349,9 @@ class Schematic:
             self.comments[f"comment_{comment.id}"] = comment
         else:
             raise ValueError("Comment id not unique")
+
+    def edit_comment(self, comment_id, new_text):
+        self.comments[f"comment_{comment_id}"].edit_text(new_text)
 
     def remove_comment(self, comment_id):
         self.comments.pop(f"comment_{comment_id}")
@@ -379,8 +382,8 @@ class Schematic:
             "H": self.H,
             "G": self.G,
             "F": self.F,
-            "last_run_score": self.last_run_score,
-            "curr_run_score": self.curr_run_score,
+            "last_runs_score": self.last_runs_score,
+            "curr_runs_score": self.curr_runs_score,
             "n_grid_spaces": self.n_grid_spaces,
             "max_iters": self.max_iters
         }
@@ -476,14 +479,14 @@ class Schematic:
 
     def get_valid_spot(self, not_allowed_pcb_spots):
         rn_pos_1 = self.get_pin1_pos()
-        rn_pos_2 = self.get_pin2_pos(rn_pos_1, not_allowed_pcb_spots)
+        rn_pos_2 = self.get_pin2_pos(rn_pos_1)
         rn_pos = [rn_pos_1, rn_pos_2]
 
         i = 0
         while rn_pos[0] in not_allowed_pcb_spots or rn_pos[1] in not_allowed_pcb_spots:
             # print("redoing pin1 and pin2")
             rn_pos_1 = self.get_pin1_pos()
-            rn_pos_2 = self.get_pin2_pos(rn_pos_1, not_allowed_pcb_spots)
+            rn_pos_2 = self.get_pin2_pos(rn_pos_1)
             rn_pos = [rn_pos_1, rn_pos_2]
 
             i += 1
