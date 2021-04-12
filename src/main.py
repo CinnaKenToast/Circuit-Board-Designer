@@ -127,6 +127,7 @@ class MainWindow(QMainWindow):
 
                 if enable:
                         width = self.ui.frame_tools.width()
+                        height = self.ui.frame_tools.height()
                         # print(width)
                         maxExtend = maxWidth
                         standard = 50
@@ -141,12 +142,13 @@ class MainWindow(QMainWindow):
                                 
                         #print(toolsOpened)
                         # print("width it should be", widthExtended)
-                        self.animation = QPropertyAnimation(self.ui.frame_tools, b"minimumWidth")
+                        self.animation = QPropertyAnimation(self.ui.frame_tools, b"minimumSize")
                         self.animation.setDuration(150)
-                        self.animation.setStartValue(width)
-                        self.animation.setEndValue(widthExtended)
+                        self.animation.setStartValue(QtCore.QSize(width, height))
+                        self.animation.setEndValue(QtCore.QSize(widthExtended, height))
                         self.animation.setEasingCurve(QtCore.QEasingCurve.InOutQuart)
                         self.animation.start()
+                        print(self.ui.frame_tools.width())
                         # print(self.ui.stacked_tools.currentWidget().accessibleName())
             
 

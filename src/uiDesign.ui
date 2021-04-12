@@ -51,7 +51,7 @@
        </size>
       </property>
       <property name="styleSheet">
-       <string notr="true">background-color: rgb(0, 255, 255);</string>
+       <string notr="true">background-color: rgb(85, 85, 85);</string>
       </property>
       <property name="frameShape">
        <enum>QFrame::NoFrame</enum>
@@ -115,11 +115,12 @@
             </property>
             <property name="styleSheet">
              <string notr="true">QPushButton{
-	background-color: rgb(0, 255, 255);
+	background-color: rgb(85, 85, 85);
+	border: none;
 }
 
 QPushButton:hover{
-	background-color: rgb(0, 170, 255);
+	background-color: rgb(42, 41, 44);
 }</string>
             </property>
             <property name="text">
@@ -173,7 +174,7 @@ QPushButton:hover{
              </size>
             </property>
             <property name="styleSheet">
-             <string notr="true">background-color: rgb(170, 255, 127);
+             <string notr="true">background-color: rgb(85, 85, 85);
 </string>
             </property>
             <property name="frameShape">
@@ -182,12 +183,46 @@ QPushButton:hover{
             <property name="frameShadow">
              <enum>QFrame::Raised</enum>
             </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_7">
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <property name="leftMargin">
+              <number>10</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QLabel" name="label_title">
+               <property name="font">
+                <font>
+                 <pointsize>16</pointsize>
+                </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">color: rgb(255, 255, 255);</string>
+               </property>
+               <property name="text">
+                <string>Circuit Board Designer</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </widget>
           </item>
           <item>
            <widget class="QFrame" name="frame_file_location">
             <property name="styleSheet">
-             <string notr="true">background-color: rgb(170, 170, 255);</string>
+             <string notr="true">background-color: rgb(85, 85, 85);
+
+border-top: 1px solid  rgba(224, 224, 224, 0.2);</string>
             </property>
             <property name="frameShape">
              <enum>QFrame::NoFrame</enum>
@@ -195,6 +230,34 @@ QPushButton:hover{
             <property name="frameShadow">
              <enum>QFrame::Raised</enum>
             </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_8">
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <property name="leftMargin">
+              <number>10</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QLabel" name="label_file_location">
+               <property name="styleSheet">
+                <string notr="true">color: rgb(255, 255, 255);
+border-top: none;</string>
+               </property>
+               <property name="text">
+                <string>C:Users\user\Desktop\Circuits\test.circuit</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </widget>
           </item>
          </layout>
@@ -206,7 +269,7 @@ QPushButton:hover{
     <item>
      <widget class="QFrame" name="frame_content">
       <property name="styleSheet">
-       <string notr="true">background-color: rgb(255, 170, 255);</string>
+       <string notr="true"/>
       </property>
       <property name="frameShape">
        <enum>QFrame::NoFrame</enum>
@@ -251,7 +314,7 @@ QPushButton:hover{
           </size>
          </property>
          <property name="styleSheet">
-          <string notr="true">background-color: rgb(255, 255, 127);</string>
+          <string notr="true">background-color: rgb(56, 55, 57);</string>
          </property>
          <property name="frameShape">
           <enum>QFrame::NoFrame</enum>
@@ -284,7 +347,7 @@ QPushButton:hover{
              </sizepolicy>
             </property>
             <property name="styleSheet">
-             <string notr="true">background-color: rgb(255, 85, 0);</string>
+             <string notr="true"/>
             </property>
             <property name="frameShape">
              <enum>QFrame::NoFrame</enum>
@@ -327,6 +390,16 @@ QPushButton:hover{
                  <width>16777215</width>
                  <height>50</height>
                 </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">QFrame, QPushButton{
+	background-color: rgb(56, 55, 57);
+	border: none;
+}
+
+QPushButton:hover{
+	background-color: rgb(42, 41, 44);
+}</string>
                </property>
                <property name="frameShape">
                 <enum>QFrame::NoFrame</enum>
@@ -413,13 +486,7 @@ QPushButton:hover{
                       </size>
                      </property>
                      <property name="styleSheet">
-                      <string notr="true">QPushButton{
-	background-color: rgb(255, 255, 127);
-}
-
-QPushButton:hover{
-	background-color: rgb(255, 255, 0);
-}</string>
+                      <string notr="true"/>
                      </property>
                      <property name="text">
                       <string/>
@@ -500,6 +567,9 @@ QPushButton:hover{
                        <pointsize>12</pointsize>
                       </font>
                      </property>
+                     <property name="styleSheet">
+                      <string notr="true">color: rgb(255, 255, 255);</string>
+                     </property>
                      <property name="text">
                       <string>Circuit Designer</string>
                      </property>
@@ -539,6 +609,16 @@ QPushButton:hover{
                  <width>16777215</width>
                  <height>50</height>
                 </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">QFrame, QPushButton{
+	background-color: rgb(56, 55, 57);
+	border: none;
+}
+
+QPushButton:hover{
+	background-color: rgb(42, 41, 44);
+}</string>
                </property>
                <property name="frameShape">
                 <enum>QFrame::NoFrame</enum>
@@ -625,13 +705,7 @@ QPushButton:hover{
                       </size>
                      </property>
                      <property name="styleSheet">
-                      <string notr="true">QPushButton{
-	background-color: rgb(255, 255, 127);
-}
-
-QPushButton:hover{
-	background-color: rgb(255, 255, 0);
-}</string>
+                      <string notr="true"/>
                      </property>
                      <property name="text">
                       <string/>
@@ -712,6 +786,9 @@ QPushButton:hover{
                        <pointsize>12</pointsize>
                       </font>
                      </property>
+                     <property name="styleSheet">
+                      <string notr="true">color: rgb(255, 255, 255);</string>
+                     </property>
                      <property name="text">
                       <string>Circuit/PCB Converter</string>
                      </property>
@@ -751,6 +828,16 @@ QPushButton:hover{
                  <width>16777215</width>
                  <height>50</height>
                 </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">QFrame, QPushButton{
+	background-color: rgb(56, 55, 57);
+	border: none;
+}
+
+QPushButton:hover{
+	background-color: rgb(42, 41, 44);
+}</string>
                </property>
                <property name="frameShape">
                 <enum>QFrame::NoFrame</enum>
@@ -837,13 +924,7 @@ QPushButton:hover{
                       </size>
                      </property>
                      <property name="styleSheet">
-                      <string notr="true">QPushButton{
-	background-color: rgb(255, 255, 127);
-}
-
-QPushButton:hover{
-	background-color: rgb(255, 255, 0);
-}</string>
+                      <string notr="true"/>
                      </property>
                      <property name="text">
                       <string/>
@@ -924,6 +1005,9 @@ QPushButton:hover{
                        <pointsize>12</pointsize>
                       </font>
                      </property>
+                     <property name="styleSheet">
+                      <string notr="true">color: rgb(255, 255, 255);</string>
+                     </property>
                      <property name="text">
                       <string>File Management</string>
                      </property>
@@ -988,8 +1072,11 @@ QPushButton:hover{
               <height>0</height>
              </size>
             </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(224, 224, 224);</string>
+            </property>
             <property name="currentIndex">
-             <number>0</number>
+             <number>2</number>
             </property>
             <widget class="QWidget" name="page_design">
              <widget class="QLabel" name="label_page_design">
@@ -1175,11 +1262,12 @@ QPushButton:hover{
                          </property>
                          <property name="styleSheet">
                           <string notr="true">QPushButton{
-	background-color: rgb(255, 170, 255);
+	background-color: rgb(85, 85, 85);
+	border: none;
 }
 
 QPushButton:hover{
-	background-color: rgb(255, 0, 255);
+	background-color: rgb(42, 41, 44);
 }</string>
                          </property>
                          <property name="text">
@@ -1194,6 +1282,12 @@ QPushButton:hover{
                            <width>24</width>
                            <height>24</height>
                           </size>
+                         </property>
+                         <property name="checkable">
+                          <bool>true</bool>
+                         </property>
+                         <property name="checked">
+                          <bool>false</bool>
                          </property>
                         </widget>
                        </item>
@@ -1288,11 +1382,12 @@ QPushButton:hover{
                          </property>
                          <property name="styleSheet">
                           <string notr="true">QPushButton{
-	background-color: rgb(255, 170, 255);
+	background-color: rgb(85, 85, 85);
+	border: none;
 }
 
 QPushButton:hover{
-	background-color: rgb(255, 0, 255);
+	background-color: rgb(42, 41, 44);
 }</string>
                          </property>
                          <property name="text">
@@ -1362,11 +1457,12 @@ QPushButton:hover{
                          </property>
                          <property name="styleSheet">
                           <string notr="true">QPushButton{
-	background-color: rgb(255, 170, 255);
+	background-color: rgb(85, 85, 85);
+	border: none;
 }
 
 QPushButton:hover{
-	background-color: rgb(255, 0, 255);
+	background-color: rgb(42, 41, 44);
 }</string>
                          </property>
                          <property name="text">
@@ -1478,11 +1574,12 @@ QPushButton:hover{
                          </property>
                          <property name="styleSheet">
                           <string notr="true">QPushButton{
-	background-color: rgb(255, 170, 255);
+	background-color: rgb(85, 85, 85);
+	border: none;
 }
 
 QPushButton:hover{
-	background-color: rgb(255, 0, 255);
+	background-color: rgb(42, 41, 44);
 }</string>
                          </property>
                          <property name="text">
@@ -1615,7 +1712,7 @@ QPushButton:hover{
           </size>
          </property>
          <property name="styleSheet">
-          <string notr="true">background-color: rgb(255, 170, 127);</string>
+          <string notr="true">background-color: rgb(42, 41, 44);</string>
          </property>
          <property name="frameShape">
           <enum>QFrame::NoFrame</enum>
@@ -1639,7 +1736,7 @@ QPushButton:hover{
           <property name="bottomMargin">
            <number>0</number>
           </property>
-          <item alignment="Qt::AlignTop">
+          <item>
            <widget class="QFrame" name="frame_top_extra_tools">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -1654,7 +1751,18 @@ QPushButton:hover{
              </size>
             </property>
             <property name="styleSheet">
-             <string notr="true">background-color: rgb(170, 255, 127);</string>
+             <string notr="true">QPushButton{
+	background-color: rgb(42, 41, 44);
+	border-style: outset;
+	border: none;
+	border-bottom: 1px solid rgba(224, 224, 224, 0.2);
+	color: #fff;
+}
+
+QPushButton:hover{
+	background-color: rgb(85, 85, 85);
+}
+</string>
             </property>
             <property name="frameShape">
              <enum>QFrame::NoFrame</enum>
@@ -1687,7 +1795,7 @@ QPushButton:hover{
                 </sizepolicy>
                </property>
                <property name="currentIndex">
-                <number>1</number>
+                <number>0</number>
                </property>
                <widget class="QWidget" name="page_components">
                 <property name="sizePolicy">
@@ -1902,6 +2010,9 @@ QPushButton:hover{
                      <width>0</width>
                      <height>50</height>
                     </size>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true">border: none;</string>
                    </property>
                    <property name="text">
                     <string>volt</string>
@@ -2179,12 +2290,17 @@ QPushButton:hover{
                </property>
                <property name="styleSheet">
                 <string notr="true">QPushButton{
-	background-color: rgb(255, 170, 127);
+	background-color: rgb(42, 41, 44);
+	border-style: outset;
+	border: none;
+	border-bottom: 1px solid rgba(224, 224, 224, 0.2);
 }
 
 QPushButton:hover{
-	background-color: rgb(255, 170, 0);
-}</string>
+	background-color: rgb(85, 85, 85);
+}
+
+</string>
                </property>
                <property name="text">
                 <string/>
@@ -2199,6 +2315,12 @@ QPushButton:hover{
                  <height>24</height>
                 </size>
                </property>
+               <property name="checkable">
+                <bool>false</bool>
+               </property>
+               <property name="checked">
+                <bool>false</bool>
+               </property>
               </widget>
              </item>
              <item>
@@ -2211,12 +2333,16 @@ QPushButton:hover{
                </property>
                <property name="styleSheet">
                 <string notr="true">QPushButton{
-	background-color: rgb(255, 170, 127);
+	background-color: rgb(42, 41, 44);
+	border-style: outset;
+	border: none;
+	border-bottom: 1px solid rgba(224, 224, 224, 0.2);
 }
 
 QPushButton:hover{
-	background-color: rgb(255, 170, 0);
-}</string>
+	background-color: rgb(85, 85, 85);
+}
+</string>
                </property>
                <property name="text">
                 <string/>
@@ -2231,6 +2357,12 @@ QPushButton:hover{
                  <height>24</height>
                 </size>
                </property>
+               <property name="checkable">
+                <bool>false</bool>
+               </property>
+               <property name="checked">
+                <bool>false</bool>
+               </property>
               </widget>
              </item>
              <item>
@@ -2243,12 +2375,16 @@ QPushButton:hover{
                </property>
                <property name="styleSheet">
                 <string notr="true">QPushButton{
-	background-color: rgb(255, 170, 127);
+	background-color: rgb(42, 41, 44);
+	border-style: outset;
+	border: none;
+	border-bottom: 1px solid rgba(224, 224, 224, 0.2);
 }
 
 QPushButton:hover{
-	background-color: rgb(255, 170, 0);
-}</string>
+	background-color: rgb(85, 85, 85);
+}
+</string>
                </property>
                <property name="text">
                 <string/>
@@ -2263,6 +2399,12 @@ QPushButton:hover{
                  <height>24</height>
                 </size>
                </property>
+               <property name="checkable">
+                <bool>false</bool>
+               </property>
+               <property name="checked">
+                <bool>false</bool>
+               </property>
               </widget>
              </item>
              <item>
@@ -2275,12 +2417,16 @@ QPushButton:hover{
                </property>
                <property name="styleSheet">
                 <string notr="true">QPushButton{
-	background-color: rgb(255, 170, 127);
+	background-color: rgb(42, 41, 44);
+	border-style: outset;
+	border: none;
+	border-bottom: 1px solid rgba(224, 224, 224, 0.2);
 }
 
 QPushButton:hover{
-	background-color: rgb(255, 170, 0);
-}</string>
+	background-color: rgb(85, 85, 85);
+}
+</string>
                </property>
                <property name="text">
                 <string/>
@@ -2294,6 +2440,12 @@ QPushButton:hover{
                  <width>24</width>
                  <height>24</height>
                 </size>
+               </property>
+               <property name="checkable">
+                <bool>false</bool>
+               </property>
+               <property name="checked">
+                <bool>false</bool>
                </property>
               </widget>
              </item>
@@ -2310,12 +2462,16 @@ QPushButton:hover{
                </property>
                <property name="styleSheet">
                 <string notr="true">QPushButton{
-	background-color: rgb(255, 170, 127);
+	background-color: rgb(42, 41, 44);
+	border-style: outset;
+	border: none;
+	border-bottom: 1px solid rgba(224, 224, 224, 0.2);
 }
 
 QPushButton:hover{
-	background-color: rgb(255, 170, 0);
-}</string>
+	background-color: rgb(85, 85, 85);
+}
+</string>
                </property>
                <property name="text">
                 <string/>
@@ -2330,6 +2486,12 @@ QPushButton:hover{
                  <height>24</height>
                 </size>
                </property>
+               <property name="checkable">
+                <bool>false</bool>
+               </property>
+               <property name="checked">
+                <bool>false</bool>
+               </property>
               </widget>
              </item>
              <item>
@@ -2342,12 +2504,16 @@ QPushButton:hover{
                </property>
                <property name="styleSheet">
                 <string notr="true">QPushButton{
-	background-color: rgb(255, 170, 127);
+	background-color: rgb(42, 41, 44);
+	border-style: outset;
+	border: none;
+	border-bottom: 1px solid rgba(224, 224, 224, 0.2);
 }
 
 QPushButton:hover{
-	background-color: rgb(255, 170, 0);
-}</string>
+	background-color: rgb(85, 85, 85);
+}
+</string>
                </property>
                <property name="text">
                 <string/>
@@ -2362,6 +2528,12 @@ QPushButton:hover{
                  <height>24</height>
                 </size>
                </property>
+               <property name="checkable">
+                <bool>false</bool>
+               </property>
+               <property name="checked">
+                <bool>false</bool>
+               </property>
               </widget>
              </item>
              <item>
@@ -2374,12 +2546,16 @@ QPushButton:hover{
                </property>
                <property name="styleSheet">
                 <string notr="true">QPushButton{
-	background-color: rgb(255, 170, 127);
+	background-color: rgb(42, 41, 44);
+	border-style: outset;
+	border: none;
 }
 
 QPushButton:hover{
-	background-color: rgb(255, 170, 0);
-}</string>
+	background-color: rgb(85, 85, 85);
+}
+
+</string>
                </property>
                <property name="text">
                 <string/>
@@ -2393,6 +2569,113 @@ QPushButton:hover{
                  <width>24</width>
                  <height>24</height>
                 </size>
+               </property>
+               <property name="checkable">
+                <bool>false</bool>
+               </property>
+               <property name="checked">
+                <bool>false</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="verticalSpacer">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeType">
+                <enum>QSizePolicy::Maximum</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>100000000</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QPushButton" name="btn_zoom_in">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>50</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">QPushButton{
+	background-color: rgb(42, 41, 44);
+	border-style: outset;
+	border: none;
+	border-bottom: 1px solid rgba(224, 224, 224, 0.2);
+}
+
+QPushButton:hover{
+	background-color: rgb(85, 85, 85);
+}
+
+</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset>
+                 <normaloff>img/add-searching.png</normaloff>img/add-searching.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>24</width>
+                 <height>24</height>
+                </size>
+               </property>
+               <property name="checkable">
+                <bool>false</bool>
+               </property>
+               <property name="checked">
+                <bool>false</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="btn_zoom_out">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>50</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">QPushButton{
+	background-color: rgb(42, 41, 44);
+	border-style: outset;
+	border: none;
+}
+
+QPushButton:hover{
+	background-color: rgb(85, 85, 85);
+}
+
+</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset>
+                 <normaloff>img/delete-searching.png</normaloff>img/delete-searching.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>24</width>
+                 <height>24</height>
+                </size>
+               </property>
+               <property name="checkable">
+                <bool>false</bool>
+               </property>
+               <property name="checked">
+                <bool>false</bool>
                </property>
               </widget>
              </item>
