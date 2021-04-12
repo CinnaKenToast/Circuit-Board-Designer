@@ -426,12 +426,12 @@ QPushButton:hover{
                      </property>
                      <property name="icon">
                       <iconset>
-                       <normaloff>img/sketch.png</normaloff>img/sketch.png</iconset>
+                       <normaloff>img/prototype.png</normaloff>img/prototype.png</iconset>
                      </property>
                      <property name="iconSize">
                       <size>
-                       <width>24</width>
-                       <height>24</height>
+                       <width>30</width>
+                       <height>30</height>
                       </size>
                      </property>
                     </widget>
@@ -638,12 +638,12 @@ QPushButton:hover{
                      </property>
                      <property name="icon">
                       <iconset>
-                       <normaloff>img/blueprint.png</normaloff>img/blueprint.png</iconset>
+                       <normaloff>img/circuit-board.png</normaloff>img/circuit-board.png</iconset>
                      </property>
                      <property name="iconSize">
                       <size>
-                       <width>24</width>
-                       <height>24</height>
+                       <width>30</width>
+                       <height>30</height>
                       </size>
                      </property>
                     </widget>
@@ -954,7 +954,7 @@ QPushButton:hover{
         <widget class="QFrame" name="frame_workspaces">
          <property name="maximumSize">
           <size>
-           <width>1250</width>
+           <width>16777215</width>
            <height>16777215</height>
           </size>
          </property>

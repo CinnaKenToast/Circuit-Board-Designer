@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'uiBug.ui'
+# Form implementation generated from reading ui file 'uiDesign.ui'
 #
 # Created by: PyQt5 UI code generator 5.9.2
 #
@@ -169,9 +169,9 @@ class Ui_MainWindow(object):
 "}")
         self.btn_design.setText("")
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap("img/sketch.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon1.addPixmap(QtGui.QPixmap("img/prototype.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.btn_design.setIcon(icon1)
-        self.btn_design.setIconSize(QtCore.QSize(24, 24))
+        self.btn_design.setIconSize(QtCore.QSize(30, 30))
         self.btn_design.setObjectName("btn_design")
         self.verticalLayout_8.addWidget(self.btn_design)
         self.horizontalLayout_5.addWidget(self.frame_btn_design)
@@ -253,9 +253,9 @@ class Ui_MainWindow(object):
 "}")
         self.btn_convert.setText("")
         icon2 = QtGui.QIcon()
-        icon2.addPixmap(QtGui.QPixmap("img/blueprint.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon2.addPixmap(QtGui.QPixmap("img/circuit-board.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.btn_convert.setIcon(icon2)
-        self.btn_convert.setIconSize(QtCore.QSize(24, 24))
+        self.btn_convert.setIconSize(QtCore.QSize(30, 30))
         self.btn_convert.setObjectName("btn_convert")
         self.verticalLayout_6.addWidget(self.btn_convert)
         self.horizontalLayout_4.addWidget(self.frame_btn_convert)
@@ -377,7 +377,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_3.addWidget(self.frame_top_menu, 0, QtCore.Qt.AlignTop)
         self.horizontalLayout_2.addWidget(self.frame_menu)
         self.frame_workspaces = QtWidgets.QFrame(self.frame_content)
-        self.frame_workspaces.setMaximumSize(QtCore.QSize(1250, 16777215))
+        self.frame_workspaces.setMaximumSize(QtCore.QSize(16777215, 16777215))
         self.frame_workspaces.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.frame_workspaces.setFrameShadow(QtWidgets.QFrame.Raised)
         self.frame_workspaces.setObjectName("frame_workspaces")
