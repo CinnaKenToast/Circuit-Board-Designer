@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2021-04-12T01:12:26.580Z" agent="5.0 (Windows)" etag="xZKH6DVHYwhyc-DTXO6r" version="14.5.10" type="github">
+<mxfile host="app.diagrams.net" modified="2021-04-12T01:13:46.445Z" agent="5.0 (Windows)" etag="XNBqujo7ex_81xMnAY9L" version="14.5.10" type="github">
   <diagram id="xsWnLA2NbZK4KlJk-8-H" name="Page-1">
-    <mxGraphModel dx="520" dy="1190" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="150" dy="992" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -91,8 +91,8 @@
             <mxPoint x="2440" y="550" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="S9mcAk_hW2MHrrXe7dgP-27" value="Circuit Board Designer Class Diagram (Python)" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="2440" y="50" width="190" height="50" as="geometry" />
+        <mxCell id="S9mcAk_hW2MHrrXe7dgP-27" value="Circuit Board Designer Class Diagram (Python 3)" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="2450" y="50" width="190" height="50" as="geometry" />
         </mxCell>
         <mxCell id="I2P0sZTxLfbZtq73Sx4J-2" value="&lt;p style=&quot;margin: 0px ; margin-top: 4px ; text-align: center&quot;&gt;&lt;b&gt;Resistor&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;&gt;&lt;p style=&quot;margin: 0px ; margin-left: 4px&quot;&gt;+ __init__(id, label, schem_position,&lt;/p&gt;&lt;p style=&quot;margin: 0px ; margin-left: 4px&quot;&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; schem_orientation, pcb_position,&lt;/p&gt;&lt;p style=&quot;margin: 0px ; margin-left: 4px&quot;&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; connections)&lt;br&gt;&lt;/p&gt;&lt;p style=&quot;margin: 0px ; margin-left: 4px&quot;&gt;+ draw(): void&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;" parent="1" vertex="1">
           <mxGeometry x="2420" y="190" width="230" height="90" as="geometry" />
