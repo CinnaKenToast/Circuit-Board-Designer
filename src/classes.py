@@ -3,26 +3,32 @@ import json
 import os.path
 
 # set the transform.rotate(...) to one of these --- flip does not mirror, it just rotates by 180 degrees. (-Jason)
-SCHEM_ORIENTATIONS = {'upright': 0, 'CW': 90, 'CCW': -90, 'flip': 180}
+SCHEM_ORIENTATIONS = {'upright': 0, 'CW1': 90, 'CCW1': -90, 'flip': 180}
 # add the one that sets the second pin whichever direction you want the component to go. (-Jason)
 PCB_ORIENTATIONS = [[1, 0], [0, 1], [-1, 0], [0, -1]]
 
 
 class Component:
+    global SCHEM_ORIENTATIONS
     # The component type field is what determines which sprite will be used
     # and what component fields to pull from the .json database. As long as the
     # database has the dimensions corresponding to type: component type,
     # and the spritesheet has a picture for it, the component can be used. (-Jason)
-    def __init__(self, label, schem_position, schem_orientation):
-        if self.valid_input({"schem_position": schem_position, "schem_orientation": schem_orientation}):
+
+    def __init__(self, id, label, num_pins, schem_position, schem_orientation, pcb_position, connections):
+        if self.valid_input({"id": id, "label": label, "schem_position": schem_position, "schem_orientation": schem_orientation}):
+            self.id = id
             self.label = label
-            # will be used as a vector to hold the x and y coordinate of the component's sprite (-Jason)
+            self.num_pins = num_pins
             self.schem_position = schem_position
-            # rotated clockwise, counterclockwise, etc. (-Jason)
             self.schem_orientation = schem_orientation
-            self.physical_dimensions = {"central_position_sprite": [], "pin_positions_sprite": [], "sprite_index": -1, "solder_pad_positions": [
-            ], "solder_pad_dim": 1}  # pulled from the .json database (pin/solder pad postions are relative to a central position) (-Jason)
-            # self.sprite # eventually a png once I figure it out (-Jason)
+            self.pcb_position = pcb_position
+            self.connections = self.set_connections(connections)
+
+            # self.pin_positions_svg = [] # the position data of the circles in the svg
+            # self.solder_pad_dim = 1 # Our solder pads are squares, so only one dim is needed (-Jason)
+            # self.svg_image_name # eventually an svg once I finish them (-Jason)
+            # self.xml_svg # for manipulating the svg
 
     def valid_input(self, input_kwargs):
         global SCHEM_ORIENTATIONS
@@ -50,11 +56,23 @@ class Component:
                     raise ValueError("Invalid value for schematic orientation")
         return True
 
+    def set_connections(self, connections):
+        if len(connections) == 0:
+            keys = [f"{self.id}_{pin_num}" for pin_num in range(
+                0, self.num_pins)]
+            vals = [[] for i in range(0, self.num_pins)]
+            self.connections = {k: v for (k, v) in zip(keys, vals)}
+        else:
+            self.connections = connections
+
     def connect(self, this_pin_id, that_pin_id):
-        raise NotImplementedError("Abstract method")
+        if this_pin_id in self.connections:
+            self.connections[this_pin_id].append(that_pin_id)
+        else:
+            raise ValueError("Invalid pin id")
 
     def disconnect(self, this_pin_id, that_pin_id):
-        raise NotImplementedError("Abstract method")
+        self.connections[this_pin_id].remove(that_pin_id)
 
     def change_label(self, text=""):
         if text == "":
@@ -64,18 +82,23 @@ class Component:
     def draw(self):
         raise NotImplementedError("Abstract method")
 
-    def to_dict(self):
-        if type(self.schem_orientation) == np.ndarray:
-            schem_orientation = self.schem_orientation.tolist()
-        else:
-            schem_orientation = self.schem_orientation
+    def to_string(self):
+        return (f"component_type: {self.__class__.__name__}\n"
+                f"id: {self.id}\n"
+                f"label: {self.label}\n"
+                f"num_pins: {self.num_pins}\n"
+                f"schem_position: {self.schem_position}\n"
+                f"schem_orientation: {self.schem_orientation} degrees\n"
+                f"pcb_position: {self.pcb_position}\n"
+                f"connections: {self.connections}\n")
 
+    def to_dict(self):
         component_dict = {
             "id": self.id,
             "component_type": self.__class__.__name__,
             "label": self.label,
             "schem_position": self.schem_position,
-            "schem_orientation": schem_orientation,
+            "schem_orientation": self.schem_orientation,
             "pcb_position": self.pcb_position,
             "connections": self.connections
         }
@@ -83,305 +106,90 @@ class Component:
 
 
 class Resistor(Component):
-    global SCHEM_ORIENTATIONS
-
-    def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[]):
-        if self.valid_input({"id": id}):
-            Component.__init__(self, label, schem_position, schem_orientation)
-            self.id = id
-            self.num_pins = 2
-            self.connections = {f"{self.id}_0": [], f"{self.id}_1": []}
-            self.pcb_position = pcb_position
-
-    def set_connections(self, connections={}):
-        if len(connections) == 0:
-            self.connections = {f"{self.id}_0": [], f"{self.id}_1": []}
-        else:
-            self.connections = connections
-
-    def connect(self, this_pin_id, that_pin_id):
-        if this_pin_id in self.connections:
-            self.connections[this_pin_id].append(that_pin_id)
-        else:
-            raise ValueError("Invalid pin id")
-
-    def disconnect(self, this_pin_id, that_pin_id):
-        self.connections[this_pin_id].remove(that_pin_id)
+    def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[], connections={}):
+        super().__init__(id, label, 2, schem_position,
+                         schem_orientation, pcb_position, connections)
 
     def draw(self):
         pass
 
 
 class Capacitor(Component):
-    global SCHEM_ORIENTATIONS
-
-    def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[]):
-        if self.valid_input({"id": id}):
-            Component.__init__(self, label, schem_position, schem_orientation)
-            self.id = id
-            self.num_pins = 2
-            self.connections = {f"{self.id}_0": [], f"{self.id}_1": []}
-            self.pcb_position = pcb_position
-
-    def set_connections(self, connections={}):
-        if len(connections) == 0:
-            self.connections = {f"{self.id}_0": [], f"{self.id}_1": []}
-        else:
-            self.connections = connections
-
-    def connect(self, this_pin_id, that_pin_id):
-        if this_pin_id in self.connections:
-            self.connections[this_pin_id].append(that_pin_id)
-        else:
-            raise ValueError("Invalid pin id")
-
-    def disconnect(self, this_pin_id, that_pin_id):
-        self.connections[this_pin_id].remove(that_pin_id)
+    def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[], connections={}):
+        super().__init__(id, label, 2, schem_position,
+                         schem_orientation, pcb_position, connections)
 
     def draw(self):
         pass
 
 
 class Inductor(Component):
-    global SCHEM_ORIENTATIONS
-
-    def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[]):
-        if self.valid_input({"id": id}):
-            Component.__init__(self, label, schem_position, schem_orientation)
-            self.id = id
-            self.num_pins = 2
-            self.connections = {f"{self.id}_0": [], f"{self.id}_1": []}
-            self.pcb_position = pcb_position
-
-    def set_connections(self, connections={}):
-        if len(connections) == 0:
-            self.connections = {f"{self.id}_0": [], f"{self.id}_1": []}
-        else:
-            self.connections = connections
-
-    def connect(self, this_pin_id, that_pin_id):
-        if this_pin_id in self.connections:
-            self.connections[this_pin_id].append(that_pin_id)
-        else:
-            raise ValueError("Invalid pin id")
-
-    def disconnect(self, this_pin_id, that_pin_id):
-        self.connections[this_pin_id].remove(that_pin_id)
+    def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[], connections={}):
+        super().__init__(id, label, 2, schem_position,
+                         schem_orientation, pcb_position, connections)
 
     def draw(self):
         pass
 
 
 class NpnTransistor(Component):
-    global SCHEM_ORIENTATIONS
-
-    def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[]):
-        if self.valid_input({"id": id}):
-            Component.__init__(self, label, schem_position, schem_orientation)
-            self.id = id
-            self.num_pins = 3
-            self.connections = {f"{self.id}_0": [],
-                                f"{self.id}_1": [], f"{self.id}_2": []}
-            self.pcb_position = pcb_position
-
-    def set_connections(self, connections={}):
-        if len(connections) == 0:
-            self.connections = {f"{self.id}_0": [],
-                                f"{self.id}_1": [], f"{self.id}_2": []}
-        else:
-            self.connections = connections
-
-    def connect(self, this_pin_id, that_pin_id):
-        if this_pin_id in self.connections:
-            self.connections[this_pin_id].append(that_pin_id)
-        else:
-            raise ValueError("Invalid pin id")
-
-    def disconnect(self, this_pin_id, that_pin_id):
-        self.connections[this_pin_id].remove(that_pin_id)
+    def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[], connections={}):
+        super().__init__(id, label, 3, schem_position,
+                         schem_orientation, pcb_position, connections)
 
     def draw(self):
         pass
 
 
 class PnpTransistor(Component):
-    global SCHEM_ORIENTATIONS
-
-    def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[]):
-        if self.valid_input({"id": id}):
-            Component.__init__(self, label, schem_position, schem_orientation)
-            self.id = id
-            self.num_pins = 3
-            self.connections = {f"{self.id}_0": [],
-                                f"{self.id}_1": [], f"{self.id}_2": []}
-            self.pcb_position = pcb_position
-
-    def set_connections(self, connections={}):
-        if len(connections) == 0:
-            self.connections = {f"{self.id}_0": [],
-                                f"{self.id}_1": [], f"{self.id}_2": []}
-        else:
-            self.connections = connections
-
-    def connect(self, this_pin_id, that_pin_id):
-        if this_pin_id in self.connections:
-            self.connections[this_pin_id].append(that_pin_id)
-        else:
-            raise ValueError("Invalid pin id")
-
-    def disconnect(self, this_pin_id, that_pin_id):
-        self.connections[this_pin_id].remove(that_pin_id)
+    def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[], connections={}):
+        super().__init__(id, label, 3, schem_position,
+                         schem_orientation, pcb_position, connections)
 
     def draw(self):
         pass
 
 
 class Diode(Component):
-    global SCHEM_ORIENTATIONS
-
-    def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[]):
-        if self.valid_input({"id": id}):
-            Component.__init__(self, label, schem_position, schem_orientation)
-            self.id = id
-            self.num_pins = 2
-            self.connections = {f"{self.id}_0": [], f"{self.id}_1": []}
-            self.pcb_position = pcb_position
-
-    def set_connections(self, connections={}):
-        if len(connections) == 0:
-            self.connections = {f"{self.id}_0": [], f"{self.id}_1": []}
-        else:
-            self.connections = connections
-
-    def connect(self, this_pin_id, that_pin_id):
-        if this_pin_id in self.connections:
-            self.connections[this_pin_id].append(that_pin_id)
-        else:
-            raise ValueError("Invalid pin id")
-
-    def disconnect(self, this_pin_id, that_pin_id):
-        self.connections[this_pin_id].remove(that_pin_id)
+    def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[], connections={}):
+        super().__init__(id, label, 2, schem_position,
+                         schem_orientation, pcb_position, connections)
 
     def draw(self):
         pass
 
 
 class Led(Component):
-    global SCHEM_ORIENTATIONS
-
-    def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[]):
-        if self.valid_input({"id": id}):
-            Component.__init__(self, label, schem_position, schem_orientation)
-            self.id = id
-            self.num_pins = 2
-            self.connections = {f"{self.id}_0": [], f"{self.id}_1": []}
-            self.pcb_position = pcb_position
-
-    def set_connections(self, connections={}):
-        if len(connections) == 0:
-            self.connections = {f"{self.id}_0": [], f"{self.id}_1": []}
-        else:
-            self.connections = connections
-
-    def connect(self, this_pin_id, that_pin_id):
-        if this_pin_id in self.connections:
-            self.connections[this_pin_id].append(that_pin_id)
-        else:
-            raise ValueError("Invalid pin id")
-
-    def disconnect(self, this_pin_id, that_pin_id):
-        self.connections[this_pin_id].remove(that_pin_id)
+    def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[], connections={}):
+        super().__init__(id, label, 2, schem_position,
+                         schem_orientation, pcb_position, connections)
 
     def draw(self):
         pass
 
 
 class Switch(Component):
-    global SCHEM_ORIENTATIONS
-
-    def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[]):
-        if self.valid_input({"id": id}):
-            Component.__init__(self, label, schem_position, schem_orientation)
-
-            self.id = id
-            self.num_pins = 2
-            self.connections = {f"{self.id}_0": [], f"{self.id}_1": []}
-            self.pcb_position = pcb_position
-
-    def set_connections(self, connections={}):
-        if len(connections) == 0:
-            self.connections = {f"{self.id}_0": [], f"{self.id}_1": []}
-        else:
-            self.connections = connections
-
-    def connect(self, this_pin_id, that_pin_id):
-        if this_pin_id in self.connections:
-            self.connections[this_pin_id].append(that_pin_id)
-        else:
-            raise ValueError("Invalid pin id")
-
-    def disconnect(self, this_pin_id, that_pin_id):
-        self.connections[this_pin_id].remove(that_pin_id)
+    def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[], connections={}):
+        super().__init__(id, label, 2, schem_position,
+                         schem_orientation, pcb_position, connections)
 
     def draw(self):
         pass
 
 
 class VoltageSource(Component):
-    global SCHEM_ORIENTATIONS
-
-    def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[]):
-        if self.valid_input({"id": id}):
-            Component.__init__(self, label, schem_position, schem_orientation)
-            self.id = id
-            self.num_pins = 2
-            self.connections = {f"{self.id}_0": [], f"{self.id}_1": []}
-            self.pcb_position = pcb_position
-
-    def set_connections(self, connections={}):
-        if len(connections) == 0:
-            self.connections = {f"{self.id}_0": [], f"{self.id}_1": []}
-        else:
-            self.connections = connections
-
-    def connect(self, this_pin_id, that_pin_id):
-        if this_pin_id in self.connections:
-            self.connections[this_pin_id].append(that_pin_id)
-        else:
-            raise ValueError("Invalid pin id")
-
-    def disconnect(self, this_pin_id, that_pin_id):
-        self.connections[this_pin_id].remove(that_pin_id)
+    def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[], connections={}):
+        super().__init__(id, label, 2, schem_position,
+                         schem_orientation, pcb_position, connections)
 
     def draw(self):
         pass
 
 
 class Ground(Component):
-    global SCHEM_ORIENTATIONS
-
-    def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[]):
-        if self.valid_input({"id": id}):
-            Component.__init__(self, label, schem_position, schem_orientation)
-            self.id = id
-            self.num_pins = 1
-            self.connections = {f"{self.id}_0": []}
-            self.pcb_position = pcb_position
-
-    def set_connections(self, connections={}):
-        if len(connections) == 0:
-            self.connections = {f"{self.id}_0": []}
-        else:
-            self.connections = connections
-
-    def connect(self, this_pin_id, that_pin_id):
-        if this_pin_id in self.connections:
-            self.connections[this_pin_id].append(that_pin_id)
-        else:
-            raise ValueError("Invalid pin id")
-
-    def disconnect(self, this_pin_id, that_pin_id):
-        self.connections[this_pin_id].remove(that_pin_id)
+    def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[], connections={}):
+        super().__init__(id, label, 2, schem_position,
+                         schem_orientation, pcb_position, connections)
 
     def draw(self):
         pass
@@ -454,8 +262,8 @@ class Schematic:
         self.H = []
         self.G = []
         self.F = []
-        self.last_run_score = 1.0
-        self.curr_run_score = 0.0
+        self.last_runs_score = 1.0
+        self.curr_runs_score = 0.0
         self.n_grid_spaces = 5
         self.max_iters = 10
 
@@ -513,8 +321,11 @@ class Schematic:
         else:
             raise ValueError("Component id not unique")
 
-    def delete_component(self, id):
-        self.components.pop(f"component_{id}")
+    def delete_component(self, component_id):
+        self.components.pop(f"component_{component_id}")
+
+    def change_label(self, component_id, text):
+        self.components[f"component_{component_id}"].change_label(text)
 
     def add_connection(self, component_1_pin_id, component_2_pin_id):
         component_1_id = int(component_1_pin_id.split("_")[0])
@@ -532,9 +343,6 @@ class Schematic:
         self.components[f"component_{component_2_id}"].disconnect(
             component_2_pin_id, component_1_pin_id)
 
-    def change_label(self, component_id, text):
-        self.components[f"component_{component_id}"].change_label(text)
-
     def add_comment(self, comment_dict):
         if self.unique_comment_id(comment_dict["id"]):
             comment = Comment(**comment_dict)
@@ -542,13 +350,13 @@ class Schematic:
         else:
             raise ValueError("Comment id not unique")
 
-    def remove_comment(self, id):
-        self.comments.pop(f"comment_{id}")
+    def remove_comment(self, comment_id):
+        self.comments.pop(f"comment_{comment_id}")
 
     def draw(self):
-        for component in self.components:
+        for component in self.components.values():
             component.draw()
-        for comment in self.comments:
+        for comment in self.comments.values():
             comment.draw()
 
     def to_dict(self):
@@ -604,9 +412,8 @@ class Schematic:
         for self.iteration_num in range(0, self.max_iters):
             not_allowed_pcb_spots = self.not_allowed_pcb_spots()
             self.randomize_layout(not_allowed_pcb_spots)
-            adj = self.initialize_adjacency_matrix()
-
-            self.run_a_star
+            adj = self.initialize_adjacency_array()
+            self.run_a_star()
 
     # Having issues with iterating over dict values... (-Jason)
     def not_allowed_pcb_spots(self):
@@ -622,11 +429,11 @@ class Schematic:
                     int(np.floor(np.random.rand() * self.n_grid_spaces))]
         return pin1_pos
 
-    def get_pin2_pos(self, pin1_pos, not_allowed_pcb_spots):
+    def get_pin2_pos(self, pin1_pos):
         global PCB_ORIENTATIONS
         possible_orientations = PCB_ORIENTATIONS.copy()
         rn_orient = int(np.floor(np.random.rand() * 4))
-        
+
         # topleft corner
         if pin1_pos[0] == 0 and pin1_pos[1] == 0:
             rn_orient = int(np.floor(np.random.rand() * 2))
@@ -665,53 +472,6 @@ class Schematic:
             possible_orientations.remove([1, 0])
         pin2_pos = np.add(pin1_pos, possible_orientations[rn_orient]).tolist()
 
-        i = 0
-        while pin2_pos in not_allowed_pcb_spots and i < self.max_iters:
-            # print("redoing pin2")
-            possible_orientations = PCB_ORIENTATIONS.copy()
-            rn_orient = int(np.floor(np.random.rand() * 4))
-
-            # topleft corner
-            if pin1_pos[0] == 0 and pin1_pos[1] == 0:
-                rn_orient = int(np.floor(np.random.rand() * 2))
-                possible_orientations.remove([-1, 0])
-                possible_orientations.remove([0, -1])
-            # topright corner
-            elif pin1_pos[0] == 0 and pin1_pos[1] == self.n_grid_spaces - 1:
-                rn_orient = int(np.floor(np.random.rand() * 2))
-                possible_orientations.remove([0, 1])
-                possible_orientations.remove([-1, 0])
-            # bottomright corner
-            elif pin1_pos[0] == self.n_grid_spaces - 1 and pin1_pos[1] == self.n_grid_spaces - 1:
-                rn_orient = int(np.floor(np.random.rand() * 2))
-                possible_orientations.remove([1, 0])
-                possible_orientations.remove([0, 1])
-            # bottomleft corner
-            elif pin1_pos[0] == self.n_grid_spaces - 1 and pin1_pos[1] == 0:
-                rn_orient = int(np.floor(np.random.rand() * 2))
-                possible_orientations.remove([0, -1])
-                possible_orientations.remove([1, 0])
-            # left edge
-            elif pin1_pos[0] * pin1_pos[1] == 0 and pin1_pos[1] == 0:
-                rn_orient = int(np.floor(np.random.rand() * 3))
-                possible_orientations.remove([0, -1])
-            # top edge
-            elif pin1_pos[0] * pin1_pos[1] == 0 and pin1_pos[0] == 0:
-                rn_orient = int(np.floor(np.random.rand() * 3))
-                possible_orientations.remove([-1, 0])
-            # right edge
-            elif pin1_pos[1] == self.n_grid_spaces - 1:
-                rn_orient = int(np.floor(np.random.rand() * 3))
-                possible_orientations.remove([0, 1])
-            # bottom edge
-            elif pin1_pos[0] == self.n_grid_spaces - 1:
-                rn_orient = int(np.floor(np.random.rand() * 3))
-                possible_orientations.remove([1, 0])
-            pin2_pos = np.add(pin1_pos, possible_orientations[rn_orient]).tolist()
-
-        # if i == self.max_iters:
-        #     print("Could not find a solution")
-        #     return []
         return pin2_pos
 
     def get_valid_spot(self, not_allowed_pcb_spots):
@@ -720,18 +480,13 @@ class Schematic:
         rn_pos = [rn_pos_1, rn_pos_2]
 
         i = 0
-        while (rn_pos[0] in not_allowed_pcb_spots or rn_pos[1] in not_allowed_pcb_spots) and i < self.max_iters:
+        while rn_pos[0] in not_allowed_pcb_spots or rn_pos[1] in not_allowed_pcb_spots:
             # print("redoing pin1 and pin2")
             rn_pos_1 = self.get_pin1_pos()
             rn_pos_2 = self.get_pin2_pos(rn_pos_1, not_allowed_pcb_spots)
             rn_pos = [rn_pos_1, rn_pos_2]
 
             i += 1
-
-        # if i == self.max_iters:
-        #     printf("Could not find positions")
-        #     return []
-
         return rn_pos
 
     # will make a layout where no pins overlap (-Jason)
@@ -741,14 +496,16 @@ class Schematic:
             component.pcb_position = rn_spot
             not_allowed_pcb_spots.append(rn_spot[0])
             not_allowed_pcb_spots.append(rn_spot[1])
-        return not_allowed_pcb_spots
 
-    def initialize_adjacency_matrix(self):
+    def initialize_adjacency_array(self):
         for component in self.components.values():
             for pin, connection in component.connections:
                 pass
 
     def initialize_paths(self):
+        pass
+
+    def calculate_score(self):
         pass
 
     def run_a_star(self):
