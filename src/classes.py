@@ -74,7 +74,7 @@ class Component:
     def disconnect(self, this_pin_id, that_pin_id):
         self.connections[this_pin_id].remove(that_pin_id)
 
-    def change_label(self, text=""):
+    def edit_label(self, text=""):
         if text == "":
             raise ValueError("Invalid label text")
         self.label = text
@@ -257,8 +257,10 @@ class Schematic:
         self.components = {}
         self.comments = {}
         self.paths = {}
+        self.connections_list = []
         self.iteration_num = -1
         self.connection_num = -1
+        self.A = []
         self.H = []
         self.G = []
         self.F = []
@@ -295,8 +297,10 @@ class Schematic:
             self.add_comment(comment)
 
         self.paths = schematic_dict["paths"]
+        self.connections_list = schematic_dict["connections_list"]
         self.iteration_num = schematic_dict["iteration_num"]
         self.connection_num = schematic_dict["connection_num"]
+        self.A = schematic_dict["A"]
         self.H = schematic_dict["H"]
         self.G = schematic_dict["G"]
         self.F = schematic_dict["F"]
@@ -325,7 +329,7 @@ class Schematic:
         self.components.pop(f"component_{component_id}")
 
     def edit_label(self, component_id, new_text):
-        self.components[f"component_{component_id}"].change_label(new_text)
+        self.components[f"component_{component_id}"].edit_label(new_text)
 
     def add_connection(self, component_1_pin_id, component_2_pin_id):
         component_1_id = int(component_1_pin_id.split("_")[0])
@@ -377,8 +381,10 @@ class Schematic:
             "components": components,
             "comments": comments,
             "paths": self.paths,
+            "connections_list": self.connections_list,
             "iteration_num": self.iteration_num,
             "connection_num": self.connection_num,
+            "A": self.A,
             "H": self.H,
             "G": self.G,
             "F": self.F,
@@ -412,11 +418,24 @@ class Schematic:
     # Metropolis' Monte Carlo method. (-Jason)
 
     def monte_carlo(self):
-        for self.iteration_num in range(0, self.max_iters):
-            not_allowed_pcb_spots = self.not_allowed_pcb_spots()
-            self.randomize_layout(not_allowed_pcb_spots)
-            adj = self.initialize_adjacency_array()
-            self.run_a_star()
+        self.initialize_connections_list()
+        not_allowed_pcb_spots = self.not_allowed_pcb_spots()
+        self.randomize_layout(not_allowed_pcb_spots)
+        self.run_a_star()
+        # for self.iteration_num in range(0, self.max_iters):
+        #     pass
+
+    def initialize_connections_list(self):
+        connections_list = []
+        for component in self.components.values():
+            for pin_id, connections in component.connections.items():
+                for connection in connections:
+                    if len(connections_list) > 0:
+                        if not [connection, pin_id] in connections_list:
+                            connections_list.append([pin_id, connection])
+                    else:
+                        connections_list.append([pin_id, connection])
+        self.connections_list = connections_list
 
     # Having issues with iterating over dict values... (-Jason)
     def not_allowed_pcb_spots(self):
@@ -500,22 +519,28 @@ class Schematic:
             not_allowed_pcb_spots.append(rn_spot[0])
             not_allowed_pcb_spots.append(rn_spot[1])
 
-    def initialize_adjacency_array(self):
-        for component in self.components.values():
-            for pin, connection in component.connections:
-                pass
+    # using heuristic based on the Chebyshev distance
+    def h(self, start_id, goal_id):
+        start = self.connections_list[start_id]
+        goal = self.connections_list[goal_id]
+        row_diff = abs(goal[0] - start[0])
+        col_diff = abs(goal[1] - start[1])
+        return max(row_diff, col_diff)
 
-    def initialize_paths(self):
-        pass
+    def reconstruct_path(self, came_from, current):
+        path = [current]
+        while current in came_from.keys():
+            current = came_from[current]
+            path.insert(0, current)
+        return path
 
     def calculate_score(self):
         pass
 
     def run_a_star(self):
         for self.connection_num in range(0, len(self.components)):
-            self.a_star(self.H(self.connection_num), self.G(
-                self.connection_num), self.F(self.connection_num))
+            self.a_star(start, goal, h,)
 
     # A* as defined on https://en.wikipedia.org/wiki/A*_search_algorithm (-Jason)
-    def a_star(self, h, g, f):
+    def a_star(self, start, goal, h, env_map):
         pass
