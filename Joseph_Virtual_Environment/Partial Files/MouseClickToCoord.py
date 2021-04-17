@@ -13,7 +13,7 @@ class ScalingWidget (QWidget):
     arcrect = QRect(-10, -10, 20, 20)
 
     def __init__(self):
-        #super(ScalingWidget, self).__init__()
+        super(ScalingWidget, self).__init__()
         self.pixmap = QPixmap(400, 400)
         painter = QPainter(self.pixmap)
         painter.fillRect(self.pixmap.rect(), self.white)
@@ -26,8 +26,10 @@ class ScalingWidget (QWidget):
 
     def sizeHint(self):
         return QSize(500,400)
-        
+
+    ##
     # Applies the default transformations
+    #
     def _default_img_transform(self, painter):
         #size of widget
         winheight   = float(self.height())
@@ -85,7 +87,6 @@ class ScalingWidget (QWidget):
         painter.end()
 
     def mouseReleaseEvent(self, event):
-        print("HEYYY YOU TOCHED ME")
         x, y = float(event.x()), float(event.y())
         inverted, invsucces = self.matrix.inverted()
         assert(invsucces)

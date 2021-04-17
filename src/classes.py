@@ -86,10 +86,10 @@ class Component:
         return (f"component_type: {self.__class__.__name__}\n"
                 f"id: {self.id}\n"
                 f"label: {self.label}\n"
-                f"num_pins: {self.num_pins}\n"
-                f"schem_position: {self.schem_position}\n"
-                f"schem_orientation: {self.schem_orientation} degrees\n"
-                f"pcb_position: {self.pcb_position}\n"
+                # f"num_pins: {self.num_pins}\n"
+                # f"schem_position: {self.schem_position}\n"
+                # f"schem_orientation: {self.schem_orientation} degrees\n"
+                # f"pcb_position: {self.pcb_position}\n"
                 f"connections: {self.connections}\n")
 
     def to_dict(self):
@@ -258,6 +258,7 @@ class Schematic:
         self.comments = {}
         self.paths = {}
         self.connections_list = []
+        self.pin_placement_list = []
         self.iteration_num = -1
         self.connection_num = -1
         self.A = []
@@ -298,6 +299,7 @@ class Schematic:
 
         self.paths = schematic_dict["paths"]
         self.connections_list = schematic_dict["connections_list"]
+        self.pin_placement_dict = schematic_dict["pin_placement_dict"]
         self.iteration_num = schematic_dict["iteration_num"]
         self.connection_num = schematic_dict["connection_num"]
         self.A = schematic_dict["A"]
@@ -382,6 +384,7 @@ class Schematic:
             "comments": comments,
             "paths": self.paths,
             "connections_list": self.connections_list,
+            "pin_placement_dict": self.pin_placement_dict,
             "iteration_num": self.iteration_num,
             "connection_num": self.connection_num,
             "A": self.A,
@@ -416,7 +419,6 @@ class Schematic:
 
     # LOOK AT force base graph layout algorithms as an alternative to this (-Jason)
     # Metropolis' Monte Carlo method. (-Jason)
-
     def monte_carlo(self):
         self.initialize_connections_list()
         not_allowed_pcb_spots = self.not_allowed_pcb_spots()
@@ -425,6 +427,13 @@ class Schematic:
         # for self.iteration_num in range(0, self.max_iters):
         #     pass
 
+    # need a dict that has {pin_id: that_pins_pcb_position}
+    # This gets a position list for every pin
+    def initialize_pin_placement_dict(self):
+        pin_placement_dict = {}
+        
+
+    # This gets the connections into a single list
     def initialize_connections_list(self):
         connections_list = []
         for component in self.components.values():
