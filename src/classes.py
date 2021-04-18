@@ -81,8 +81,7 @@ class Component(QtWidgets.QGraphicsItem):
         self.label = text
 
     def draw(self):
-        # raise NotImplementedError("Abstract method")
-        self.scene.draw()
+        raise NotImplementedError("Abstract method")
 
     def to_string(self):
         return (f"component_type: {self.__class__.__name__}\n"
