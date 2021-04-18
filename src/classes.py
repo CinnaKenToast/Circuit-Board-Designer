@@ -16,8 +16,8 @@ class Component(QtWidgets.QGraphicsItem):
     # database has the dimensions corresponding to type: component type,
     # and the spritesheet has a picture for it, the component can be used. (-Jason)
 
-    def __init__(self, id, label, num_pins, schem_position, schem_orientation, pcb_position, connections, image_file, scene):
-        if self.valid_input({"id": id, "label": label, "schem_position": schem_position, "schem_orientation": schem_orientation, "image_file": image_file, "scene": scene}):
+    def __init__(self, id, label, num_pins, schem_position, schem_orientation, pcb_position, connections):
+        if self.valid_input({"id": id, "label": label, "schem_position": schem_position, "schem_orientation": schem_orientation}):
             # super().__init__()
             self.id = id
             self.label = label
@@ -52,13 +52,6 @@ class Component(QtWidgets.QGraphicsItem):
                     raise TypeError("Invalid schematic orientation type")
                 if not np.shape(input_kwargs[key]) in SCHEM_ORIENTATIONS.values:
                     raise ValueError("Invalid value for schematic orientation")
-            elif key == "image_file":
-                if type(input_kwargs[key]) != str:
-                    raise TypeError("Invalid file name type")
-                if len(input_kwargs[key]) == 0:
-                    raise ValueError("Invalid file name")
-            elif key == "scene":
-                if input_kwargs[key] == None
         return True
 
     def set_connections(self, connections):
@@ -115,9 +108,13 @@ class Component(QtWidgets.QGraphicsItem):
 
 
 class Resistor(Component):
-    def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[], connections={}, image_file="", scene=None):
+    def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[], connections={}):
         super().__init__(id, label, 2, schem_position,
-                         schem_orientation, pcb_position, connections, image, scene)
+                         schem_orientation, pcb_position, connection)
+
+        def draw(self):
+            pass
+
 
 class Capacitor(Component):
     def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[], connections={}):
@@ -355,7 +352,8 @@ class Schematic:
             component_2_pin_id, component_1_pin_id)
 
     def set_component_schematic_pos(self, component_id, pos_x, pos_y):
-        self.components[f"component_{component_id}"].set_schematic_pos(pos_x, pos_y)
+        self.components[f"component_{component_id}"].set_schematic_pos(
+            pos_x, pos_y)
 
     def add_comment(self, comment_dict):
         if self.unique_comment_id(comment_dict["id"]):
