@@ -1,5 +1,6 @@
 import numpy as np
 import json
+from PyQt5 import QtWidgets, QtGui
 import os.path
 
 # set the transform.rotate(...) to one of these --- flip does not mirror, it just rotates by 180 degrees. (-Jason)
@@ -8,15 +9,16 @@ SCHEM_ORIENTATIONS = {'upright': 0, 'CW1': 90, 'CCW1': -90, 'flip': 180}
 PCB_ORIENTATIONS = [[1, 0], [0, 1], [-1, 0], [0, -1]]
 
 
-class Component:
+class Component(QtWidgets.QGraphicsItem):
     global SCHEM_ORIENTATIONS
     # The component type field is what determines which sprite will be used
     # and what component fields to pull from the .json database. As long as the
     # database has the dimensions corresponding to type: component type,
     # and the spritesheet has a picture for it, the component can be used. (-Jason)
 
-    def __init__(self, id, label, num_pins, schem_position, schem_orientation, pcb_position, connections):
-        if self.valid_input({"id": id, "label": label, "schem_position": schem_position, "schem_orientation": schem_orientation}):
+    def __init__(self, id, label, num_pins, schem_position, schem_orientation, pcb_position, connections, image_file, scene):
+        if self.valid_input({"id": id, "label": label, "schem_position": schem_position, "schem_orientation": schem_orientation, "image_file": image_file, "scene": scene}):
+            # super().__init__()
             self.id = id
             self.label = label
             self.num_pins = num_pins
@@ -31,8 +33,6 @@ class Component:
             # self.xml_svg # for manipulating the svg
 
     def valid_input(self, input_kwargs):
-        global SCHEM_ORIENTATIONS
-
         for key in input_kwargs:
             if key == "id":
                 if type(input_kwargs[key]) != int:
@@ -42,8 +42,6 @@ class Component:
             elif key == "label":
                 if type(input_kwargs[key]) != str:
                     raise TypeError("Invalid label type")
-                if input_kwargs[key] == "":
-                    raise ValueError("Invalid label text")
             elif key == "schem_position":
                 if type(input_kwargs[key]) != list:
                     raise TypeError("Invalid schematic position type")
@@ -54,6 +52,13 @@ class Component:
                     raise TypeError("Invalid schematic orientation type")
                 if not np.shape(input_kwargs[key]) in SCHEM_ORIENTATIONS.values:
                     raise ValueError("Invalid value for schematic orientation")
+            elif key == "image_file":
+                if type(input_kwargs[key]) != str:
+                    raise TypeError("Invalid file name type")
+                if len(input_kwargs[key]) == 0:
+                    raise ValueError("Invalid file name")
+            elif key == "scene":
+                if input_kwargs[key] == None
         return True
 
     def set_connections(self, connections):
@@ -64,6 +69,9 @@ class Component:
             self.connections = {k: v for (k, v) in zip(keys, vals)}
         else:
             self.connections = connections
+
+    def set_schematic_pos(pos):
+        self.schem_position = pos
 
     def connect(self, this_pin_id, that_pin_id):
         if this_pin_id in self.connections:
@@ -80,7 +88,8 @@ class Component:
         self.label = text
 
     def draw(self):
-        raise NotImplementedError("Abstract method")
+        # raise NotImplementedError("Abstract method")
+        self.scene.draw()
 
     def to_string(self):
         return (f"component_type: {self.__class__.__name__}\n"
@@ -106,13 +115,9 @@ class Component:
 
 
 class Resistor(Component):
-    def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[], connections={}):
+    def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[], connections={}, image_file="", scene=None):
         super().__init__(id, label, 2, schem_position,
-                         schem_orientation, pcb_position, connections)
-
-    def draw(self):
-        pass
-
+                         schem_orientation, pcb_position, connections, image, scene)
 
 class Capacitor(Component):
     def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[], connections={}):
@@ -349,6 +354,9 @@ class Schematic:
         self.components[f"component_{component_2_id}"].disconnect(
             component_2_pin_id, component_1_pin_id)
 
+    def set_component_schematic_pos(self, component_id, pos_x, pos_y):
+        self.components[f"component_{component_id}"].set_schematic_pos(pos_x, pos_y)
+
     def add_comment(self, comment_dict):
         if self.unique_comment_id(comment_dict["id"]):
             comment = Comment(**comment_dict)
@@ -427,11 +435,13 @@ class Schematic:
         # for self.iteration_num in range(0, self.max_iters):
         #     pass
 
-    # need a dict that has {pin_id: that_pins_pcb_position}
     # This gets a position list for every pin
     def initialize_pin_placement_dict(self):
         pin_placement_dict = {}
-        
+        for component in self.components.values():
+            for pin_id, pos in component.pcb_position.values():
+                pin_placement_dict |= {pin_id: pos}
+        self.pin_placement_list = pin_placement_dict
 
     # This gets the connections into a single list
     def initialize_connections_list(self):
