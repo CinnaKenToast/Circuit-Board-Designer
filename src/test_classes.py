@@ -9,11 +9,11 @@ if __name__ == "__main__":
     test_schematic_1 = classes.Schematic()
 
     # Setup the inital states of the components and test adding them to the schematic
-    vs1_kwargs = {"id": 84, "label": "V1", "component_type": "VoltageSource"}
+    vs1_kwargs = {"id": 84, "label": "C1", "component_type": "Capacitor"}
     test_schematic_1.add_component(vs1_kwargs)
-    r1_kwargs = {"id": 42, "label": "R1", "component_type": "Resistor"}
+    r1_kwargs = {"id": 42, "label": "C2", "component_type": "Capacitor"}
     test_schematic_1.add_component(r1_kwargs)
-    # c1_kwargs = {'id': 21, "label": "C1", 'component_type': "Capacitor"}
+    # c1_kwargs = {'id': 21, "label": "C3", 'component_type': "Capacitor"}
     # test_schematic_1.add_component(c1_kwargs)
     # r2_kwargs = {'id': 2, 'label': 'R2', 'component_type': 'Resistor'}
     # test_schematic_1.add_component(r2_kwargs)
@@ -37,13 +37,16 @@ if __name__ == "__main__":
     test_schematic_1.add_connection("84_0", "42_1")
     test_schematic_1.add_connection("84_1", "42_0")
 
+    test_schematic_1.get_component("84").print_svg("cap1.svg")
+    test_schematic_1.get_component("42").print_svg("cap2.svg")
+
     # Test setting the schematic position
     test_schematic_1.set_component_schematic_pos("84", 200, 200)
     test_schematic_1.set_component_schematic_pos("42", 100, 200)
 
-    # Short out voltage source and then unshort its pins
-    test_schematic_1.add_connection("84_1", "84_0")
-    test_schematic_1.remove_connection("84_1", "84_0")
+    # # Short out voltage source and then unshort its pins
+    # test_schematic_1.add_connection("84_1", "84_0")
+    # test_schematic_1.remove_connection("84_1", "84_0")
 
     # # Setup the initial states of the comments and test adding them to the schematic
     # comm1_kwargs = {"id": 0, "text": "Hello, world!", "position": [10, 0]}
@@ -52,24 +55,24 @@ if __name__ == "__main__":
     # test_schematic_1.add_comment(comm2_kwargs)
 
     # # Testing randomize_layout
-    test_schematic_1.set_monte_carlo_parameters(4, 10)
-    not_allowed_spots = test_schematic_1.not_allowed_pcb_spots()
-    test_schematic_1.randomize_layout(not_allowed_spots)
+    # test_schematic_1.set_monte_carlo_parameters(4, 10)
+    # not_allowed_spots = test_schematic_1.not_allowed_pcb_spots()
+    # test_schematic_1.randomize_layout(not_allowed_spots)
 
     # # Print out the contents of each component
     # for component in test_schematic_1.components.values():
     #     print(component.to_string())
 
-    # Test the connections list initialization - that it doesn't have duplicates and print it out
-    test_schematic_1.initialize_connections_list()
-    for pin_pair in test_schematic_1.connections_list:
-        print(
-            f"{pin_pair[0]}: {test_schematic_1.pin_position[pin_pair[0]]}, {pin_pair[1]}: {test_schematic_1.pin_position[pin_pair[1]]}")
+    # # Test the connections list initialization - that it doesn't have duplicates and print it out
+    # test_schematic_1.initialize_connections_list()
+    # for pin_pair in test_schematic_1.connections_list:
+    #     print(
+    #         f"{pin_pair[0]}: {test_schematic_1.pin_position[pin_pair[0]]}, {pin_pair[1]}: {test_schematic_1.pin_position[pin_pair[1]]}")
 
     # # Test the save function (output to test1.json)
     # file_name_1 = input("Filename:   ") + ".json"
-    # file_name_1 = "test_output1.json"
-    # test_schematic_1.save(file_name_1)
+    file_name_1 = "test_output1.json"
+    test_schematic_1.save(file_name_1)
 
     # delete the schematic
     del test_schematic_1

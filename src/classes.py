@@ -2,6 +2,7 @@ import numpy as np
 import json
 from PyQt5 import QtWidgets, QtGui
 import os.path
+import componentSVG
 
 # set the transform.rotate(...) to one of these --- flip does not mirror, it just rotates by 180 degrees. (-Jason)
 SCHEM_ORIENTATIONS = {'upright': 0, 'CW1': 90, 'CCW1': -90, 'flip': 180}
@@ -16,21 +17,19 @@ class Component(QtWidgets.QGraphicsItem):
     # database has the dimensions corresponding to type: component type,
     # and the spritesheet has a picture for it, the component can be used. (-Jason)
 
-    def __init__(self, id, label, num_pins, schem_position, schem_orientation, pcb_position, connections):
+    def __init__(self, id, label, num_pins, schem_position, schem_orientation, pcb_position, connections, svg_file_name):
         if self.valid_input({"id": id, "label": label, "schem_position": schem_position, "schem_orientation": schem_orientation}):
             # super().__init__()
             self.id = id
             self.label = label
             self.num_pins = num_pins
+            self.pin_states = [False for i in range(0, self.num_pins)]
             self.schem_position = schem_position
             self.schem_orientation = schem_orientation
             self.pcb_position = pcb_position
             self.connections = self.set_connections(connections)
-
-            # self.pin_positions_svg = [] # the position data of the circles in the svg
-            # self.solder_pad_dim = 1 # Our solder pads are squares, so only one dim is needed (-Jason)
-            # self.svg_image_name # eventually an svg once I finish them (-Jason)
-            # self.xml_svg # for manipulating the svg
+            self.svg_obj = componentSVG.ComponentSVG(
+                base_file_name=svg_file_name)
 
     def valid_input(self, input_kwargs):
         for key in input_kwargs:
@@ -63,17 +62,42 @@ class Component(QtWidgets.QGraphicsItem):
         else:
             self.connections = connections
 
-    def set_schematic_pos(pos):
+    def set_schematic_pos(self, pos):
         self.schem_position = pos
 
     def connect(self, this_pin_id, that_pin_id):
         if this_pin_id in self.connections:
             self.connections[this_pin_id].append(that_pin_id)
+
+            if len(self.connections) == 1:
+                this_pin_num = this_pin_id.split("_")
+                self.active_svg_xml, self.pin_states[this_pin_num] = self.svg_obj.change_pin_state(
+                    this_pin_num, True)
+                self.pin_states[this_pin_num] = True
         else:
             raise ValueError("Invalid pin id")
 
     def disconnect(self, this_pin_id, that_pin_id):
-        self.connections[this_pin_id].remove(that_pin_id)
+        if this_pin_id in self.connections:
+            self.connections[this_pin_id].remove(that_pin_id)
+
+            # If there aren't any more connections, update the image
+            if len(self.connections) == 0:
+                this_pin_num = this_pin_id.split("_")
+                self.active_svg_xml, self.pin_states[this_pin_num] = self.svg_obj.change_pin_state(
+                    this_pin_num, False)
+                self.pin_states[this_pin_num] = False
+        else:
+            raise ValueError("Invalid pin id")
+
+    def get_svg_pin_position(self):
+        raise NotImplementedError("Abstract method")
+
+    def get_svg_xml(self):
+        return self.svg_obj.active_xml
+
+    def print_svg(self, file_name):
+        self.svg_obj.print_svg_file(file_name)
 
     def edit_label(self, text=""):
         if text == "":
@@ -101,96 +125,138 @@ class Component(QtWidgets.QGraphicsItem):
             "schem_position": self.schem_position,
             "schem_orientation": self.schem_orientation,
             "pcb_position": self.pcb_position,
-            "connections": self.connections
+            "connections": self.connections,
+            "svg_obj": self.svg_obj,
+            "active_svg": self.active_SVG
         }
         return component_dict
 
 
 class Resistor(Component):
-    def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[], connections={}):
+    def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[], connections={}, svg_file_name="images/Resistor.svg"):
         super().__init__(id, label, 2, schem_position,
-                         schem_orientation, pcb_position, connection)
+                         schem_orientation, pcb_position, connections, svg_file_name)
+        self.svg_pin_positions = []
 
-        def draw(self):
-            pass
+    def get_svg_pin_position(self):
+        return self.svg_pin_positions
+
+    def draw(self):
+        pass
 
 
 class Capacitor(Component):
-    def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[], connections={}):
+    def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[], connections={}, svg_file_name="images/Capacitor.svg"):
         super().__init__(id, label, 2, schem_position,
-                         schem_orientation, pcb_position, connections)
+                         schem_orientation, pcb_position, connections, svg_file_name)
+        self.svg_pin_positions = [[10.25, 30.25], [150.25, 30.25]]
+
+    def get_svg_pin_position(self):
+        return self.svg_pin_positions
 
     def draw(self):
         pass
 
 
 class Inductor(Component):
-    def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[], connections={}):
+    def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[], connections={}, svg_file_name="images/Inductor.svg"):
         super().__init__(id, label, 2, schem_position,
-                         schem_orientation, pcb_position, connections)
+                         schem_orientation, pcb_position, connections, svg_file_name)
+        self.svg_pin_positions = []
+
+    def get_svg_pin_position(self):
+        return self.svg_pin_positions
 
     def draw(self):
         pass
 
 
 class NpnTransistor(Component):
-    def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[], connections={}):
+    def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[], connections={}, svg_file_name="images/NpnTransistor.svg"):
         super().__init__(id, label, 3, schem_position,
-                         schem_orientation, pcb_position, connections)
+                         schem_orientation, pcb_position, connections, svg_file_name)
+        self.svg_pin_positions = []
+
+    def get_svg_pin_position(self):
+        return self.svg_pin_positions
 
     def draw(self):
         pass
 
 
 class PnpTransistor(Component):
-    def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[], connections={}):
+    def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[], connections={}, svg_file_name="images/PnpTransistor.svg"):
         super().__init__(id, label, 3, schem_position,
-                         schem_orientation, pcb_position, connections)
+                         schem_orientation, pcb_position, connections, svg_file_name)
+        self.svg_pin_positions = []
+
+    def get_svg_pin_position(self):
+        return self.svg_pin_positions
 
     def draw(self):
         pass
 
 
 class Diode(Component):
-    def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[], connections={}):
+    def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[], connections={}, svg_file_name="images/Diode.svg"):
         super().__init__(id, label, 2, schem_position,
-                         schem_orientation, pcb_position, connections)
+                         schem_orientation, pcb_position, connections, svg_file_name)
+        self.svg_pin_positions = []
+
+    def get_svg_pin_position(self):
+        return self.svg_pin_positions
 
     def draw(self):
         pass
 
 
 class Led(Component):
-    def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[], connections={}):
+    def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[], connections={}, svg_file_name="images/Led.svg"):
         super().__init__(id, label, 2, schem_position,
-                         schem_orientation, pcb_position, connections)
+                         schem_orientation, pcb_position, connections, svg_file_name)
+        self.svg_pin_positions = []
+
+    def get_svg_pin_position(self):
+        return self.svg_pin_positions
 
     def draw(self):
         pass
 
 
 class Switch(Component):
-    def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[], connections={}):
+    def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[], connections={}, svg_file_name="images/Switch.svg"):
         super().__init__(id, label, 2, schem_position,
-                         schem_orientation, pcb_position, connections)
+                         schem_orientation, pcb_position, connections, svg_file_name)
+        self.svg_pin_positions = []
+
+    def get_svg_pin_position(self):
+        return self.svg_pin_positions
 
     def draw(self):
         pass
 
 
 class VoltageSource(Component):
-    def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[], connections={}):
+    def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[], connections={}, svg_file_name="images/VoltageSource.svg"):
         super().__init__(id, label, 2, schem_position,
-                         schem_orientation, pcb_position, connections)
+                         schem_orientation, pcb_position, connections, svg_file_name)
+        self.svg_pin_positions = []
+
+    def get_svg_pin_position(self):
+        return self.svg_pin_positions
 
     def draw(self):
         pass
 
 
 class Ground(Component):
-    def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[], connections={}):
+    def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[], connections={}, svg_file_name="images/Ground.svg"):
         super().__init__(id, label, 2, schem_position,
-                         schem_orientation, pcb_position, connections)
+                         schem_orientation, pcb_position, connections, svg_file_name)
+        self.svg_pin_positions = []
+
+    def get_svg_pin_position(self):
+        return self.svg_pin_positions
 
     def draw(self):
         pass
@@ -331,6 +397,9 @@ class Schematic:
     def remove_component(self, component_id):
         self.components.pop(f"component_{component_id}")
 
+    def get_component(self, component_id):
+        return self.components[f"component_{component_id}"]
+
     def edit_label(self, component_id, new_text):
         self.components[f"component_{component_id}"].edit_label(new_text)
 
@@ -412,6 +481,11 @@ class Schematic:
         # notify user that file exists and ask if they want to overwrite it/choose a different name (-Jason)
         else:
             raise FileExistsError(f"\"{file_name}\" already exists")
+
+    def overwrite_save(self, file_name):
+        schematic_dict = self.to_dict()
+        with open(file_name, 'w') as f:
+            json.dump(schematic_dict, f)
 
     def load(self, file_name):  # need to implement some safegard to be sure that the user wants to load in something (in case they had not saved the current schematic) (-Jason)
         if os.path.exists(file_name):
@@ -535,28 +609,28 @@ class Schematic:
             not_allowed_pcb_spots.append(rn_spot[0])
             not_allowed_pcb_spots.append(rn_spot[1])
 
-    # using heuristic based on the Chebyshev distance
-    def h(self, start_id, goal_id):
-        start = self.connections_list[start_id]
-        goal = self.connections_list[goal_id]
-        row_diff = abs(goal[0] - start[0])
-        col_diff = abs(goal[1] - start[1])
-        return max(row_diff, col_diff)
+    # # using heuristic based on the Chebyshev distance
+    # def h(self, start_id, goal_id):
+    #     start = self.connections_list[start_id]
+    #     goal = self.connections_list[goal_id]
+    #     row_diff = abs(goal[0] - start[0])
+    #     col_diff = abs(goal[1] - start[1])
+    #     return max(row_diff, col_diff)
 
-    def reconstruct_path(self, came_from, current):
-        path = [current]
-        while current in came_from.keys():
-            current = came_from[current]
-            path.insert(0, current)
-        return path
+    # def reconstruct_path(self, came_from, current):
+    #     path = [current]
+    #     while current in came_from.keys():
+    #         current = came_from[current]
+    #         path.insert(0, current)
+    #     return path
 
-    def calculate_score(self):
-        pass
+    # def calculate_score(self):
+    #     pass
 
-    def run_a_star(self):
-        for self.connection_num in range(0, len(self.components)):
-            self.a_star(start, goal, h,)
+    # def run_a_star(self):
+    #     for self.connection_num in range(0, len(self.components)):
+    #         self.a_star(start, goal, h,)
 
-    # A* as defined on https://en.wikipedia.org/wiki/A*_search_algorithm (-Jason)
-    def a_star(self, start, goal, h, env_map):
-        pass
+    # # A* as defined on https://en.wikipedia.org/wiki/A*_search_algorithm (-Jason)
+    # def a_star(self, start, goal, h, env_map):
+    #     pass
