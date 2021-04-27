@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:osb="http://www.openswatchbook.org/uri/2009/osb"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="160mm"
+   height="60mm"
+   viewBox="0 0 160 60"
+   version="1.1"
+   id="capacitorsvg"
+   inkscape:version="1.0.2-2 (e86c870879, 2021-01-15)"
+   sodipodi:docname="Capacitor.svg">
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1368"
+     inkscape:window-height="850"
+     id="namedview911"
+     showgrid="false"
+     inkscape:zoom="0.86456187"
+     inkscape:cx="205.08427"
+     inkscape:cy="241.18033"
+     inkscape:window-x="-6"
+     inkscape:window-y="-6"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="draw_layer"
+     inkscape:document-rotation="0"
+     units="px" />
+  <defs
+     id="defs2">
+    <linearGradient
+       id="linearGradient2783"
+       osb:paint="solid">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop2781" />
+    </linearGradient>
+  </defs>
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:groupmode="layer"
+     id="draw_layer"
+     inkscape:label="#draw_layer"
+     transform="translate(0,0)">
+    <circle
+       style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.563612;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:fill markers stroke"
+       cx="10"
+       cy="30"
+       id="circle904"
+       r="8.5" />
+    <circle
+       style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.563612;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:fill markers stroke"
+       cx="150"
+       cy="30"
+       id="circle906"
+       r="8.5" />
+    <path
+       id="Capacitor"
+       style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.93263;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 226.77148 0 L 226.77148 109.60547 L 75.400391 109.60547 A 37.795276 37.795276 0 0 0 37.794922 75.589844 A 37.795276 37.795276 0 0 0 0 113.38672 A 37.795276 37.795276 0 0 0 37.794922 151.18164 A 37.795276 37.795276 0 0 0 75.400391 117.16211 L 226.77148 117.16211 L 226.77148 226.77148 L 279.68555 226.77148 L 279.68555 0 L 226.77148 0 z M 317.48047 0 L 317.48047 226.77148 L 370.39453 226.77148 L 370.39453 117.16602 L 529.32422 117.16602 A 37.795276 37.795276 0 0 0 566.92969 151.18164 A 37.795276 37.795276 0 0 0 604.72461 113.38672 A 37.795276 37.795276 0 0 0 566.92969 75.589844 A 37.795276 37.795276 0 0 0 529.32422 109.60938 L 370.39453 109.60938 L 370.39453 0 L 317.48047 0 z M 37.794922 83.150391 A 30.23622 30.23622 0 0 1 68.03125 113.38672 A 30.23622 30.23622 0 0 1 37.794922 143.62109 A 30.23622 30.23622 0 0 1 7.5585938 113.38672 A 30.23622 30.23622 0 0 1 37.794922 83.150391 z M 566.92969 83.150391 A 30.23622 30.23622 0 0 1 597.16602 113.38672 A 30.23622 30.23622 0 0 1 566.92969 143.62109 A 30.23622 30.23622 0 0 1 536.69336 113.38672 A 30.23622 30.23622 0 0 1 566.92969 83.150391 z "
+       transform="matrix(0.26458333,0,0,0.26458333,3.002882e-4,2.4476387e-4)" />
+  </g>
+</svg>
