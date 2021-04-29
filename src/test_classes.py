@@ -9,44 +9,42 @@ if __name__ == "__main__":
     test_schematic_1 = classes.Schematic()
 
     # Setup the inital states of the components and test adding them to the schematic
-    vs1_kwargs = {"id": 84, "label": "C1", "component_type": "Capacitor"}
-    test_schematic_1.add_component(vs1_kwargs)
-    r1_kwargs = {"id": 42, "label": "C2", "component_type": "Capacitor"}
-    test_schematic_1.add_component(r1_kwargs)
-    # c1_kwargs = {'id': 21, "label": "C3", 'component_type': "Capacitor"}
-    # test_schematic_1.add_component(c1_kwargs)
-    # r2_kwargs = {'id': 2, 'label': 'R2', 'component_type': 'Resistor'}
-    # test_schematic_1.add_component(r2_kwargs)
+    c1 = {"id": 0, "component_type": "Capacitor"}
+    test_schematic_1.add_component(c1)
+    c2 = {"id": 1, "component_type": "Capacitor"}
+    test_schematic_1.add_component(c2)
+    c3 = {'id': 2, 'component_type': "Capacitor"}
+    test_schematic_1.add_component(c3)
+    # d1 = {'id': 3, 'label': 'D1', 'component_type': 'Diode'}
+    # test_schematic_1.add_component(d1)
 
     # Test removing a component
-    # test_schematic_1.remove_component(c1_kwargs['id'])
+    # test_schematic_1.remove_component(c1['id'])
 
     # # Test adding a label to components
-    # test_schematic_1.edit_label(84, "V1")
-    # test_schematic_1.edit_label(42, "R1")
-    # # test_schematic_1.edit_label(21, "C1")
+    # test_schematic_1.edit_label(0, "C1")
+    # test_schematic_1.edit_label(1, "C2")
+    # # test_schematic_1.edit_label(2, "C3")
 
-    # # Test adding connections between 4 components
-    # test_schematic_1.add_connection("84_0", "21_1")
-    # test_schematic_1.add_connection("84_1", "42_0")
-    # test_schematic_1.add_connection("21_0", "42_1")
-    # test_schematic_1.add_connection("2_0", "42_0")
-    # test_schematic_1.add_connection("2_1", "21_1")
+    # Test adding connections between some components
+    test_schematic_1.add_connection("0_0", "1_1")
+    test_schematic_1.add_connection("0_1", "2_0")
+    test_schematic_1.add_connection("1_0", "2_1")
 
-    # Test adding connections between 2 components
-    test_schematic_1.add_connection("84_0", "42_1")
-    test_schematic_1.add_connection("84_1", "42_0")
+    # # Test adding connections between 2 components
+    # test_schematic_1.add_connection("0_0", "1_1")
+    # test_schematic_1.add_connection("0_1", "1_0")
 
-    test_schematic_1.get_component("84").print_svg("cap1.svg")
-    test_schematic_1.get_component("42").print_svg("cap2.svg")
+    # test_schematic_1.get_component("0").print_svg("cap1.svg")
+    # test_schematic_1.get_component("1").print_svg("cap2.svg")
 
-    # Test setting the schematic position
-    test_schematic_1.set_component_schematic_pos("84", 200, 200)
-    test_schematic_1.set_component_schematic_pos("42", 100, 200)
+    # # Test setting the schematic position
+    # test_schematic_1.set_component_schematic_pos("0", 200, 200)
+    # test_schematic_1.set_component_schematic_pos("1", 100, 200)
 
-    # # Short out voltage source and then unshort its pins
-    # test_schematic_1.add_connection("84_1", "84_0")
-    # test_schematic_1.remove_connection("84_1", "84_0")
+    # # Short out a component and then unshort its pins (test removing a connection)
+    # test_schematic_1.add_connection("0_1", "0_0")
+    # test_schematic_1.remove_connection("0_1", "0_0")
 
     # # Setup the initial states of the comments and test adding them to the schematic
     # comm1_kwargs = {"id": 0, "text": "Hello, world!", "position": [10, 0]}
@@ -54,24 +52,24 @@ if __name__ == "__main__":
     # comm2_kwargs = {"id": 1, "text": "Hello, 2nd world!", "position": [10, 5]}
     # test_schematic_1.add_comment(comm2_kwargs)
 
-    # # Testing randomize_layout
-    # test_schematic_1.set_monte_carlo_parameters(4, 10)
-    # not_allowed_spots = test_schematic_1.not_allowed_pcb_spots()
-    # test_schematic_1.randomize_layout(not_allowed_spots)
+    # Testing randomize_layout
+    test_schematic_1.set_monte_carlo_parameters(3, 10, 2)
+    not_allowed_spots = []
+    test_schematic_1.randomize_layout(not_allowed_spots)
 
-    # # Print out the contents of each component
-    # for component in test_schematic_1.components.values():
-    #     print(component.to_string())
+    # Print out the contents of each component
+    test_schematic_1.print_all_components_strings()
 
-    # # Test the connections list initialization - that it doesn't have duplicates and print it out
-    # test_schematic_1.initialize_connections_list()
-    # for pin_pair in test_schematic_1.connections_list:
-    #     print(
-    #         f"{pin_pair[0]}: {test_schematic_1.pin_position[pin_pair[0]]}, {pin_pair[1]}: {test_schematic_1.pin_position[pin_pair[1]]}")
+    # Test initialization of pin_placement_dict, connection list, and connections_of_pins list
+    test_schematic_1.initialize_pin_placement_dict()
+    test_schematic_1.initialize_connections_list()
+    test_schematic_1.initialize_connections_of_pins_list()
+
+    print(test_schematic_1.connections_of_pins)
 
     # # Test the save function (output to test1.json)
     # file_name_1 = input("Filename:   ") + ".json"
-    file_name_1 = "test_output1.json"
+    file_name_1 = "test_classes.json"
     test_schematic_1.save(file_name_1)
 
     # delete the schematic
