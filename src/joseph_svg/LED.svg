@@ -24,16 +24,16 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1368"
-     inkscape:window-height="850"
+     inkscape:window-width="958"
+     inkscape:window-height="1003"
      id="namedview21"
      showgrid="false"
      inkscape:zoom="0.92677825"
-     inkscape:cx="251.5886"
-     inkscape:cy="129.26043"
-     inkscape:window-x="-6"
-     inkscape:window-y="-6"
-     inkscape:window-maximized="1"
+     inkscape:cx="122.14777"
+     inkscape:cy="94.56231"
+     inkscape:window-x="-8"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
      inkscape:current-layer="draw_layer"
      inkscape:document-rotation="0" />
   <metadata
@@ -94,13 +94,13 @@
     <circle
        style="fill:none;stroke-width:1.19726"
        id="path34"
-       cx="10"
+       cx="10.025"
        cy="30"
        r="8.5" />
     <circle
        style="fill:none;stroke-width:1.19726"
        id="path34-7"
-       cx="150"
+       cx="150.025"
        cy="30"
        r="8.5" />
   </g>

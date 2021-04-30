@@ -49,8 +49,13 @@ class ComponentSVG:
         with open(file_name, 'w') as f:
             self.active_xml.writexml(f)
 
+    def to_dict(self):
+        svg_dict = {}
 
-class Component(QtWidgets.QGraphicsItem):
+        return svg_dict
+
+
+class Component:
     global SCHEM_ORIENTATIONS
     # The component type field is what determines which sprite will be used
     # and what component fields to pull from the .json database. As long as the
@@ -59,7 +64,6 @@ class Component(QtWidgets.QGraphicsItem):
 
     def __init__(self, id, label, num_pins, schem_position, schem_orientation, pcb_position, connections, svg_file_name):
         if self.valid_input({"id": id, "label": label, "schem_position": schem_position, "schem_orientation": schem_orientation}):
-            # super().__init__()
             self.id = id
             self.label = label
             self.num_pins = num_pins
@@ -68,8 +72,8 @@ class Component(QtWidgets.QGraphicsItem):
             self.schem_orientation = schem_orientation
             self.pcb_position = pcb_position
             self.connections = self.set_connections(connections)
-            # self.svg_obj = ComponentSVG(
-            #     base_file_name=svg_file_name)
+            self.svg_obj = ComponentSVG(
+                base_file_name=svg_file_name)
 
     def valid_input(self, input_kwargs):
         for key in input_kwargs:
@@ -114,8 +118,8 @@ class Component(QtWidgets.QGraphicsItem):
 
             if len(self.connections) == 1:
                 this_pin_num = this_pin_id.split("_")
-                self.active_svg_xml, self.pin_states[this_pin_num] = self.svg_obj.change_pin_state(
-                    this_pin_num, True)
+                # self.active_svg_xml, self.pin_states[this_pin_num] = self.svg_obj.change_pin_state(
+                #     this_pin_num, True)
                 self.pin_states[this_pin_num] = True
         else:
             raise ValueError("Invalid pin id")
@@ -127,20 +131,20 @@ class Component(QtWidgets.QGraphicsItem):
             # If there aren't any more connections, update the image
             if len(self.connections) == 0:
                 this_pin_num = this_pin_id.split("_")
-                self.active_svg_xml, self.pin_states[this_pin_num] = self.svg_obj.change_pin_state(
-                    this_pin_num, False)
+                # self.active_svg_xml, self.pin_states[this_pin_num] = self.svg_obj.change_pin_state(
+                #     this_pin_num, False)
                 self.pin_states[this_pin_num] = False
         else:
             raise ValueError("Invalid pin id")
 
-    # def get_svg_pin_position(self):
-    #     raise NotImplementedError("Abstract method")
+    def get_svg_pin_position(self):
+        raise NotImplementedError("Abstract method")
 
-    # def get_svg_xml(self):
-    #     return self.svg_obj.active_xml
+    def get_svg_xml(self):
+        return self.svg_obj.active_xml
 
-    # def print_svg(self, file_name):
-    #     self.svg_obj.print_svg_file(file_name)
+    def print_svg(self, file_name):
+        self.svg_obj.print_svg_file(file_name)
 
     def edit_label(self, text=""):
         if text == "":
@@ -169,7 +173,7 @@ class Component(QtWidgets.QGraphicsItem):
             "schem_orientation": self.schem_orientation,
             "pcb_position": self.pcb_position,
             "connections": self.connections
-            # "svg_obj": self.svg_obj
+            "svg_obj": self.svg_obj.to_dict()
         }
         return component_dict
 
@@ -178,7 +182,7 @@ class Resistor(Component):
     def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[], connections={}, svg_file_name="comp_img/Resistor.svg"):
         super().__init__(id, label, 2, schem_position,
                          schem_orientation, pcb_position, connections, svg_file_name)
-        self.svg_pin_positions = []
+        self.svg_pin_positions = [[10, 30], [150, 30]]
 
     def get_svg_pin_position(self):
         return self.svg_pin_positions
@@ -204,7 +208,7 @@ class Inductor(Component):
     def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[], connections={}, svg_file_name="comp_img/Inductor.svg"):
         super().__init__(id, label, 2, schem_position,
                          schem_orientation, pcb_position, connections, svg_file_name)
-        self.svg_pin_positions = []
+        self.svg_pin_positions = [[10, 30], [150, 30]]
 
     def get_svg_pin_position(self):
         return self.svg_pin_positions
@@ -230,7 +234,7 @@ class Led(Component):
     def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[], connections={}, svg_file_name="comp_img/Led.svg"):
         super().__init__(id, label, 2, schem_position,
                          schem_orientation, pcb_position, connections, svg_file_name)
-        self.svg_pin_positions = []
+        self.svg_pin_positions = [[10.025, 30], [150.025, 30]]
 
     def get_svg_pin_position(self):
         return self.svg_pin_positions
@@ -243,7 +247,7 @@ class Switch(Component):
     def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[], connections={}, svg_file_name="comp_img/Switch.svg"):
         super().__init__(id, label, 2, schem_position,
                          schem_orientation, pcb_position, connections, svg_file_name)
-        self.svg_pin_positions = []
+        self.svg_pin_positions = [[10, 30], [150, 30]]
 
     def get_svg_pin_position(self):
         return self.svg_pin_positions
@@ -256,7 +260,7 @@ class VoltageSource(Component):
     def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[], connections={}, svg_file_name="comp_img/VoltageSource.svg"):
         super().__init__(id, label, 2, schem_position,
                          schem_orientation, pcb_position, connections, svg_file_name)
-        self.svg_pin_positions = []
+        self.svg_pin_positions = [[10, 30], [150, 30]]
 
     def get_svg_pin_position(self):
         return self.svg_pin_positions
@@ -267,9 +271,9 @@ class VoltageSource(Component):
 
 class Ground(Component):
     def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[], connections={}, svg_file_name="comp_img/Ground.svg"):
-        super().__init__(id, label, 2, schem_position,
+        super().__init__(id, label, 1, schem_position,
                          schem_orientation, pcb_position, connections, svg_file_name)
-        self.svg_pin_positions = []
+        self.svg_pin_positions = [30, 150]
 
     def get_svg_pin_position(self):
         return self.svg_pin_positions
@@ -390,8 +394,8 @@ class Schematic:
         self.H = schematic_dict["H"]
         self.G = schematic_dict["G"]
         self.F = schematic_dict["F"]
-        self.last_run_score = schematic_dict["last_runs_score"]
-        self.curr_run_score = schematic_dict["curr_runs_score"]
+        self.last_runs_score = schematic_dict["last_runs_score"]
+        self.curr_runs_score = schematic_dict["curr_runs_score"]
         self.set_monte_carlo_parameters(
             schematic_dict["n_grid_spaces"], schematic_dict["max_iters"], schematic_dict["max_expand"])
 
@@ -416,6 +420,12 @@ class Schematic:
 
     def get_component(self, component_id):
         return self.components[f"component_{component_id}"]
+
+    def get_pin_position(self, pin_id):
+        component_id, pin_num = pin_id.split('_')
+        component_lookup_id = f"component_{component_id}"
+        component = component.self.components[component_lookup_id]
+        return component.get_pin_position()[int(pin_num)]
 
     def edit_label(self, component_id, new_text):
         self.components[f"component_{component_id}"].edit_label(new_text)
@@ -498,22 +508,26 @@ class Schematic:
 
     def save(self, file_name):
         schematic_dict = self.to_dict()
-        if not os.path.exists(file_name):
-            with open(file_name, 'x') as f:
+        fn = f"{file_name}.json"
+        if not os.path.exists(fn):
+            with open(fn, 'x') as f:
                 json.dump(schematic_dict, f)
         else:
             i = 0
-            while os.path.exists(f"{file_name}({i})"):
+            fn = f"{file_name}({i}).json"
+            while os.path.exists(fn):
                 if i > 254:
                     raise FileExistsError(
-                        f"\"{file_name}\" exists and there are too many with its base name (255)")
+                        f"\"{file_name}.json\" exists and there are too many with its base name (255)")
                 i += 1
-            with open(f"{file_name}({i})", 'x') as f:
+                fn = f"{file_name}({i}).json"
+            with open(fn, 'x') as f:
                 json.dump(schematic_dict, f)
 
     def overwrite_save(self, file_name):
         schematic_dict = self.to_dict()
-        with open(file_name, 'w') as f:
+        fn = f"{file_name}.json"
+        with open(fn, 'w') as f:
             json.dump(schematic_dict, f)
 
     def load(self, file_name):  # need to implement some safegard to be sure that the user wants to load in something (in case they had not saved the current schematic) (-Jason)
@@ -527,59 +541,68 @@ class Schematic:
 
     # LOOK AT force base graph layout algorithms as an alternative to this (-Jason)
     # Metropolis' Monte Carlo method. (-Jason)
-    def monte_carlo(self):
+    def monte_carlo(self, max_iters):
+        # Create backup just in case
+        self.overwrite_save("tmp_monte_carlo.json")
+
+        # run first iteration
+        self.paths.clear()
+        # First get random layout
+        self.randomize_layout()
+        # Next, setup a few lookup lists
         self.initialize_pin_placement_dict()
         self.initialize_connections_list()
         self.initialize_connections_of_pins_list()
-        not_allowed_pcb_spots = self.not_allowed_pcb_spots()
-        self.randomize_layout(not_allowed_pcb_spots)
-        self.run_a_star()
-        # for self.iteration_num in range(0, self.max_iters):
-        #     pass
+        # Lastly, get the paths.
+        # paths will be a dict whos keys are "startId:goalId" and the values
+        # correspond to dicts of info for that path (length; grid points;
+        # and maybe max x, min x, max y, min y)
+        paths = self.run_a_star()
 
-    # This gets a position list for every pin
-    def initialize_pin_placement_dict(self):
-        pin_placement_dict = {}
-        for component in self.components.values():
-            pin_ids = list(component.connections.keys())
-            for pin_id, pos in zip(pin_ids, component.pcb_position):
-                pin_placement_dict |= {pin_id: pos}
-        self.pin_placement_dict = pin_placement_dict
+        # Set the last run's score to inf
+        self.last_runs_score = np.inf
+        # Calculate this run's score based on average/total path length
+        # and pcb surface area (obviously including the paths)
+        self.curr_runs_score = self.calculate_score(
+            paths, self.pin_placement_dict)
 
-    # This gets the connections into a single list
-    def initialize_connections_list(self):
-        connections_list = []
-        for component in self.components.values():
-            for pin_id, connections in component.connections.items():
-                for connection in connections:
-                    if len(connections_list) > 0:
-                        if not [connection, pin_id] in connections_list:
-                            connections_list.append([pin_id, connection])
-                    else:
-                        connections_list.append([pin_id, connection])
+        # run the subsequent iterations up until the score is high enough or we've reached the max_iters
+        self.iteration_num = 1
+        while np.subtract(self.curr_runs_score, self.last_runs_score) > .3 and self.iteration_num < max_iters:
+            self.last_runs_score = self.curr_runs_score
+            self.paths.clear()
+            self.pin_placement_dict.clear()
+            self.connections_list.clear()
+            self.connections_of_pins.clear()
 
-        self.connections_list = connections_list
+            self.randomize_layout()
+            self.initialize_pin_placement_dict()
+            self.initialize_connections_list()
+            self.initialize_connections_of_pins_list()
+            paths = self.run_a_star()
 
-    # This creates the start/goal lists in one list
-    def initialize_connections_of_pins_list(self):
-        pin_placements = self.pin_placement_dict
-        connections = self.connections_list
+            self.curr_runs_score = self.calculate_score(
+                paths)
+            self.iteration_num += 1
 
-        connections_of_pins = self.connections_of_pins
+        self.paths = paths
 
-        for start_id, goal_id in connections:
-            connections_of_pins[0].append({start_id: pin_placements[start_id]})
-            connections_of_pins[1].append({goal_id: pin_placements[goal_id]})
-
-        self.connections_of_pins = connections_of_pins
-
-    # Having issues with iterating over dict values... (-Jason)
     def not_allowed_pcb_spots(self):
         not_allowed = []
+
+        # Append existing components to the not allowed list.
         for component in self.components.values():
             if component.pcb_position != []:
                 not_allowed.append(component.pcb_position[0])
                 not_allowed.append(component.pcb_position[1])
+
+        # Append any path points to the not allowed list for use in
+        # A*.
+        if len(self.paths) > 0:
+            for path in self.paths:
+                for grid_point in path["grid_points"]:
+                    not_allowed.append(grid_point)
+
         return not_allowed
 
     def get_pin1_pos(self):
@@ -648,39 +671,79 @@ class Schematic:
         return rn_pos
 
     # will make a layout where no pins overlap (-Jason)
-    def randomize_layout(self, not_allowed_pcb_spots):
+    def randomize_layout(self):
+        not_allowed_pcb_spots = []
         for component in self.components.values():
-            rn_spot = self.get_valid_spot(not_allowed_pcb_spots)
+            rn_spot = self.get_valid_spot([not_allowed_pcb_spots])
             component.pcb_position = rn_spot
-            not_allowed_pcb_spots.append(rn_spot[0])
-            not_allowed_pcb_spots.append(rn_spot[1])
 
-    # using heuristic based on the Chebyshev distance
+    # This gets a position list for every pin
+    def initialize_pin_placement_dict(self):
+        pin_placement_dict = {}
+        for component in self.components.values():
+            pin_ids = list(component.connections.keys())
+            for pin_id, pos in zip(pin_ids, component.pcb_position):
+                pin_placement_dict |= {pin_id: pos}
+        self.pin_placement_dict = pin_placement_dict
+
+    # This gets the connections into a single list
+    def initialize_connections_list(self):
+        connections_list = []
+        for component in self.components.values():
+            for pin_id, connections in component.connections.items():
+                for connection in connections:
+                    if len(connections_list) > 0:
+                        if not [connection, pin_id] in connections_list:
+                            connections_list.append([pin_id, connection])
+                    else:
+                        connections_list.append([pin_id, connection])
+
+        self.connections_list = connections_list
+
+    # This creates the start/goal lists in one list
+    def initialize_connections_of_pins_list(self):
+        pin_placements = self.pin_placement_dict
+        connections = self.connections_list
+
+        connections_of_pins = self.connections_of_pins
+
+        for start_id, goal_id in connections:
+            connections_of_pins[0].append({start_id: pin_placements[start_id]})
+            connections_of_pins[1].append({goal_id: pin_placements[goal_id]})
+
+        self.connections_of_pins = connections_of_pins
+
+    def calculate_score(self, path, pin_placements):
+        pass
+
+    def run_a_star(self):
+        paths_dict = {}
+        starting_points = self.connections_of_pins[0]
+        goal_points = self.connections_of_pins[1]
+
+        for start, goal in zip(starting_points, goal_points):
+            path = self.a_star(start, goal)
+            paths_dict |= path
+
+        return paths_dict
+
+    def reconstruct_path(self, came_from, current):
+        pass
+
+    # Using a heuristic based on the Chebyshev distance
     def h(self, start, goal):
         row_diff = abs(goal[0] - start[0])
         col_diff = abs(goal[1] - start[1])
         return max(row_diff, col_diff)
 
-    # def reconstruct_path(self, came_from, current):
-    #     path = [current]
-    #     while current in came_from.keys():
-    #         current = came_from[current]
-    #         path.insert(0, current)
-    #     return path
-
-    # def calculate_score(self):
-    #     pass
-
-    def run_a_star(self):
-        starting_points = self.connections_of_pins[0]
-        goal_points = self.connections_of_pins[1]
-
-        for start, goal in zip(starting_points, goal_points):
-            self.a_star(start, goal)
-
     # A* as defined on https://en.wikipedia.org/wiki/A*_search_algorithm (-Jason)
+
+    # start and goal look like {"pin_id": [x, y]}
     def a_star(self, start, goal):
         # node_dict will have g_costs and h_costs for previously looked at nodes - for lookup
-        node_dict = {}
-        open_nodes = []
+        path_key = f"{list(start.keys())[0]}:{list(goal.keys())[0]}"
+        path_dict = {"length"}
+        open_nodes = list(start.values())[0]
         closed_nodes = []
+
+        return {path_key: path_dict}

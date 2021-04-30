@@ -54,22 +54,25 @@ if __name__ == "__main__":
 
     # Testing randomize_layout
     test_schematic_1.set_monte_carlo_parameters(3, 10, 2)
-    not_allowed_spots = []
-    test_schematic_1.randomize_layout(not_allowed_spots)
+    test_schematic_1.randomize_layout()
 
-    # Print out the contents of each component
-    test_schematic_1.print_all_components_strings()
+    # # Print out the contents of each component
+    # test_schematic_1.print_all_components_strings()
 
-    # Test initialization of pin_placement_dict, connection list, and connections_of_pins list
-    test_schematic_1.initialize_pin_placement_dict()
-    test_schematic_1.initialize_connections_list()
-    test_schematic_1.initialize_connections_of_pins_list()
+    # # Test initialization of pin_placement_dict, connection list, and connections_of_pins list
+    # test_schematic_1.initialize_pin_placement_dict()
+    # test_schematic_1.initialize_connections_list()
+    # test_schematic_1.initialize_connections_of_pins_list()
+    # for start, goal in zip(test_schematic_1.connections_of_pins[0], test_schematic_1.connections_of_pins[1]):
+    #     print(f"{list(start.keys())[0]}:{list(start.keys())[1]}")
 
-    print(test_schematic_1.connections_of_pins)
+    # # Try one iteration of Monte Carlo
+    # test_schematic_1.set_monte_carlo_parameters(3, 5, 2)
+    # test_schematic_1.monte_carlo(1)
 
     # # Test the save function (output to test1.json)
     # file_name_1 = input("Filename:   ") + ".json"
-    file_name_1 = "test_classes.json"
+    file_name_1 = "test_classes"
     test_schematic_1.save(file_name_1)
 
     # delete the schematic
