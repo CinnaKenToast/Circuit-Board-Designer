@@ -1090,9 +1090,9 @@ class Ui_MainWindow(object):
         self.verticalLayout_12.addWidget(self.btn_color)
         spacerItem = QtWidgets.QSpacerItem(20, 100000000, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Maximum)
         self.verticalLayout_12.addItem(spacerItem)
-        self.btn_zoom_home = QtWidgets.QPushButton(self.frame_top_tools)
-        self.btn_zoom_home.setMinimumSize(QtCore.QSize(0, 50))
-        self.btn_zoom_home.setStyleSheet("QPushButton{\n"
+        self.btn_zoom_in_2 = QtWidgets.QPushButton(self.frame_top_tools)
+        self.btn_zoom_in_2.setMinimumSize(QtCore.QSize(0, 50))
+        self.btn_zoom_in_2.setStyleSheet("QPushButton{\n"
 "    background-color: rgb(42, 41, 44);\n"
 "    border-style: outset;\n"
 "    border: none;\n"
@@ -1104,15 +1104,15 @@ class Ui_MainWindow(object):
 "}\n"
 "\n"
 "")
-        self.btn_zoom_home.setText("")
+        self.btn_zoom_in_2.setText("")
         icon15 = QtGui.QIcon()
         icon15.addPixmap(QtGui.QPixmap("img/home-searching.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.btn_zoom_home.setIcon(icon15)
-        self.btn_zoom_home.setIconSize(QtCore.QSize(24, 24))
-        self.btn_zoom_home.setCheckable(False)
-        self.btn_zoom_home.setChecked(False)
-        self.btn_zoom_home.setObjectName("btn_zoom_home")
-        self.verticalLayout_12.addWidget(self.btn_zoom_home)
+        self.btn_zoom_in_2.setIcon(icon15)
+        self.btn_zoom_in_2.setIconSize(QtCore.QSize(24, 24))
+        self.btn_zoom_in_2.setCheckable(False)
+        self.btn_zoom_in_2.setChecked(False)
+        self.btn_zoom_in_2.setObjectName("btn_zoom_in_2")
+        self.verticalLayout_12.addWidget(self.btn_zoom_in_2)
         self.btn_zoom_in = QtWidgets.QPushButton(self.frame_top_tools)
         self.btn_zoom_in.setMinimumSize(QtCore.QSize(0, 50))
         self.btn_zoom_in.setStyleSheet("QPushButton{\n"
