@@ -542,6 +542,8 @@ class Schematic:
     # LOOK AT force base graph layout algorithms as an alternative to this (-Jason)
     # Metropolis' Monte Carlo method. (-Jason)
     def monte_carlo(self, max_iters):
+        #Might not need to do this first one - just set last run's score to infinity and this runs score to zero then do the loop? (-Jason)
+
         # Create backup just in case
         self.overwrite_save("tmp_monte_carlo.json")
 
@@ -564,7 +566,7 @@ class Schematic:
         # Calculate this run's score based on average/total path length
         # and pcb surface area (obviously including the paths)
         self.curr_runs_score = self.calculate_score(
-            paths, self.pin_placement_dict)
+            paths)
 
         # run the subsequent iterations up until the score is high enough or we've reached the max_iters
         self.iteration_num = 1
@@ -713,7 +715,7 @@ class Schematic:
 
         self.connections_of_pins = connections_of_pins
 
-    def calculate_score(self, path, pin_placements):
+    def calculate_score(self, path):
         pass
 
     def run_a_star(self):
@@ -731,13 +733,12 @@ class Schematic:
         pass
 
     # Using a heuristic based on the Chebyshev distance
-    def h(self, start, goal):
+    def h(self, from, to):
         row_diff = abs(goal[0] - start[0])
         col_diff = abs(goal[1] - start[1])
         return max(row_diff, col_diff)
 
-    # A* as defined on https://en.wikipedia.org/wiki/A*_search_algorithm (-Jason)
-
+    # A* as defined by Sebastian Lague (-Jason)
     # start and goal look like {"pin_id": [x, y]}
     def a_star(self, start, goal):
         # node_dict will have g_costs and h_costs for previously looked at nodes - for lookup
