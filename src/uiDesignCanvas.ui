@@ -1797,7 +1797,7 @@ QPushButton:hover{
                 </sizepolicy>
                </property>
                <property name="currentIndex">
-                <number>0</number>
+                <number>1</number>
                </property>
                <widget class="QWidget" name="page_components">
                 <property name="sizePolicy">
@@ -2064,7 +2064,17 @@ QPushButton:hover{
                     </size>
                    </property>
                    <property name="text">
-                    <string>black</string>
+                    <string/>
+                   </property>
+                   <property name="icon">
+                    <iconset>
+                     <normaloff>color_img/black.png</normaloff>color_img/black.png</iconset>
+                   </property>
+                   <property name="iconSize">
+                    <size>
+                     <width>36</width>
+                     <height>36</height>
+                    </size>
                    </property>
                   </widget>
                  </item>
@@ -2083,7 +2093,17 @@ QPushButton:hover{
                     </size>
                    </property>
                    <property name="text">
-                    <string>red</string>
+                    <string/>
+                   </property>
+                   <property name="icon">
+                    <iconset>
+                     <normaloff>color_img/red.png</normaloff>color_img/red.png</iconset>
+                   </property>
+                   <property name="iconSize">
+                    <size>
+                     <width>36</width>
+                     <height>36</height>
+                    </size>
                    </property>
                   </widget>
                  </item>
@@ -2102,7 +2122,17 @@ QPushButton:hover{
                     </size>
                    </property>
                    <property name="text">
-                    <string>oran</string>
+                    <string/>
+                   </property>
+                   <property name="icon">
+                    <iconset>
+                     <normaloff>color_img/orange.png</normaloff>color_img/orange.png</iconset>
+                   </property>
+                   <property name="iconSize">
+                    <size>
+                     <width>36</width>
+                     <height>36</height>
+                    </size>
                    </property>
                   </widget>
                  </item>
@@ -2121,7 +2151,17 @@ QPushButton:hover{
                     </size>
                    </property>
                    <property name="text">
-                    <string>yell</string>
+                    <string/>
+                   </property>
+                   <property name="icon">
+                    <iconset>
+                     <normaloff>color_img/yellow.png</normaloff>color_img/yellow.png</iconset>
+                   </property>
+                   <property name="iconSize">
+                    <size>
+                     <width>36</width>
+                     <height>36</height>
+                    </size>
                    </property>
                   </widget>
                  </item>
@@ -2140,7 +2180,17 @@ QPushButton:hover{
                     </size>
                    </property>
                    <property name="text">
-                    <string>green</string>
+                    <string/>
+                   </property>
+                   <property name="icon">
+                    <iconset>
+                     <normaloff>color_img/green.png</normaloff>color_img/green.png</iconset>
+                   </property>
+                   <property name="iconSize">
+                    <size>
+                     <width>36</width>
+                     <height>36</height>
+                    </size>
                    </property>
                   </widget>
                  </item>
@@ -2159,7 +2209,17 @@ QPushButton:hover{
                     </size>
                    </property>
                    <property name="text">
-                    <string>blue</string>
+                    <string/>
+                   </property>
+                   <property name="icon">
+                    <iconset>
+                     <normaloff>color_img/blue.png</normaloff>color_img/blue.png</iconset>
+                   </property>
+                   <property name="iconSize">
+                    <size>
+                     <width>36</width>
+                     <height>36</height>
+                    </size>
                    </property>
                   </widget>
                  </item>
@@ -2178,7 +2238,17 @@ QPushButton:hover{
                     </size>
                    </property>
                    <property name="text">
-                    <string>purp</string>
+                    <string/>
+                   </property>
+                   <property name="icon">
+                    <iconset>
+                     <normaloff>color_img/purple.png</normaloff>color_img/purple.png</iconset>
+                   </property>
+                   <property name="iconSize">
+                    <size>
+                     <width>36</width>
+                     <height>36</height>
+                    </size>
                    </property>
                   </widget>
                  </item>
@@ -2197,7 +2267,17 @@ QPushButton:hover{
                     </size>
                    </property>
                    <property name="text">
-                    <string>pink</string>
+                    <string/>
+                   </property>
+                   <property name="icon">
+                    <iconset>
+                     <normaloff>color_img/pink.png</normaloff>color_img/pink.png</iconset>
+                   </property>
+                   <property name="iconSize">
+                    <size>
+                     <width>36</width>
+                     <height>36</height>
+                    </size>
                    </property>
                   </widget>
                  </item>
@@ -2216,7 +2296,17 @@ QPushButton:hover{
                     </size>
                    </property>
                    <property name="text">
-                    <string>cyan</string>
+                    <string/>
+                   </property>
+                   <property name="icon">
+                    <iconset>
+                     <normaloff>color_img/cyan.png</normaloff>color_img/cyan.png</iconset>
+                   </property>
+                   <property name="iconSize">
+                    <size>
+                     <width>36</width>
+                     <height>36</height>
+                    </size>
                    </property>
                   </widget>
                  </item>
@@ -2235,7 +2325,17 @@ QPushButton:hover{
                     </size>
                    </property>
                    <property name="text">
-                    <string>brown</string>
+                    <string/>
+                   </property>
+                   <property name="icon">
+                    <iconset>
+                     <normaloff>color_img/brown.png</normaloff>color_img/brown.png</iconset>
+                   </property>
+                   <property name="iconSize">
+                    <size>
+                     <width>36</width>
+                     <height>36</height>
+                    </size>
                    </property>
                   </widget>
                  </item>

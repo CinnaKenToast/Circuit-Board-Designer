@@ -23,7 +23,7 @@ def addToEvent(item):
     print(eventList)
 
 class Widget(QtWidgets.QWidget):
-    def __init__(self, name, scene, boundingBox, parent = None):
+    def __init__(self, compType, name, scene, boundingBox, parent = None):
         super().__init__(parent)
         self.ui = Ui_Form()
         self.ui.setupUi(self)
@@ -32,6 +32,23 @@ class Widget(QtWidgets.QWidget):
         self.ui.btn_pin1.clicked.connect(lambda: self.printRightButtonPos())
         self.boundingBox = boundingBox
         self.scene = scene
+
+        if compType == "resistor":
+            self.ui.lable_image.setPixmap(QtGui.QIcon("comp_img/Resistor.svg").pixmap(QtCore.QSize()))
+        elif compType == "capacitor":
+            self.ui.lable_image.setPixmap(QtGui.QIcon("comp_img/Capacitor.svg").pixmap(QtCore.QSize()))
+        elif compType == "diode":
+            self.ui.lable_image.setPixmap(QtGui.QIcon("comp_img/Diode.svg").pixmap(QtCore.QSize()))
+        elif compType == "led":
+            self.ui.lable_image.setPixmap(QtGui.QIcon("comp_img/Led.svg").pixmap(QtCore.QSize()))
+        elif compType == "inductor":
+            self.ui.lable_image.setPixmap(QtGui.QIcon("comp_img/Inductor.svg").pixmap(QtCore.QSize()))
+        elif compType == "switch":
+            self.ui.lable_image.setPixmap(QtGui.QIcon("comp_img/Switch.svg").pixmap(QtCore.QSize()))
+        elif compType == "ground":
+            self.ui.lable_image.setPixmap(QtGui.QIcon("comp_img/Ground.svg").pixmap(QtCore.QSize()))
+        elif compType == "voltage":
+            self.ui.lable_image.setPixmap(QtGui.QIcon("comp_img/voltage_source.svg").pixmap(QtCore.QSize()))
     
     def printLeftButtonPos(self):
         #self.boundingBox.setSelected(True)
@@ -47,19 +64,17 @@ class Widget(QtWidgets.QWidget):
         pin1y = self.boundingBox.pos().y() + 20 + 75/2
         addToEvent((self.boundingBox, QPoint(pin1x, pin1y)))
 
-class component(QtWidgets.QGraphicsRectItem):
-    def __init__(self, scene, pen, name):
+class Component(QtWidgets.QGraphicsRectItem):
+    def __init__(self, scene, pen, compType, name):
         super().__init__()
         self.scene = scene
         self.boundingBox = self.scene.addRect(0,0, 150, 95, pen)
-        self.widget = self.scene.addWidget(Widget(name, scene, self.boundingBox))
+        self.widget = self.scene.addWidget(Widget(compType, name, scene, self.boundingBox))
         self.boundingBox.setFlag(QtWidgets.QGraphicsItem.ItemIsMovable)
         self.boundingBox.setFlag(QtWidgets.QGraphicsItem.ItemIsSelectable)
         self.widget.setParentItem(self.boundingBox)   
         self.line = None
         self.isPoint = None
-        #print(self.boundingBox.parent())
-        print(self)
 
     def mousePressEvent(self, event):
         print("Hello")
@@ -88,7 +103,6 @@ class component(QtWidgets.QGraphicsRectItem):
 
         self.line.setLine(QtCore.QLineF(p1, p2))
 
-
 class MainWindow(QMainWindow):
     def __init__(self):
         # Window set up
@@ -112,8 +126,12 @@ class MainWindow(QMainWindow):
         self.penColor = QtGui.QPen(QtCore.Qt.black)
         self.penColor.setWidth(3)
 
-        self.component1 = component(self.scene, self.penColor, "resistor")
+        self.components = []
+
+        self.component1 = Component(self.scene, self.penColor, "resistor", "r1")
         self.component1.boundingBox.moveBy(1000, 1000)
+
+        self.components.append(self.component1)
 
         self.penColors = {
                 "black" : QtCore.Qt.black,
@@ -125,17 +143,29 @@ class MainWindow(QMainWindow):
                 "purple" : QtGui.QColor(221, 101, 247), 
                 "pink" : QtGui.QColor(255, 186, 244), 
                 "cyan" : QtCore.Qt.cyan,
-                "brown" : QtGui.QColor(122, 112, 97)
+                "brown" : QtGui.QColor(119, 90, 49)
         }
 
         ellipse = self.scene.addEllipse(1000,1000,50,50,self.penColors["brown"],redBrush)
         ellipse.setFlag(QtWidgets.QGraphicsItem.ItemIsMovable)
 
         # Connect buttons to functions
+        self.ui.btn_resistor.clicked.connect(lambda: self.addComponent("resistor", "r1"))
+        self.ui.btn_capacitor.clicked.connect(lambda: self.addComponent("capacitor", "c1"))
+        self.ui.btn_diode.clicked.connect(lambda: self.addComponent("diode", "d1"))
+        self.ui.btn_led.clicked.connect(lambda: self.addComponent("led", "l1"))
+        self.ui.btn_inductor.clicked.connect(lambda: self.addComponent("inductor", "i1"))
+        self.ui.btn_switch.clicked.connect(lambda: self.addComponent("switch", "s1"))
+        self.ui.btn_ground.clicked.connect(lambda: self.addComponent("ground", "g1"))
+        self.ui.btn_voltage.clicked.connect(lambda: self.addComponent("voltage", "v1"))
+
+        self.ui.btn_delete.clicked.connect(lambda: self.deleteComponent())
+
         self.ui.btn_toggle.clicked.connect(lambda: self.toggleMenu(200, True))
         self.ui.btn_design.clicked.connect(lambda: self.ui.stacked_workspaces.setCurrentWidget(self.ui.page_design))
         self.ui.btn_convert.clicked.connect(lambda: self.ui.stacked_workspaces.setCurrentWidget(self.ui.page_convert))
         self.ui.btn_file.clicked.connect(lambda: self.ui.stacked_workspaces.setCurrentWidget(self.ui.page_file))
+
 
         '''
         self.ui.btn_wire.clicked.connect(lambda: uiFunctions.toggleTools(self, 50, True, "btn_wire"))
@@ -186,7 +216,24 @@ class MainWindow(QMainWindow):
 
 
 #------------------- BUTTON FUNCTIONS -------------------
-        # Zooms in on the scene
+    # Add component to the scene
+    def addComponent(self, component, name):
+        newComponent = Component(self.scene, self.penColor, component, name)
+        newComponent.boundingBox.moveBy(1500,1000)
+        self.components.append(newComponent)
+    
+    # Deleted selected component from scene
+    def deleteComponent(self):
+        print(self.components[0].boundingBox)
+        print(self.scene.selectedItems()[0])
+        print(self.components[0].boundingBox == self.scene.selectedItems()[0])
+        self.scene.removeItem(self.scene.selectedItems()[0])
+        comp = self.components[0]
+        self.components.remove(comp)
+        del comp
+        print(self.components)
+
+    # Zooms in on the scene    
     def zoomIn(self):
         self.zoom += 20
         if self.zoom >= 200:
@@ -211,6 +258,7 @@ class MainWindow(QMainWindow):
         scaleFactorY = self.zoom/100/self.ui.window_canvas.transform().m22()
         self.ui.window_canvas.scale(scaleFactorX, scaleFactorY)
 
+    # Changes color of the wire pen
     def changePenColor(self, color):
         self.penColor.setColor(color)
         print(color)
@@ -234,12 +282,13 @@ class MainWindow(QMainWindow):
             self.animation.setEndValue(widthExtended)
             self.animation.setEasingCurve(QtCore.QEasingCurve.InOutQuart)
             self.animation.start()
+    
     # Toggles the right pull out menu for the tools
     def toggleTools(self, maxWidth, button):
         enable = False
         buttons = ["btn_wire", "btn_snip", "btn_delete", "btn_clicked", "btn_comment"]
         
-        print("Start:", button, "|", self.currentState)
+        # print("Start:", button, "|", self.currentState)
 
         if button in buttons and self.currentState != "Closed":
             enable = True
@@ -292,7 +341,7 @@ class MainWindow(QMainWindow):
             self.animation.setEndValue(QtCore.QSize(widthExtended, height))
             self.animation.setEasingCurve(QtCore.QEasingCurve.InOutQuart)
             self.animation.start()
-            print(self.ui.frame_tools.width())
+            # print(self.ui.frame_tools.width())
             # print(self.ui.stacked_tools.currentWidget().accessibleName())
 
 
