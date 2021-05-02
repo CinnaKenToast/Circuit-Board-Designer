@@ -9,6 +9,8 @@ from PySide2.QtWidgets import *
 from ui_main import Ui_MainWindow
 from twoPin import Ui_Form
 
+import classes
+
 # IMPORT FUNCTIONS
 # from ui_functions import *
 
@@ -23,7 +25,7 @@ def addToEvent(item):
     print(eventList)
 
 class Widget(QtWidgets.QWidget):
-    def __init__(self, compType, name, scene, boundingBox, parent = None):
+    def __init__(self, compType, name, scene, boundingBox, id, parent = None):
         super().__init__(parent)
         self.ui = Ui_Form()
         self.ui.setupUi(self)
@@ -32,22 +34,23 @@ class Widget(QtWidgets.QWidget):
         self.ui.btn_pin1.clicked.connect(lambda: self.printRightButtonPos())
         self.boundingBox = boundingBox
         self.scene = scene
+        self.id = id
 
-        if compType == "resistor":
+        if compType == "Resistor":
             self.ui.lable_image.setPixmap(QtGui.QIcon("comp_img/Resistor.svg").pixmap(QtCore.QSize()))
-        elif compType == "capacitor":
+        elif compType == "Capacitor":
             self.ui.lable_image.setPixmap(QtGui.QIcon("comp_img/Capacitor.svg").pixmap(QtCore.QSize()))
-        elif compType == "diode":
+        elif compType == "Siode":
             self.ui.lable_image.setPixmap(QtGui.QIcon("comp_img/Diode.svg").pixmap(QtCore.QSize()))
-        elif compType == "led":
+        elif compType == "Led":
             self.ui.lable_image.setPixmap(QtGui.QIcon("comp_img/Led.svg").pixmap(QtCore.QSize()))
-        elif compType == "inductor":
+        elif compType == "Inductor":
             self.ui.lable_image.setPixmap(QtGui.QIcon("comp_img/Inductor.svg").pixmap(QtCore.QSize()))
-        elif compType == "switch":
+        elif compType == "Switch":
             self.ui.lable_image.setPixmap(QtGui.QIcon("comp_img/Switch.svg").pixmap(QtCore.QSize()))
-        elif compType == "ground":
+        elif compType == "Ground":
             self.ui.lable_image.setPixmap(QtGui.QIcon("comp_img/Ground.svg").pixmap(QtCore.QSize()))
-        elif compType == "voltage":
+        elif compType == "VoltageSource":
             self.ui.lable_image.setPixmap(QtGui.QIcon("comp_img/voltage_source.svg").pixmap(QtCore.QSize()))
     
     def printLeftButtonPos(self):
@@ -55,26 +58,30 @@ class Widget(QtWidgets.QWidget):
         print(self.boundingBox.pos())
         pin0x = self.boundingBox.pos().x()
         pin0y = self.boundingBox.pos().y() + 20 + 75/2
-        addToEvent((self.boundingBox, QPoint(pin0x, pin0y)))
+        addToEvent((self.boundingBox, QPoint(pin0x, pin0y), [self.id, 0]))
 
     def printRightButtonPos(self):
         #self.boundingBox.setSelected(True)
         print(self.boundingBox.pos())
         pin1x = self.boundingBox.pos().x() + 150
         pin1y = self.boundingBox.pos().y() + 20 + 75/2
-        addToEvent((self.boundingBox, QPoint(pin1x, pin1y)))
+        addToEvent((self.boundingBox, QPoint(pin1x, pin1y), [self.id, 1]))
 
 class Component(QtWidgets.QGraphicsRectItem):
-    def __init__(self, scene, pen, compType, name):
+    def __init__(self, scene, pen, compType, name, id):
         super().__init__()
         self.scene = scene
+        self.name = name
+        self.compType = compType
+        self.id = id
         self.boundingBox = self.scene.addRect(0,0, 150, 95, pen)
-        self.widget = self.scene.addWidget(Widget(compType, name, scene, self.boundingBox))
+        self.widget = self.scene.addWidget(Widget(compType, self.name, self.scene, self.boundingBox, self.id))
         self.boundingBox.setFlag(QtWidgets.QGraphicsItem.ItemIsMovable)
         self.boundingBox.setFlag(QtWidgets.QGraphicsItem.ItemIsSelectable)
         self.widget.setParentItem(self.boundingBox)   
-        self.line = None
-        self.isPoint = None
+        self.schematicArgs = {}
+        self.pin0Connection = None
+        self.pin1Connection = None
 
     def mousePressEvent(self, event):
         print("Hello")
@@ -90,7 +97,7 @@ class Component(QtWidgets.QGraphicsRectItem):
             newPos = value
             self.moveLineToCenter(newPos)
         
-        return super(component, self).itemChange(change, value)
+        return super(Component, self).itemChange(change, value)
 
     def moveLineToCenter(self, newPos):
         xOffset = self.rect().x() + self.rect().width()/2
@@ -119,19 +126,23 @@ class MainWindow(QMainWindow):
         self.ui.window_canvas.move(1500.0, 1000.0)
         self.ui.window_canvas.setDragMode(QtWidgets.QGraphicsView.DragMode.ScrollHandDrag)
         self.ui.window_canvas.centerOn(1500.0, 1000.0)
-        redBrush = QtGui.QBrush(QtCore.Qt.red)
-        blackPen = QtGui.QPen(QtCore.Qt.black)
-        blackPen.setWidth(5)
-
+        self.ids = 1
         self.penColor = QtGui.QPen(QtCore.Qt.black)
         self.penColor.setWidth(3)
 
         self.components = []
+        self.schematic = classes.Schematic()
 
-        self.component1 = Component(self.scene, self.penColor, "resistor", "r1")
+        self.component1 = Component(self.scene, self.penColor, "Resistor", "r1", 0)
         self.component1.boundingBox.moveBy(1000, 1000)
-
+        self.component1.schematicArgs = {"id": 0, "label": self.component1.name, "component_type": "Resistor"} #, "position": [self.component1.boundingBox.pos().x(), self.component1.boundingBox.pos().y]
+        self.schematic.add_component(self.component1.schematicArgs)
+        self.schematic.set_component_schematic_pos(0, [self.component1.boundingBox.pos().x(), self.component1.boundingBox.pos().y()])
+        #print(self.component1.boundingBox.pos().x(), self.component1.boundingBox.pos().y())
         self.components.append(self.component1)
+
+        for component in self.schematic.components.values():
+            print(component.to_string())
 
         self.penColors = {
                 "black" : QtCore.Qt.black,
@@ -146,20 +157,19 @@ class MainWindow(QMainWindow):
                 "brown" : QtGui.QColor(119, 90, 49)
         }
 
-        ellipse = self.scene.addEllipse(1000,1000,50,50,self.penColors["brown"],redBrush)
-        ellipse.setFlag(QtWidgets.QGraphicsItem.ItemIsMovable)
-
         # Connect buttons to functions
-        self.ui.btn_resistor.clicked.connect(lambda: self.addComponent("resistor", "r1"))
-        self.ui.btn_capacitor.clicked.connect(lambda: self.addComponent("capacitor", "c1"))
-        self.ui.btn_diode.clicked.connect(lambda: self.addComponent("diode", "d1"))
-        self.ui.btn_led.clicked.connect(lambda: self.addComponent("led", "l1"))
-        self.ui.btn_inductor.clicked.connect(lambda: self.addComponent("inductor", "i1"))
-        self.ui.btn_switch.clicked.connect(lambda: self.addComponent("switch", "s1"))
-        self.ui.btn_ground.clicked.connect(lambda: self.addComponent("ground", "g1"))
-        self.ui.btn_voltage.clicked.connect(lambda: self.addComponent("voltage", "v1"))
+        self.ui.btn_resistor.clicked.connect(lambda: self.addComponent("Resistor", "r1"))
+        self.ui.btn_capacitor.clicked.connect(lambda: self.addComponent("Capacitor", "c1"))
+        self.ui.btn_diode.clicked.connect(lambda: self.addComponent("Diode", "d1"))
+        self.ui.btn_led.clicked.connect(lambda: self.addComponent("Led", "l1"))
+        self.ui.btn_inductor.clicked.connect(lambda: self.addComponent("Inductor", "i1"))
+        self.ui.btn_switch.clicked.connect(lambda: self.addComponent("Switch", "s1"))
+        self.ui.btn_ground.clicked.connect(lambda: self.addComponent("Ground", "g1"))
+        self.ui.btn_voltage.clicked.connect(lambda: self.addComponent("VoltageSource", "v1"))
 
         self.ui.btn_delete.clicked.connect(lambda: self.deleteComponent())
+
+        self.ui.btn_wire.clicked.connect(lambda:self.addConnection())
 
         self.ui.btn_toggle.clicked.connect(lambda: self.toggleMenu(200, True))
         self.ui.btn_design.clicked.connect(lambda: self.ui.stacked_workspaces.setCurrentWidget(self.ui.page_design))
@@ -212,26 +222,70 @@ class MainWindow(QMainWindow):
         self.ui.btn_cyan.clicked.connect(lambda: self.changePenColor("cyan"))
         self.ui.btn_brown.clicked.connect(lambda: self.changePenColor("brown"))
 
+        self.ui.btn_label.clicked.connect(lambda: self.printSchematic())
+
+        self.scene.changed.connect(lambda: self.updatePositions())
+
         self.show()
 
 
 #------------------- BUTTON FUNCTIONS -------------------
+    # Update the positions of the components
+    def updatePositions(self):
+        for component in self.components:
+            compId = component.id
+            self.schematic.set_component_schematic_pos(compId, [component.boundingBox.pos().x(), component.boundingBox.pos().y()])
+
+    # Print all components in schematic
+    def printSchematic(self):
+        for component in self.schematic.components.values():
+            print(component.to_string())
+
     # Add component to the scene
     def addComponent(self, component, name):
-        newComponent = Component(self.scene, self.penColor, component, name)
+        newComponent = Component(self.scene, self.penColor, component, name, self.ids)
         newComponent.boundingBox.moveBy(1500,1000)
+        newComponent.schematicArgs = {"id": self.ids, "label": newComponent.name, "component_type": component} 
+        newComponent.id = self.ids
+        self.schematic.add_component(newComponent.schematicArgs)
+        self.schematic.set_component_schematic_pos(self.ids, [newComponent.boundingBox.pos().x(), newComponent.boundingBox.pos().y()])
+        #print(self.component1.boundingBox.pos().x(), self.component1.boundingBox.pos().y())
         self.components.append(newComponent)
-    
+        self.ids += 1
+
+        for component in self.schematic.components.values():
+            print(component.to_string())
+
     # Deleted selected component from scene
     def deleteComponent(self):
-        print(self.components[0].boundingBox)
-        print(self.scene.selectedItems()[0])
-        print(self.components[0].boundingBox == self.scene.selectedItems()[0])
+        #print(self.components[0].boundingBox)
+        #print(self.scene.selectedItems()[0])
+        #print(self.components[0].boundingBox == self.scene.selectedItems()[0])
         self.scene.removeItem(self.scene.selectedItems()[0])
         comp = self.components[0]
         self.components.remove(comp)
         del comp
-        print(self.components)
+        #print(self.components)
+
+    # Adds connection between two components
+    def addConnection(self):
+        if len(eventList) < 2:
+            print("Not enough events")
+        elif eventList[0][0] == eventList[1][0]:
+            print("Can't connect the pins of same component")
+        else:
+            line = self.scene.addLine(QtCore.QLineF(eventList[0][1], eventList[1][1]), self.penColor)
+            pinId0 = str(eventList[0][2][0]) + "_" + str(eventList[0][2][1]) 
+            pinId1 = str(eventList[1][2][0]) + "_" + str(eventList[1][2][1]) 
+            self.schematic.add_connection(pinId0, pinId1)
+    
+    # Delete the connection between two components
+    def deleteConnection(self):
+        pass
+
+    # Change the label on a component
+    def changeLabel(self):
+        pass
 
     # Zooms in on the scene    
     def zoomIn(self):
