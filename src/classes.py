@@ -10,49 +10,50 @@ SCHEM_ORIENTATIONS = {'upright': 0, 'CW1': 90, 'CCW1': -90, 'flip': 180}
 PCB_ORIENTATIONS = [[1, 0], [0, 1], [-1, 0], [0, -1]]
 
 
-class ComponentSVG:
-    def __init__(self, base_file_name="", base_xml=None, active_xml=None):
-        if (not base_file_name == "") and base_xml == None:
-            self.base_xml = minidom.parse(base_file_name)
-        else:
-            self.base_xml = minidom.parseString(base_xml.toxml())
-        self.active_xml = self.base_xml
+# class ComponentSVG:
+#     def __init__(self, base_file_name="", base_xml=None, active_xml=None):
+#         if active_xml == None:
+#             if base_xml == None:
+#                 self.active_xml = minidom.parse(base_file_name)
+#             else:
+#                 self.active_xml = base_xml
+#         else:
+#             self.active_xml = active_xml
 
-    # For filling in the pin to make it obvious it has been connected to.
-    def change_pin_state(self, pin_number, new_state):
-        # These are the two options: transparent or black - disconnected or connected.
-        fill_options = ["none", "#000000"]
-        fill = fill_options[new_state]
+#     # For filling in the pin to make it obvious it has been connected to.
+#     def change_pin_state(self, pin_number, new_state):
+#         # These are the two options: transparent or black - disconnected or connected.
+#         fill_options = ["none", "#000000"]
+#         fill = fill_options[new_state]
 
-        # Get a searchable xml from the svg file and find the circle (pin) objects
-        new_xml = self.active_xml
-        pins = new_xml.getElementsByTagName("circle")
+#         # Get a searchable xml from the svg file and find the circle (pin) objects
+#         new_xml = self.active_xml
+#         pins = new_xml.getElementsByTagName("circle")
 
-        # Split the style line into two sections: the fill section and the rest.
-        # Then get the current fill
-        style_line = pins[pin_number].attributes["style"].value
-        current_fill = style_line.split(';', 1)[0].split(':')[1]
+#         # Split the style line into two sections: the fill section and the rest.
+#         # Then get the current fill
+#         style_line = pins[pin_number].attributes["style"].value
+#         current_fill = style_line.split(';', 1)[0].split(':')[1]
 
-        # # This decides which element the new_fill will be based on the current_fill
-        # current_state = not current_fill == fill_options[0]
-        # new_fill = fill_options[not current_state]
-        # new_state = not current_state
+#         # # This decides which element the new_fill will be based on the current_fill
+#         # current_state = not current_fill == fill_options[0]
+#         # new_fill = fill_options[not current_state]
+#         # new_state = not current_state
 
-        style = f"fill:{fill};{style_line.split(';', 1)[1]}"
-        pins[pin_number].attributes["style"].value = style
+#         style = f"fill:{fill};{style_line.split(';', 1)[1]}"
+#         pins[pin_number].attributes["style"].value = style
 
-        # Update the active xml
-        self.active_xml = new_xml
+#         # Update the active xml
+#         self.active_xml = new_xml
 
-    # For debugging the xml output.
-    def print_svg_file(self, file_name):
-        with open(file_name, 'w') as f:
-            self.active_xml.writexml(f)
+#     # For debugging the xml output.
+#     def print_svg_file(self, file_name):
+#         with open(file_name, 'w') as f:
+#             self.active_xml.writexml(f)
 
-    def to_dict(self):
-        svg_dict = {}
-
-        return svg_dict
+#     def to_dict(self):
+#         svg_dict = {"active_xml": self.active_xml.toxml()}
+#         return svg_dict
 
 
 class Component:
@@ -72,8 +73,8 @@ class Component:
             self.schem_orientation = schem_orientation
             self.pcb_position = pcb_position
             self.connections = self.set_connections(connections)
-            self.svg_obj = ComponentSVG(
-                base_file_name=svg_file_name)
+            # self.svg_obj = ComponentSVG(
+            #     base_file_name=svg_file_name)
 
     def valid_input(self, input_kwargs):
         for key in input_kwargs:
@@ -137,14 +138,14 @@ class Component:
         else:
             raise ValueError("Invalid pin id")
 
-    def get_svg_pin_position(self):
-        raise NotImplementedError("Abstract method")
+    # def get_svg_pin_position(self):
+    #     raise NotImplementedError("Abstract method")
 
-    def get_svg_xml(self):
-        return self.svg_obj.active_xml
+    # def get_svg_xml(self):
+    #     return self.svg_obj.active_xml
 
-    def print_svg(self, file_name):
-        self.svg_obj.print_svg_file(file_name)
+    # def print_svg(self, file_name):
+    #     self.svg_obj.print_svg_file(file_name)
 
     def edit_label(self, text=""):
         if text == "":
@@ -172,8 +173,7 @@ class Component:
             "schem_position": self.schem_position,
             "schem_orientation": self.schem_orientation,
             "pcb_position": self.pcb_position,
-            "connections": self.connections
-            "svg_obj": self.svg_obj.to_dict()
+            "connections": self.connections  # , "svg_obj": self.svg_obj.to_dict()
         }
         return component_dict
 
@@ -269,17 +269,17 @@ class VoltageSource(Component):
         pass
 
 
-class Ground(Component):
-    def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[], connections={}, svg_file_name="comp_img/Ground.svg"):
-        super().__init__(id, label, 1, schem_position,
-                         schem_orientation, pcb_position, connections, svg_file_name)
-        self.svg_pin_positions = [30, 150]
+# class Ground(Component):
+#     def __init__(self, id=-1, label="", schem_position=[0, 0], schem_orientation=SCHEM_ORIENTATIONS['upright'], pcb_position=[], connections={}, svg_file_name="comp_img/Ground.svg"):
+#         super().__init__(id, label, 1, schem_position,
+#                          schem_orientation, pcb_position, connections, svg_file_name)
+#         self.svg_pin_positions = [30, 150]
 
-    def get_svg_pin_position(self):
-        return self.svg_pin_positions
+#     def get_svg_pin_position(self):
+#         return self.svg_pin_positions
 
-    def draw(self):
-        pass
+#     def draw(self):
+#         pass
 
 
 class Comment:
@@ -326,6 +326,95 @@ class Comment:
         return comment_dict
 
 
+class GridNode:
+    def __init__(self, pos, id="", taken=False):
+        self.pos = pos
+        self.id = id
+        self.taken = taken
+        self.g_cost = -1
+        self.h_cost = -1
+
+    # Using a heuristic based on the Chebyshev distance
+    def h_cost(self, from, to):
+        row_diff = abs(to[0] - from[0])
+        col_diff = abs(to[1] - from[1])
+        return max(row_diff, col_diff)
+
+    def f_cost(self):
+        return self.g_cost + self.h_cost
+
+
+class PcbGrid:
+    def __init__(self, dims=0, pin_placements_dict={}):
+        self.dims = dims
+        self.taken = {}
+        self.nodes = self.initialize_grid(pin_placements_dict)
+
+    def initialize_grid(self, pin_placements_dict):
+        nodes = {}
+
+        for i in range(0, self.dims):
+            for j in range(0, self.dims):
+                if [i, j] in pin_placements_dict
+                nodes[f"[{i}, {j}]"]
+        for pin_id, pos in pin_placements_dict.items():
+            nodes[str(pos)] = GridNode(pos, pin_id, True)
+            self.taken[str(pos)] = True
+
+        return nodes
+
+    def node_at(self, pos):
+        if str(pos) in self.nodes.keys():
+            return self.nodes(str(pos))
+        else:
+            return None
+
+    def is_taken(self, pos):
+        return taken[str(pos)]
+
+    # def append_path_nodes(self):
+    #     self.nodes
+
+    def get_neighbors(self, node):
+        neighbors = []
+
+        for i in range(-1, 2):
+            for j in range(-1, 2):
+                if i == 0 and j == 0:
+                    continue
+
+                neighbor_node_pos = [node.pos[0] + i, node.pos[1] + j]
+
+                if neighbor_node_pos[0] >= 0 and neighbor_node_pos[0] < self.dims and neighbor_node_pos[1] >= 0 and neighbor_node_pos[1] < self.dims:
+                    # Get whatever is at the location in the grid (existing node or none)
+                    neighbor_node = self.node_at(neighbor_node_pos)
+                    if neighbor_node != None:
+                        neighbors.append(neighbor_node)
+                    else:
+
+                        self.nodes[str(neighbor_node_pos)] = GridNode(
+                            neighbor_node_pos)
+                        neighbors.append(self.nodes[str(neighbor_node_pos)])
+
+        return neighbors
+
+    def update_nodes(pin_placement_dict):
+        self.taken.clear()
+        self.nodes.clear()
+        nodes = {}
+
+        for pin_id, pos in pin_placements.items():
+            nodes[str(pos)] = GridNode(taken[str(pos)], pos)
+            self.taken[str(pos)] = True
+
+    def g_cost(self, start_node, current_node):
+        return 0
+
+    def f_cost(self, node):
+        grid_node = node_at(node.pos)
+        return node_at(). + self.g_cost()
+
+
 class Schematic:
     COMPONENT_CLASSES = {
         "Resistor": Resistor,
@@ -334,8 +423,7 @@ class Schematic:
         "Diode": Diode,
         "Led": Led,
         "Switch": Switch,
-        "VoltageSource": VoltageSource,
-        "Ground": Ground
+        "VoltageSource": VoltageSource  # , "Ground": Ground
     }
 
     def __init__(self):
@@ -344,22 +432,19 @@ class Schematic:
         self.paths = {}
         self.pin_placement_dict = {}
         self.connections_list = []
-        self.connections_of_pins = [[], []]
+        self.pcb_grid = PCBGrid()
         self.iteration_num = -1
         self.connection_num = -1
-        self.A = []
-        self.H = []
-        self.G = []
-        self.F = []
         self.last_runs_score = 1.0
         self.curr_runs_score = 0.0
         self.n_grid_spaces = 5
+        self.grid_padding = 4
         self.max_iters = 10
-        self.max_expand = 5
 
     # Allows for setting the monte carlo params so it can continue (-Jason)
-    def set_monte_carlo_parameters(self, n_grid_spaces=5, max_iters=10, max_expand=5):
+    def set_monte_carlo_parameters(self, n_grid_spaces=5, grid_padding=4, max_iters=10):
         self.n_grid_spaces = n_grid_spaces
+        self.grid_padding = grid_padding
         self.max_iters = max_iters
 
     # Checks an id versus the list of component ids that exist and tells whether its unique (-Jason)
@@ -387,17 +472,13 @@ class Schematic:
         self.paths = schematic_dict["paths"]
         self.pin_placement_dict = schematic_dict["pin_placement_dict"]
         self.connections_list = schematic_dict["connections_list"]
-        self.connections_of_pins = schematic_dict["connections_of_pins"]
+        # self.connections_of_pins = schematic_dict["connections_of_pins"]
         self.iteration_num = schematic_dict["iteration_num"]
         self.connection_num = schematic_dict["connection_num"]
-        self.A = schematic_dict["A"]
-        self.H = schematic_dict["H"]
-        self.G = schematic_dict["G"]
-        self.F = schematic_dict["F"]
         self.last_runs_score = schematic_dict["last_runs_score"]
         self.curr_runs_score = schematic_dict["curr_runs_score"]
         self.set_monte_carlo_parameters(
-            schematic_dict["n_grid_spaces"], schematic_dict["max_iters"], schematic_dict["max_expand"])
+            schematic_dict["n_grid_spaces"], schematic_dict["grid_padding"], schematic_dict["max_iters"])
 
     def add_component(self, component_dict):
         if self.unique_component_id(component_dict["id"]):
@@ -490,18 +571,14 @@ class Schematic:
             "paths": self.paths,
             "pin_placement_dict": self.pin_placement_dict,
             "connections_list": self.connections_list,
-            "connections_of_pins": self.connections_of_pins,
+            # "connections_of_pins": self.connections_of_pins,
             "iteration_num": self.iteration_num,
             "connection_num": self.connection_num,
-            "A": self.A,
-            "H": self.H,
-            "G": self.G,
-            "F": self.F,
             "last_runs_score": self.last_runs_score,
             "curr_runs_score": self.curr_runs_score,
             "n_grid_spaces": self.n_grid_spaces,
-            "max_iters": self.max_iters,
-            "max_expand": self.max_expand
+            "grid_padding": self.grid_padding,
+            "max_iters": self.max_iters
         }
 
         return schematic_dict
@@ -542,8 +619,7 @@ class Schematic:
     # LOOK AT force base graph layout algorithms as an alternative to this (-Jason)
     # Metropolis' Monte Carlo method. (-Jason)
     def monte_carlo(self, max_iters):
-        #Might not need to do this first one - just set last run's score to infinity and this runs score to zero then do the loop? (-Jason)
-
+        # Might not need to do this first one - just set last run's score to infinity and this runs score to zero then do the loop? (-Jason)
         # Create backup just in case
         self.overwrite_save("tmp_monte_carlo.json")
 
@@ -554,7 +630,7 @@ class Schematic:
         # Next, setup a few lookup lists
         self.initialize_pin_placement_dict()
         self.initialize_connections_list()
-        self.initialize_connections_of_pins_list()
+        self.initialize_pcb_grid()
         # Lastly, get the paths.
         # paths will be a dict whos keys are "startId:goalId" and the values
         # correspond to dicts of info for that path (length; grid points;
@@ -580,7 +656,7 @@ class Schematic:
             self.randomize_layout()
             self.initialize_pin_placement_dict()
             self.initialize_connections_list()
-            self.initialize_connections_of_pins_list()
+            self.update_pcb_grid()
             paths = self.run_a_star()
 
             self.curr_runs_score = self.calculate_score(
@@ -602,8 +678,9 @@ class Schematic:
         # A*.
         if len(self.paths) > 0:
             for path in self.paths:
-                for grid_point in path["grid_points"]:
-                    not_allowed.append(grid_point)
+                if "grid_points" in path.keys():
+                    for grid_point in path["grid_points"]:
+                        not_allowed.append(grid_point)
 
         return not_allowed
 
@@ -672,21 +749,31 @@ class Schematic:
             i += 1
         return rn_pos
 
-    # will make a layout where no pins overlap (-Jason)
+    # Will make a layout where no pins overlap
+    # and adjusted by some padding (-Jason)
     def randomize_layout(self):
         not_allowed_pcb_spots = []
         for component in self.components.values():
-            rn_spot = self.get_valid_spot([not_allowed_pcb_spots])
+            rn_spot = self.get_valid_spot(not_allowed_pcb_spots)
+            rn_spot = np.add(
+                rn_spot, [int(self.grid_padding/2), int(self.grid_padding)]).tolist()
             component.pcb_position = rn_spot
 
     # This gets a position list for every pin
     def initialize_pin_placement_dict(self):
-        pin_placement_dict = {}
+        pin_placement_dict = []
         for component in self.components.values():
             pin_ids = list(component.connections.keys())
             for pin_id, pos in zip(pin_ids, component.pcb_position):
-                pin_placement_dict |= {pin_id: pos}
+                pin_placement_dict |= {pin_id: [pos, connection]}
         self.pin_placement_dict = pin_placement_dict
+
+    def initialize_pcb_grid(self):
+        self.pcb_grid = PcbGrid(
+            self.n_grid_spaces + self.grid_padding, {}, self.pin_placement_dict)
+
+    def update_pcb_grid(self):
+        self.pcb_grid.update_nodes(self.pin_placement_dict)
 
     # This gets the connections into a single list
     def initialize_connections_list(self):
@@ -702,49 +789,86 @@ class Schematic:
 
         self.connections_list = connections_list
 
-    # This creates the start/goal lists in one list
-    def initialize_connections_of_pins_list(self):
-        pin_placements = self.pin_placement_dict
-        connections = self.connections_list
+    # # This creates the start/goal lists in one list
+    # def initialize_connections_of_pins_list(self):
+    #     pin_placements = self.pin_placement_dict
+    #     connections = self.connections_list
 
-        connections_of_pins = self.connections_of_pins
+    #     connections_of_pins = []
 
-        for start_id, goal_id in connections:
-            connections_of_pins[0].append({start_id: pin_placements[start_id]})
-            connections_of_pins[1].append({goal_id: pin_placements[goal_id]})
+    #     for start_id, goal_id in connections:
+    #         connections_of_pins[0].append({start_id: pin_placements[start_id]})
+    #         connections_of_pins[1].append({goal_id: pin_placements[goal_id]})
 
-        self.connections_of_pins = connections_of_pins
+    #     self.connections_of_pins = zip(
+    #         connections_of_pins[0], connections_of_pins[1])
 
-    def calculate_score(self, path):
-        pass
+    # def calculate_score(self, paths):
+    #     total_path_length = 0
+    #     total_area = 1
+
+    #     for path in paths:
+    #         total_path_length += path["length"]
+
+    #     total_area = abs(min_x - max_x) * abs(min_y - max_y)
 
     def run_a_star(self):
-        paths_dict = {}
-        starting_points = self.connections_of_pins[0]
-        goal_points = self.connections_of_pins[1]
+        paths = []
 
-        for start, goal in zip(starting_points, goal_points):
+        # Terrible list comprehension that says get a list of the grid_nodes from pcb_grid that are at the locations denoted by each pair of connected pin_ids
+        start_goal_node_list = [[self.pcb_grid.node_at(self.pin_placement_dict[id_1]), self.pcb_grid.node_at(
+            self.pin_placement_dict[id_2])] for id_1, id_2 in self.connections_list]
+        for start, goal in start_goal_node_list:
             path = self.a_star(start, goal)
-            paths_dict |= path
+            paths.append(path)
 
         return paths_dict
 
     def reconstruct_path(self, came_from, current):
         pass
 
-    # Using a heuristic based on the Chebyshev distance
-    def h(self, from, to):
-        row_diff = abs(goal[0] - start[0])
-        col_diff = abs(goal[1] - start[1])
-        return max(row_diff, col_diff)
-
     # A* as defined by Sebastian Lague (-Jason)
+    # Pseudo-code:
+    # OPEN //the set of nodes to be evaluated
+    # CLOSED //the set of nodes already evaluated
+    # add the start node to OPEN
+    #
+    # loop
+    #   current = node in OPEN with the lowest f_cost
+    #   remove current from OPEN
+    #   add current to CLOSED
+    #
+    #   if current is the target node //path has been found
+    #       return
+    #
+    #   foreach neighbour of the current node
+    #       if neighbour is not traversable or neighbour is in CLOSED
+    #           skip to the next neighbour
+    #
+    #       if new path to neighbour is shorter OR neighbour is not in OPEN
+    #           set f_cost of neighbour
+    #           set parent of neighbour to current
+    #           if neighbour is not in OPEN
+    #               add neighbour to OPEN
+
     # start and goal look like {"pin_id": [x, y]}
     def a_star(self, start, goal):
-        # node_dict will have g_costs and h_costs for previously looked at nodes - for lookup
-        path_key = f"{list(start.keys())[0]}:{list(goal.keys())[0]}"
-        path_dict = {"length"}
-        open_nodes = list(start.values())[0]
+        # node_dict will have g_costs and h_costs for previously looked at nodes - for lookup if I use this...
+        path_dict = {"path_id": f"{}:{}", "length": -1, "grid_nodes": []}
+        open_nodes = [start]
         closed_nodes = []
 
-        return {path_key: path_dict}
+        while len(open_nodes) > 0:
+            this_node = open_nodes[0]
+            for that_node in open_nodes[1:]:
+                if (that_node.f_cost() < this_node.f_cost()) or (that_node.f_cost() == this_node.f_cost() and that_node.h_cost < this_node.h_cost):
+                    this_node = that_node
+
+            open_nodes.remove(this_node)
+            closed_nodes.append(this_node)
+
+            if this_node == goal:
+                break
+
+            for neighbor in PcbGrid.get_neighbors(this_node):
+                if neighbor
