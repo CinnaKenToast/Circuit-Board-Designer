@@ -448,6 +448,7 @@ class Schematic:
         self.last_runs_score = -1
         self.curr_runs_score = -1
         self.better_by = .3
+        self.target_score = .5
         self.pin_placement_dict = {}
         self.connections_list = []
         self.area_weight = .7
@@ -486,6 +487,8 @@ class Schematic:
         self.paths = schematic_dict["paths"]
         self.last_runs_score = schematic_dict["last_runs_score"]
         self.curr_runs_score = schematic_dict["curr_runs_score"]
+        self.better_by = schematic_dict["better_by"]
+        self.target_score = schematic_dict["target_score"]
         self.pin_placement_dict = schematic_dict["pin_placement_dict"]
         self.connections_list = schematic_dict["connections_list"]
         self.area_weight = schematic_dict["area_weight"]
@@ -599,6 +602,8 @@ class Schematic:
             "paths": self.paths,
             "last_runs_score": self.last_runs_score,
             "curr_runs_score": self.curr_runs_score,
+            "better_by": self.better_by,
+            "target_score": self.target_score,
             "pin_placement_dict": self.pin_placement_dict,
             "connections_list": self.connections_list,
             "area_weight": self.area_weight,
