@@ -176,7 +176,6 @@ class MainWindow(QMainWindow):
 # -----------------------------------------------------
 
         self.penColors = {
-<<<<<<< HEAD
                 "black" : QtCore.Qt.black,
                 "red" : QtCore.Qt.red,
                 "orange" : QtGui.QColor(255, 166, 0), 
@@ -187,18 +186,6 @@ class MainWindow(QMainWindow):
                 "pink" : QtGui.QColor(255, 186, 244), 
                 "cyan" : QtCore.Qt.cyan,
                 "brown" : QtGui.QColor(119, 90, 49)
-=======
-            "black": QtCore.Qt.black,
-            "red": QtCore.Qt.red,
-            "orange": QtGui.QColor(255, 166, 0),
-            "yellow": QtCore.Qt.yellow,
-            "green": QtCore.Qt.green,
-            "blue": QtCore.Qt.blue,
-            "purple": QtGui.QColor(221, 101, 247),
-            "pink": QtGui.QColor(255, 186, 244),
-            "cyan": QtCore.Qt.cyan,
-            "brown": QtGui.QColor(119, 90, 49)
->>>>>>> 676538c0a4349e5b35c3cdf102db11e31660c9e4
         }
 
         # Connect buttons to functions
@@ -219,7 +206,6 @@ class MainWindow(QMainWindow):
         self.ui.btn_wire.clicked.connect(lambda: self.addConnection())
 
         self.ui.btn_toggle.clicked.connect(lambda: self.toggleMenu(200, True))
-<<<<<<< HEAD
         self.ui.btn_design.clicked.connect(lambda: self.ui.stacked_workspaces.setCurrentWidget(self.ui.page_design))
         self.ui.btn_convert.clicked.connect(lambda: self.ui.stacked_workspaces.setCurrentWidget(self.ui.page_convert))
         self.ui.btn_file.clicked.connect(lambda: self.ui.stacked_workspaces.setCurrentWidget(self.ui.page_file))
@@ -256,40 +242,6 @@ class MainWindow(QMainWindow):
         
         self.ui.btn_add.clicked.connect(lambda: self.ui.stacked_tools.setCurrentWidget(self.ui.page_components))
         self.ui.btn_color.clicked.connect(lambda: self.ui.stacked_tools.setCurrentWidget(self.ui.page_colors))
-=======
-        self.ui.btn_design.clicked.connect(
-            lambda: self.ui.stacked_workspaces.setCurrentWidget(self.ui.page_design))
-        self.ui.btn_convert.clicked.connect(
-            lambda: self.ui.stacked_workspaces.setCurrentWidget(self.ui.page_convert))
-        self.ui.btn_file.clicked.connect(
-            lambda: self.ui.stacked_workspaces.setCurrentWidget(self.ui.page_file))
-
-        self.ui.btn_wire.clicked.connect(
-            lambda: self.toggleTools(50, "btn_wire"))
-        self.ui.btn_snip.clicked.connect(
-            lambda: self.toggleTools(50, "btn_snip"))
-        self.ui.btn_delete.clicked.connect(
-            lambda: self.toggleTools(50, "btn_delete"))
-        self.ui.btn_label.clicked.connect(
-            lambda: self.toggleTools(50, "btn_clicked"))
-        self.ui.btn_comment.clicked.connect(
-            lambda: self.toggleTools(50, "btn_comment"))
-
-        self.ui.btn_add.clicked.connect(
-            lambda: self.ui.stacked_tools.setCurrentWidget(self.ui.page_components))
-        self.ui.btn_color.clicked.connect(
-            lambda: self.ui.stacked_tools.setCurrentWidget(self.ui.page_colors))
-
-        self.ui.btn_add.clicked.connect(
-            lambda: self.toggleTools(100, "btn_add"))
-        self.ui.btn_color.clicked.connect(
-            lambda: self.toggleTools(100, "btn_colors"))
-
-        self.ui.btn_add.clicked.connect(
-            lambda: self.ui.stacked_tools.setCurrentWidget(self.ui.page_components))
-        self.ui.btn_color.clicked.connect(
-            lambda: self.ui.stacked_tools.setCurrentWidget(self.ui.page_colors))
->>>>>>> 676538c0a4349e5b35c3cdf102db11e31660c9e4
 
         self.ui.btn_zoom_in.clicked.connect(lambda: self.zoomIn())
         self.ui.btn_zoom_out.clicked.connect(lambda: self.zoomOut())
@@ -470,11 +422,6 @@ class MainWindow(QMainWindow):
                 component2.pin0Connection = None
             else:
                 component2.pin1Connection = None
-<<<<<<< HEAD
-                
-=======
-
->>>>>>> 676538c0a4349e5b35c3cdf102db11e31660c9e4
     # Change the label on a component
     def changeLabel(self):
         if len(self.scene.selectedItems()) == 0:
@@ -574,12 +521,7 @@ class MainWindow(QMainWindow):
 
     # Saves as a new file
     def fileSaveAs(self):
-<<<<<<< HEAD
-        fileName = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File','', 'Circuit Data (*.circ)')
-=======
-        fileName = QtWidgets.QFileDialog.getSaveFileName(
-            self, 'Save File', '', 'Circuit Data (*.circ)')
->>>>>>> 676538c0a4349e5b35c3cdf102db11e31660c9e4
+        fileName = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File', '', 'Circuit Data (*.circ)')
         print(fileName[0])
         self.schematic.overwrite_save(fileName[0])
         self.file = fileName[0]
@@ -611,16 +553,10 @@ class MainWindow(QMainWindow):
     # Toggles the right pull out menu for the tools
     def toggleTools(self, maxWidth, button):
         enable = False
-<<<<<<< HEAD
         buttons = ["btn_wire", "btn_snip", "btn_delete", "btn_clicked", "btn_comment", "btn_pick_color", 
         "btn_resistor", "btn_capacitor", "btn_diode", "btn_led", "btn_inductor", "btn_switch", "btn_voltage", 
         "btn_black", "btn_red", "btn_orange", "btn_yellow", "btn_green", "btn_blue", "btn_purple", "btn_pink", "btn_cyan", "btn_brown"]
         
-=======
-        buttons = ["btn_wire", "btn_snip", "btn_delete",
-                   "btn_clicked", "btn_comment", "btn_pick_color"]
-
->>>>>>> 676538c0a4349e5b35c3cdf102db11e31660c9e4
         # print("Start:", button, "|", self.currentState)
 
         if button in buttons and self.currentState != "Closed":
