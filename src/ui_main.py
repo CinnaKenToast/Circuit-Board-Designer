@@ -2,16 +2,14 @@
 
 # Form implementation generated from reading ui file 'uiDesign.ui'
 #
-# Created by: PyQt5 UI code generator 5.14.0
+# Created by: PyQt5 UI code generator 5.9.2
 #
 # WARNING! All changes made in this file will be lost!
 
-
-from PySide2 import QtCore, QtGui, QtWidgets
+from PySide2 import QtCore, QtGui, QtWidgets, QtSvg
 from PySide2.QtCore import (QCoreApplication, QPropertyAnimation, QDate, QDateTime, QMetaObject, QObject, QPoint, QRect, QSize, QTime, QUrl, Qt, QEvent)
 from PySide2.QtGui import (QBrush, QColor, QConicalGradient, QCursor, QFont, QFontDatabase, QIcon, QKeySequence, QLinearGradient, QPalette, QPainter, QPixmap, QRadialGradient)
 from PySide2.QtWidgets import *
-
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -744,7 +742,7 @@ class Ui_MainWindow(object):
         self.btn_resistor.setMaximumSize(QtCore.QSize(16777215, 50))
         self.btn_resistor.setText("")
         icon8 = QtGui.QIcon()
-        icon8.addPixmap(QtGui.QPixmap("Circuit-Board-Designer/src/img/resistor.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon8.addPixmap(QtGui.QPixmap("img/resistor.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.btn_resistor.setIcon(icon8)
         self.btn_resistor.setIconSize(QtCore.QSize(50, 50))
         self.btn_resistor.setObjectName("btn_resistor")
@@ -760,7 +758,7 @@ class Ui_MainWindow(object):
         self.btn_capacitor.setMaximumSize(QtCore.QSize(16777215, 50))
         self.btn_capacitor.setText("")
         icon9 = QtGui.QIcon()
-        icon9.addPixmap(QtGui.QPixmap("Circuit-Board-Designer/src/img/Capacitor.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon9.addPixmap(QtGui.QPixmap("img/Capacitor.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.btn_capacitor.setIcon(icon9)
         self.btn_capacitor.setIconSize(QtCore.QSize(50, 50))
         self.btn_capacitor.setObjectName("btn_capacitor")
@@ -775,7 +773,7 @@ class Ui_MainWindow(object):
         self.btn_diode.setMaximumSize(QtCore.QSize(16777215, 50))
         self.btn_diode.setText("")
         icon10 = QtGui.QIcon()
-        icon10.addPixmap(QtGui.QPixmap("Circuit-Board-Designer/src/img/Diode.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon10.addPixmap(QtGui.QPixmap("img/Diode.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.btn_diode.setIcon(icon10)
         self.btn_diode.setIconSize(QtCore.QSize(50, 50))
         self.btn_diode.setObjectName("btn_diode")
@@ -790,7 +788,7 @@ class Ui_MainWindow(object):
         self.btn_led.setMaximumSize(QtCore.QSize(16777215, 50))
         self.btn_led.setText("")
         icon11 = QtGui.QIcon()
-        icon11.addPixmap(QtGui.QPixmap("Circuit-Board-Designer/src/img/Led.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon11.addPixmap(QtGui.QPixmap("img/Led.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.btn_led.setIcon(icon11)
         self.btn_led.setIconSize(QtCore.QSize(50, 50))
         self.btn_led.setObjectName("btn_led")
@@ -805,7 +803,7 @@ class Ui_MainWindow(object):
         self.btn_inductor.setMaximumSize(QtCore.QSize(16777215, 50))
         self.btn_inductor.setText("")
         icon12 = QtGui.QIcon()
-        icon12.addPixmap(QtGui.QPixmap("Circuit-Board-Designer/src/img/Inductor.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon12.addPixmap(QtGui.QPixmap("img/Inductor.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.btn_inductor.setIcon(icon12)
         self.btn_inductor.setIconSize(QtCore.QSize(50, 50))
         self.btn_inductor.setObjectName("btn_inductor")
@@ -820,7 +818,7 @@ class Ui_MainWindow(object):
         self.btn_switch.setMaximumSize(QtCore.QSize(16777215, 50))
         self.btn_switch.setText("")
         icon13 = QtGui.QIcon()
-        icon13.addPixmap(QtGui.QPixmap("Circuit-Board-Designer/src/img/Switch.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon13.addPixmap(QtGui.QPixmap("img/Switch.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.btn_switch.setIcon(icon13)
         self.btn_switch.setIconSize(QtCore.QSize(50, 50))
         self.btn_switch.setObjectName("btn_switch")
@@ -836,7 +834,7 @@ class Ui_MainWindow(object):
         self.btn_voltage.setStyleSheet("border: none;")
         self.btn_voltage.setText("")
         icon14 = QtGui.QIcon()
-        icon14.addPixmap(QtGui.QPixmap("Circuit-Board-Designer/src/img/VoltageSource.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon14.addPixmap(QtGui.QPixmap("img/VoltageSource.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.btn_voltage.setIcon(icon14)
         self.btn_voltage.setIconSize(QtCore.QSize(50, 50))
         self.btn_voltage.setObjectName("btn_voltage")
@@ -1162,7 +1160,7 @@ class Ui_MainWindow(object):
 "")
         self.btn_color.setText("")
         icon31 = QtGui.QIcon()
-        icon31.addPixmap(QtGui.QPixmap("Circuit-Board-Designer/src/color_img/blackIcon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon31.addPixmap(QtGui.QPixmap("color_img/blackIcon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.btn_color.setIcon(icon31)
         self.btn_color.setIconSize(QtCore.QSize(35, 35))
         self.btn_color.setCheckable(False)
@@ -1249,7 +1247,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         self.stacked_workspaces.setCurrentIndex(2)
-        self.stacked_tools.setCurrentIndex(1)
+        self.stacked_tools.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -1277,3 +1275,4 @@ if __name__ == "__main__":
     ui.setupUi(MainWindow)
     MainWindow.show()
     sys.exit(app.exec_())
+

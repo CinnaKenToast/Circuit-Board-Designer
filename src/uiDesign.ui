@@ -1836,7 +1836,7 @@ QPushButton:hover{
                 </size>
                </property>
                <property name="currentIndex">
-                <number>1</number>
+                <number>0</number>
                </property>
                <widget class="QWidget" name="page_components">
                 <property name="sizePolicy">
@@ -1892,7 +1892,7 @@ QPushButton:hover{
                    </property>
                    <property name="icon">
                     <iconset>
-                     <normaloff>Circuit-Board-Designer/src/img/resistor.png</normaloff>Circuit-Board-Designer/src/img/resistor.png</iconset>
+                     <normaloff>img/resistor.png</normaloff>img/resistor.png</iconset>
                    </property>
                    <property name="iconSize">
                     <size>
@@ -1930,7 +1930,7 @@ QPushButton:hover{
                    </property>
                    <property name="icon">
                     <iconset>
-                     <normaloff>Circuit-Board-Designer/src/img/Capacitor.png</normaloff>Circuit-Board-Designer/src/img/Capacitor.png</iconset>
+                     <normaloff>img/Capacitor.png</normaloff>img/Capacitor.png</iconset>
                    </property>
                    <property name="iconSize">
                     <size>
@@ -1965,7 +1965,7 @@ QPushButton:hover{
                    </property>
                    <property name="icon">
                     <iconset>
-                     <normaloff>Circuit-Board-Designer/src/img/Diode.png</normaloff>Circuit-Board-Designer/src/img/Diode.png</iconset>
+                     <normaloff>img/Diode.png</normaloff>img/Diode.png</iconset>
                    </property>
                    <property name="iconSize">
                     <size>
@@ -2000,7 +2000,7 @@ QPushButton:hover{
                    </property>
                    <property name="icon">
                     <iconset>
-                     <normaloff>Circuit-Board-Designer/src/img/Led.png</normaloff>Circuit-Board-Designer/src/img/Led.png</iconset>
+                     <normaloff>img/Led.png</normaloff>img/Led.png</iconset>
                    </property>
                    <property name="iconSize">
                     <size>
@@ -2035,7 +2035,7 @@ QPushButton:hover{
                    </property>
                    <property name="icon">
                     <iconset>
-                     <normaloff>Circuit-Board-Designer/src/img/Inductor.png</normaloff>Circuit-Board-Designer/src/img/Inductor.png</iconset>
+                     <normaloff>img/Inductor.png</normaloff>img/Inductor.png</iconset>
                    </property>
                    <property name="iconSize">
                     <size>
@@ -2070,7 +2070,7 @@ QPushButton:hover{
                    </property>
                    <property name="icon">
                     <iconset>
-                     <normaloff>Circuit-Board-Designer/src/img/Switch.png</normaloff>Circuit-Board-Designer/src/img/Switch.png</iconset>
+                     <normaloff>img/Switch.png</normaloff>img/Switch.png</iconset>
                    </property>
                    <property name="iconSize">
                     <size>
@@ -2108,7 +2108,7 @@ QPushButton:hover{
                    </property>
                    <property name="icon">
                     <iconset>
-                     <normaloff>Circuit-Board-Designer/src/img/VoltageSource.png</normaloff>Circuit-Board-Designer/src/img/VoltageSource.png</iconset>
+                     <normaloff>img/VoltageSource.png</normaloff>img/VoltageSource.png</iconset>
                    </property>
                    <property name="iconSize">
                     <size>
@@ -2783,7 +2783,7 @@ QPushButton:hover{
                </property>
                <property name="icon">
                 <iconset>
-                 <normaloff>Circuit-Board-Designer/src/color_img/blackIcon.png</normaloff>Circuit-Board-Designer/src/color_img/blackIcon.png</iconset>
+                 <normaloff>color_img/blackIcon.png</normaloff>color_img/blackIcon.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
