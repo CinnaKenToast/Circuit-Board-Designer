@@ -6,10 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PySide2 import QtCore, QtGui, QtWidgets
-from PySide2.QtCore import (QCoreApplication, QPropertyAnimation, QDate, QDateTime, QMetaObject, QObject, QPoint, QRect, QSize, QTime, QUrl, Qt, QEvent)
-from PySide2.QtGui import (QBrush, QColor, QConicalGradient, QCursor, QFont, QFontDatabase, QIcon, QKeySequence, QLinearGradient, QPalette, QPainter, QPixmap, QRadialGradient)
-from PySide2.QtWidgets import *
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_Form(object):
     def setupUi(self, Form):
@@ -41,12 +38,12 @@ class Ui_Form(object):
         self.lable_image.setObjectName("lable_image")
         self.btn_pin0 = QtWidgets.QPushButton(self.frame)
         self.btn_pin0.setGeometry(QtCore.QRect(0, 0, 75, 75))
-        self.btn_pin0.setStyleSheet("background-color: rgba(255, 255, 255, 0);")
+        self.btn_pin0.setStyleSheet("")
         self.btn_pin0.setText("")
         self.btn_pin0.setObjectName("btn_pin0")
         self.btn_pin1 = QtWidgets.QPushButton(self.frame)
         self.btn_pin1.setGeometry(QtCore.QRect(75, 0, 75, 75))
-        self.btn_pin1.setStyleSheet("background-color: rgba(255, 255, 255, 0);")
+        self.btn_pin1.setStyleSheet("")
         self.btn_pin1.setText("")
         self.btn_pin1.setObjectName("btn_pin1")
 

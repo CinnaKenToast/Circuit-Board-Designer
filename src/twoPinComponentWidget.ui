@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>170</width>
-    <height>90</height>
+    <width>150</width>
+    <height>95</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -18,14 +18,14 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>170</width>
-    <height>90</height>
+    <width>150</width>
+    <height>95</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>170</width>
-    <height>90</height>
+    <width>168</width>
+    <height>16777215</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -34,28 +34,23 @@
   <widget class="QLabel" name="label_name">
    <property name="geometry">
     <rect>
-     <x>5</x>
+     <x>0</x>
      <y>0</y>
-     <width>160</width>
-     <height>25</height>
+     <width>150</width>
+     <height>20</height>
     </rect>
    </property>
    <property name="minimumSize">
     <size>
-     <width>160</width>
-     <height>25</height>
+     <width>0</width>
+     <height>20</height>
     </size>
    </property>
    <property name="maximumSize">
     <size>
-     <width>160</width>
-     <height>25</height>
+     <width>16777215</width>
+     <height>20</height>
     </size>
-   </property>
-   <property name="font">
-    <font>
-     <pointsize>12</pointsize>
-    </font>
    </property>
    <property name="text">
     <string>Component Name</string>
@@ -67,16 +62,16 @@
   <widget class="QFrame" name="frame">
    <property name="geometry">
     <rect>
-     <x>5</x>
-     <y>25</y>
-     <width>160</width>
-     <height>60</height>
+     <x>0</x>
+     <y>20</y>
+     <width>150</width>
+     <height>75</height>
     </rect>
    </property>
    <property name="minimumSize">
     <size>
-     <width>160</width>
-     <height>60</height>
+     <width>150</width>
+     <height>50</height>
     </size>
    </property>
    <property name="frameShape">
@@ -90,15 +85,9 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>160</width>
-      <height>60</height>
+      <width>150</width>
+      <height>75</height>
      </rect>
-    </property>
-    <property name="minimumSize">
-     <size>
-      <width>160</width>
-      <height>60</height>
-     </size>
     </property>
     <property name="text">
      <string/>
@@ -112,8 +101,8 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>80</width>
-      <height>60</height>
+      <width>75</width>
+      <height>75</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -126,10 +115,10 @@
    <widget class="QPushButton" name="btn_pin1">
     <property name="geometry">
      <rect>
-      <x>80</x>
+      <x>75</x>
       <y>0</y>
-      <width>80</width>
-      <height>60</height>
+      <width>75</width>
+      <height>75</height>
      </rect>
     </property>
     <property name="styleSheet">
