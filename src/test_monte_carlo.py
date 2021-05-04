@@ -43,8 +43,8 @@ if __name__ == "__main__":
     #         f"Path: {path_id}\nPath nodes: {path_nodes}\nLength: {path_length}")
 
     # Test monte_carlo:
-    sch.set_monte_carlo_parameters(6, 4, .3)
-    sch.monte_carlo(500)
+    sch.set_monte_carlo_parameters(6, 4, .1)
+    sch.monte_carlo(1000)
     for path in sch.paths:
         path_id = path["path_id"]
         path_nodes = path["path_nodes"]

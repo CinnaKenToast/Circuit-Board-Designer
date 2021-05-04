@@ -2,6 +2,7 @@ from typing import Type
 import numpy as np
 import json
 from PyQt5 import QtWidgets, QtGui
+import PIL
 import os.path
 from xml.dom import minidom
 
@@ -449,8 +450,8 @@ class Schematic:
         self.better_by = .3
         self.pin_placement_dict = {}
         self.connections_list = []
-        self.area_weight = .5
-        self.path_length_weight = .5
+        self.area_weight = .7
+        self.path_length_weight = .3
         self.n_grid_spaces = 5
         self.a_star_grid_padding = 4
 
@@ -760,7 +761,7 @@ class Schematic:
 
         # run the subsequent iterations up until the score is high enough or we've reached the max_iters
         i = 0
-        while curr_runs_score-last_runs_score > self.better_by and i < max_iters:
+        while ((curr_runs_score - last_runs_score > self.better_by) and (i < max_iters)) or ((curr_runs_score < .85) and (i < max_iters)):
             self.last_runs_score = curr_runs_score
             self.paths.clear()
             self.pin_placement_dict.clear()
@@ -769,9 +770,9 @@ class Schematic:
             self.initialize_pin_placement_dict()
             paths = self.run_a_star()
 
-            # Try connection list as is; if that doesn't work then randomize the order and try again - say 4 * number of connections.
+            # Try connection list as is; if that doesn't work then randomize the order and try again.
             j = 0
-            while paths == [] and j < 4*len(self.connections_list):
+            while paths == [] and j < 10*len(self.connections_list):
                 np.random.shuffle(self.connections_list)
                 paths = self.run_a_star()
                 j += 1
@@ -785,10 +786,10 @@ class Schematic:
         self.paths = paths
 
     def pcb_area(self, paths):
-        min_x = 0
-        max_x = self.n_grid_spaces + self.a_star_grid_padding
-        min_y = 0
-        max_y = self.n_grid_spaces + self.a_star_grid_padding
+        min_x = int((self.n_grid_spaces + self.a_star_grid_padding)/2)
+        max_x = int((self.n_grid_spaces + self.a_star_grid_padding)/2)
+        min_y = int((self.n_grid_spaces + self.a_star_grid_padding)/2)
+        max_y = int((self.n_grid_spaces + self.a_star_grid_padding)/2)
 
         for path in paths:
             for path_node in path["path_nodes"]:
@@ -805,18 +806,23 @@ class Schematic:
     # For calculating how good a set of paths (pcb layout) is.
     # It is based on total path length and total area (including paths)
     def calculate_score(self, paths):
+        worst_total_area = np.square(
+            self.n_grid_spaces + self.a_star_grid_padding)
+        best_total_area = len(paths)*2
+        worst_path_length = np.square(10*(
+            self.n_grid_spaces + self.a_star_grid_padding))  # based on taking every path in a grid
+        best_path_length = 10  # the pins are right next to one another
+
         total_path_length = 0
         for path in paths:
             total_path_length += path["length"]
-
         total_area = self.pcb_area(paths)
 
-        score_non_normalized = (total_area * self.area_weight) + \
-            (total_path_length * self.path_length_weight)
-        score_normalized = score_non_normalized / \
-            (self.area_weight + self.path_length_weight)
+        score = ((worst_total_area - total_area)/(worst_total_area-best_total_area))*self.area_weight + \
+            (worst_path_length - total_path_length) / \
+            (worst_path_length - best_path_length)*self.path_length_weight
 
-        return score_normalized
+        return score
 
     def run_a_star(self):
         paths = []
@@ -841,7 +847,7 @@ class Schematic:
             path["path_nodes"] = grid.retrace_path(start_node, goal_node)
 
             not_allowed += path["path_nodes"]
-            path["length"] = goal_node.g_cost
+            path["length"] = goal_node.g_cost+1
             path["path_id"] = f"{start_id}->{goal_id}"
 
             paths.append(path)
