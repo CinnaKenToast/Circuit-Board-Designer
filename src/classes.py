@@ -611,25 +611,25 @@ class Schematic:
 
     def save(self, file_name):
         schematic_dict = self.to_dict()
-        fn = f"{file_name}.json"
+        fn = f"{file_name}"
         if not os.path.exists(fn):
             with open(fn, 'x') as f:
                 json.dump(schematic_dict, f)
         else:
             i = 0
-            fn = f"{file_name}({i}).json"
+            fn = f"{file_name}({i})"
             while os.path.exists(fn):
                 if i > 254:
                     raise FileExistsError(
-                        f"\"{file_name}.json\" exists and there are too many with its base name (255)")
+                        f"\"{file_name}\" exists and there are too many with its base name (255)")
                 i += 1
-                fn = f"{file_name}({i}).json"
+                fn = f"{file_name}({i})"
             with open(fn, 'x') as f:
                 json.dump(schematic_dict, f)
 
     def overwrite_save(self, file_name):
         schematic_dict = self.to_dict()
-        fn = f"{file_name}.json"
+        fn = f"{file_name}"
         with open(fn, 'w') as f:
             json.dump(schematic_dict, f)
 
@@ -644,209 +644,209 @@ class Schematic:
 
     # LOOK AT force base graph layout algorithms as an alternative to this (-Jason)
     # Metropolis' Monte Carlo method. (-Jason)
-    def monte_carlo(self, max_iters):
-        # Might not need to do this first one - just set last run's score to infinity and this runs score to zero then do the loop? (-Jason)
-        # Create backup just in case
-        self.overwrite_save("tmp_monte_carlo.json")
+    # def monte_carlo(self, max_iters):
+    #     # Might not need to do this first one - just set last run's score to infinity and this runs score to zero then do the loop? (-Jason)
+    #     # Create backup just in case
+    #     self.overwrite_save("tmp_monte_carlo.json")
 
-        # run first iteration
-        self.paths.clear()
-        # First get random layout
-        self.randomize_layout()
-        # Next, setup a few lookup lists
-        self.initialize_pin_placement_dict()
-        self.initialize_connections_list()
-        # Lastly, get the paths.
-        # paths will be a dict whos keys are "startId:goalId" and the values
-        # correspond to dicts of info for that path (length; grid points;
-        # and maybe max x, min x, max y, min y)
-        paths = self.run_a_star()
+    #     # run first iteration
+    #     self.paths.clear()
+    #     # First get random layout
+    #     self.randomize_layout()
+    #     # Next, setup a few lookup lists
+    #     self.initialize_pin_placement_dict()
+    #     self.initialize_connections_list()
+    #     # Lastly, get the paths.
+    #     # paths will be a dict whos keys are "startId:goalId" and the values
+    #     # correspond to dicts of info for that path (length; grid points;
+    #     # and maybe max x, min x, max y, min y)
+    #     paths = self.run_a_star()
 
-        # Set the last run's score to inf
-        self.last_runs_score = np.inf
-        # Calculate this run's score based on average/total path length
-        # and pcb surface area (obviously including the paths)
-        self.curr_runs_score = self.calculate_score(
-            paths)
+    #     # Set the last run's score to inf
+    #     self.last_runs_score = np.inf
+    #     # Calculate this run's score based on average/total path length
+    #     # and pcb surface area (obviously including the paths)
+    #     self.curr_runs_score = self.calculate_score(
+    #         paths)
 
-        # run the subsequent iterations up until the score is high enough or we've reached the max_iters
-        self.iteration_num = 1
-        while np.subtract(self.curr_runs_score, self.last_runs_score) > .3 and self.iteration_num < max_iters:
-            self.last_runs_score = self.curr_runs_score
-            self.paths.clear()
-            self.pin_placement_dict.clear()
-            self.connections_list.clear()
+    #     # run the subsequent iterations up until the score is high enough or we've reached the max_iters
+    #     self.iteration_num = 1
+    #     while np.subtract(self.curr_runs_score, self.last_runs_score) > .3 and self.iteration_num < max_iters:
+    #         self.last_runs_score = self.curr_runs_score
+    #         self.paths.clear()
+    #         self.pin_placement_dict.clear()
+    #         self.connections_list.clear()
 
-            self.randomize_layout()
-            self.initialize_pin_placement_dict()
-            self.initialize_connections_list()
-            paths = self.run_a_star()
+    #         self.randomize_layout()
+    #         self.initialize_pin_placement_dict()
+    #         self.initialize_connections_list()
+    #         paths = self.run_a_star()
 
-            self.curr_runs_score = self.calculate_score(
-                paths)
-            self.iteration_num += 1
+    #         self.curr_runs_score = self.calculate_score(
+    #             paths)
+    #         self.iteration_num += 1
 
-        self.paths = paths
+    #     self.paths = paths
 
-    def not_allowed_pcb_spots(self):
-        not_allowed = []
+    # def not_allowed_pcb_spots(self):
+    #     not_allowed = []
 
-        # Append existing components to the not allowed list.
-        for component in self.components.values():
-            if component.pcb_position != []:
-                not_allowed.append(component.pcb_position[0])
-                not_allowed.append(component.pcb_position[1])
+    #     # Append existing components to the not allowed list.
+    #     for component in self.components.values():
+    #         if component.pcb_position != []:
+    #             not_allowed.append(component.pcb_position[0])
+    #             not_allowed.append(component.pcb_position[1])
 
-        return not_allowed
+    #     return not_allowed
 
-    def get_pin1_pos(self):
-        pin1_pos = [int(np.floor(np.random.rand() * self.n_grid_spaces)),
-                    int(np.floor(np.random.rand() * self.n_grid_spaces))]
-        return pin1_pos
+    # def get_pin1_pos(self):
+    #     pin1_pos = [int(np.floor(np.random.rand() * self.n_grid_spaces)),
+    #                 int(np.floor(np.random.rand() * self.n_grid_spaces))]
+    #     return pin1_pos
 
-    def get_pin2_pos(self, pin1_pos):
-        global PCB_ORIENTATIONS
-        possible_orientations = PCB_ORIENTATIONS.copy()
-        rn_orient = int(np.floor(np.random.rand() * 4))
+    # def get_pin2_pos(self, pin1_pos):
+    #     global PCB_ORIENTATIONS
+    #     possible_orientations = PCB_ORIENTATIONS.copy()
+    #     rn_orient = int(np.floor(np.random.rand() * 4))
 
-        # topleft corner
-        if pin1_pos[0] == 0 and pin1_pos[1] == 0:
-            rn_orient = int(np.floor(np.random.rand() * 2))
-            possible_orientations.remove([-1, 0])
-            possible_orientations.remove([0, -1])
-        # topright corner
-        elif pin1_pos[0] == 0 and pin1_pos[1] == self.n_grid_spaces - 1:
-            rn_orient = int(np.floor(np.random.rand() * 2))
-            possible_orientations.remove([0, 1])
-            possible_orientations.remove([-1, 0])
-        # bottomright corner
-        elif pin1_pos[0] == self.n_grid_spaces - 1 and pin1_pos[1] == self.n_grid_spaces - 1:
-            rn_orient = int(np.floor(np.random.rand() * 2))
-            possible_orientations.remove([1, 0])
-            possible_orientations.remove([0, 1])
-        # bottomleft corner
-        elif pin1_pos[0] == self.n_grid_spaces - 1 and pin1_pos[1] == 0:
-            rn_orient = int(np.floor(np.random.rand() * 2))
-            possible_orientations.remove([0, -1])
-            possible_orientations.remove([1, 0])
-        # left edge
-        elif pin1_pos[0] * pin1_pos[1] == 0 and pin1_pos[1] == 0:
-            rn_orient = int(np.floor(np.random.rand() * 3))
-            possible_orientations.remove([0, -1])
-        # top edge
-        elif pin1_pos[0] * pin1_pos[1] == 0 and pin1_pos[0] == 0:
-            rn_orient = int(np.floor(np.random.rand() * 3))
-            possible_orientations.remove([-1, 0])
-        # right edge
-        elif pin1_pos[1] == self.n_grid_spaces - 1:
-            rn_orient = int(np.floor(np.random.rand() * 3))
-            possible_orientations.remove([0, 1])
-        # bottom edge
-        elif pin1_pos[0] == self.n_grid_spaces - 1:
-            rn_orient = int(np.floor(np.random.rand() * 3))
-            possible_orientations.remove([1, 0])
-        pin2_pos = np.add(pin1_pos, possible_orientations[rn_orient]).tolist()
+    #     # topleft corner
+    #     if pin1_pos[0] == 0 and pin1_pos[1] == 0:
+    #         rn_orient = int(np.floor(np.random.rand() * 2))
+    #         possible_orientations.remove([-1, 0])
+    #         possible_orientations.remove([0, -1])
+    #     # topright corner
+    #     elif pin1_pos[0] == 0 and pin1_pos[1] == self.n_grid_spaces - 1:
+    #         rn_orient = int(np.floor(np.random.rand() * 2))
+    #         possible_orientations.remove([0, 1])
+    #         possible_orientations.remove([-1, 0])
+    #     # bottomright corner
+    #     elif pin1_pos[0] == self.n_grid_spaces - 1 and pin1_pos[1] == self.n_grid_spaces - 1:
+    #         rn_orient = int(np.floor(np.random.rand() * 2))
+    #         possible_orientations.remove([1, 0])
+    #         possible_orientations.remove([0, 1])
+    #     # bottomleft corner
+    #     elif pin1_pos[0] == self.n_grid_spaces - 1 and pin1_pos[1] == 0:
+    #         rn_orient = int(np.floor(np.random.rand() * 2))
+    #         possible_orientations.remove([0, -1])
+    #         possible_orientations.remove([1, 0])
+    #     # left edge
+    #     elif pin1_pos[0] * pin1_pos[1] == 0 and pin1_pos[1] == 0:
+    #         rn_orient = int(np.floor(np.random.rand() * 3))
+    #         possible_orientations.remove([0, -1])
+    #     # top edge
+    #     elif pin1_pos[0] * pin1_pos[1] == 0 and pin1_pos[0] == 0:
+    #         rn_orient = int(np.floor(np.random.rand() * 3))
+    #         possible_orientations.remove([-1, 0])
+    #     # right edge
+    #     elif pin1_pos[1] == self.n_grid_spaces - 1:
+    #         rn_orient = int(np.floor(np.random.rand() * 3))
+    #         possible_orientations.remove([0, 1])
+    #     # bottom edge
+    #     elif pin1_pos[0] == self.n_grid_spaces - 1:
+    #         rn_orient = int(np.floor(np.random.rand() * 3))
+    #         possible_orientations.remove([1, 0])
+    #     pin2_pos = np.add(pin1_pos, possible_orientations[rn_orient]).tolist()
 
-        return pin2_pos
+    #     return pin2_pos
 
-    def get_valid_spot(self, not_allowed_pcb_spots):
-        rn_pos_1 = self.get_pin1_pos()
-        rn_pos_2 = self.get_pin2_pos(rn_pos_1)
-        rn_pos = [rn_pos_1, rn_pos_2]
+    # def get_valid_spot(self, not_allowed_pcb_spots):
+    #     rn_pos_1 = self.get_pin1_pos()
+    #     rn_pos_2 = self.get_pin2_pos(rn_pos_1)
+    #     rn_pos = [rn_pos_1, rn_pos_2]
 
-        i = 0
-        while rn_pos[0] in not_allowed_pcb_spots or rn_pos[1] in not_allowed_pcb_spots:
-            # print("redoing pin1 and pin2")
-            rn_pos_1 = self.get_pin1_pos()
-            rn_pos_2 = self.get_pin2_pos(rn_pos_1)
-            rn_pos = [rn_pos_1, rn_pos_2]
+    #     i = 0
+    #     while rn_pos[0] in not_allowed_pcb_spots or rn_pos[1] in not_allowed_pcb_spots:
+    #         # print("redoing pin1 and pin2")
+    #         rn_pos_1 = self.get_pin1_pos()
+    #         rn_pos_2 = self.get_pin2_pos(rn_pos_1)
+    #         rn_pos = [rn_pos_1, rn_pos_2]
 
-            i += 1
-        return rn_pos
+    #         i += 1
+    #     return rn_pos
 
-    # Will make a layout where no pins overlap
-    # and are adjusted by some padding (-Jason)
-    def randomize_layout(self):
-        not_allowed_pcb_spots = []
-        for component in self.components.values():
-            rn_spot = self.get_valid_spot(not_allowed_pcb_spots)
-            rn_spot = np.add(
-                rn_spot, [int(self.grid_padding/2), int(self.grid_padding)]).tolist()
-            component.pcb_position = rn_spot
+    # # Will make a layout where no pins overlap
+    # # and are adjusted by some padding (-Jason)
+    # def randomize_layout(self):
+    #     not_allowed_pcb_spots = []
+    #     for component in self.components.values():
+    #         rn_spot = self.get_valid_spot(not_allowed_pcb_spots)
+    #         rn_spot = np.add(
+    #             rn_spot, [int(self.grid_padding/2), int(self.grid_padding)]).tolist()
+    #         component.pcb_position = rn_spot
 
-    # This gets a list for the position for every pin
-    def initialize_pin_placement_dict(self):
-        pin_placement_dict = {}
-        for component in self.components.values():
-            pin_ids = list(component.connections.keys())
-            for pin_id, pos in zip(pin_ids, component.pcb_position):
-                pin_placement_dict |= {pin_id: pos}
-        self.pin_placement_dict = pin_placement_dict
+    # # This gets a list for the position for every pin
+    # def initialize_pin_placement_dict(self):
+    #     pin_placement_dict = {}
+    #     for component in self.components.values():
+    #         pin_ids = list(component.connections.keys())
+    #         for pin_id, pos in zip(pin_ids, component.pcb_position):
+    #             pin_placement_dict |= {pin_id: pos}
+    #     self.pin_placement_dict = pin_placement_dict
 
-    # This gets the connections into a single list
-    def initialize_connections_list(self):
-        connections_list = []
-        for component in self.components.values():
-            for pin_id, connections in component.connections.items():
-                for connection in connections:
-                    if len(connections_list) > 0:
-                        if not [connection, pin_id] in connections_list:
-                            connections_list.append([pin_id, connection])
-                    else:
-                        connections_list.append([pin_id, connection])
+    # # This gets the connections into a single list
+    # def initialize_connections_list(self):
+    #     connections_list = []
+    #     for component in self.components.values():
+    #         for pin_id, connections in component.connections.items():
+    #             for connection in connections:
+    #                 if len(connections_list) > 0:
+    #                     if not [connection, pin_id] in connections_list:
+    #                         connections_list.append([pin_id, connection])
+    #                 else:
+    #                     connections_list.append([pin_id, connection])
 
-        self.connections_list = connections_list
+    #     self.connections_list = connections_list
 
-    def pcb_area(self, paths):
-        min_x = 0
-        max_x = self.n_grid_spaces + self.grid_padding
-        min_y = 0
-        max_y = self.n_grid_spaces + self.grid_padding
+    # def pcb_area(self, paths):
+    #     min_x = 0
+    #     max_x = self.n_grid_spaces + self.grid_padding
+    #     min_y = 0
+    #     max_y = self.n_grid_spaces + self.grid_padding
 
-        for path in paths:
-            for grid_node in path:
-                grid_x = grid_node[0]
-                grid_y = grid_node[1]
+    #     for path in paths:
+    #         for grid_node in path:
+    #             grid_x = grid_node[0]
+    #             grid_y = grid_node[1]
 
-                min_x = min(grid_x, min_x)
-                max_x = max(grid_x, max_x)
-                min_y = min(grid_y, min_y)
-                max_y = max(grid_y, max_y)
+    #             min_x = min(grid_x, min_x)
+    #             max_x = max(grid_x, max_x)
+    #             min_y = min(grid_y, min_y)
+    #             max_y = max(grid_y, max_y)
 
-        return (max_x - min_x) * (max_y - min_y)
+    #     return (max_x - min_x) * (max_y - min_y)
 
-    # For calculating how good a set of paths (pcb layout) is.
-    # It is based on total path length and total area (including paths)
-    def calculate_score(self, paths):
-        total_path_length = 0
-        for path in paths:
-            total_path_length += path["length"]
+    # # For calculating how good a set of paths (pcb layout) is.
+    # # It is based on total path length and total area (including paths)
+    # def calculate_score(self, paths):
+    #     total_path_length = 0
+    #     for path in paths:
+    #         total_path_length += path["length"]
 
-        total_area = self.pcb_area(paths)
+    #     total_area = self.pcb_area(paths)
 
-        score_non_normalized = (total_area * self.area_weight) + \
-            (total_path_length * self.path_length_weight)
-        score_normalized = score_non_normalized / \
-            (self.area_weight + self.path_length_weight)
+    #     score_non_normalized = (total_area * self.area_weight) + \
+    #         (total_path_length * self.path_length_weight)
+    #     score_normalized = score_non_normalized / \
+    #         (self.area_weight + self.path_length_weight)
 
-        return score_normalized
+    #     return score_normalized
 
-    def run_a_star(self):
-        paths = []
-        not_allowed = self.not_allowed_pcb_spots()
-        grid = PcbGrid(self.n_grid_spaces + self.grid_padding, not_allowed)
+    # def run_a_star(self):
+    #     paths = []
+    #     not_allowed = self.not_allowed_pcb_spots()
+    #     grid = PcbGrid(self.n_grid_spaces + self.grid_padding, not_allowed)
 
-        for start_id, goal_id in self.connections_list:
-            start_pos = self.pin_placement_dict[start_id]
-            goal_pos = self.pin_placement_dict[goal_id]
+    #     for start_id, goal_id in self.connections_list:
+    #         start_pos = self.pin_placement_dict[start_id]
+    #         goal_pos = self.pin_placement_dict[goal_id]
 
-            start_node = grid.node_at(start_pos)
-            goal_node = grid.node_at(goal_pos)
+    #         start_node = grid.node_at(start_pos)
+    #         goal_node = grid.node_at(goal_pos)
 
-            path = grid.a_star(start_node, start_id, goal_node, goal_id)
-            not_allowed += path["grid_nodes"]
-            path["path_id"] = f"{start_id}->{goal_id}"
-            paths.append(path)
-            grid = PcbGrid(self.n_grid_spaces + self.grid_padding, not_allowed)
+    #         path = grid.a_star(start_node, start_id, goal_node, goal_id)
+    #         not_allowed += path["grid_nodes"]
+    #         path["path_id"] = f"{start_id}->{goal_id}"
+    #         paths.append(path)
+    #         grid = PcbGrid(self.n_grid_spaces + self.grid_padding, not_allowed)
 
-        return paths
+    #     return paths

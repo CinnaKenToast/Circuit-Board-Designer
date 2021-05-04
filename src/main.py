@@ -56,19 +56,19 @@ class Widget(QtWidgets.QWidget):
         #self.boundingBox.setSelected(True)
         #print(self.boundingBox.pos())
         pin0x = self.boundingBox.pos().x() + 12
-        pin0y = self.boundingBox.pos().y() + 30 + 60/2
+        pin0y = self.boundingBox.pos().y() + 25 + 60/2
         addToEvent((self.boundingBox, QPoint(pin0x, pin0y), [self.id, 0]))
 
     def printRightButtonPos(self):
         #self.boundingBox.setSelected(True)
         #print(self.boundingBox.pos())
         pin1x = self.boundingBox.pos().x() + 170 - 12
-        pin1y = self.boundingBox.pos().y() + 30 + 60/2
+        pin1y = self.boundingBox.pos().y() + 25 + 60/2
         addToEvent((self.boundingBox, QPoint(pin1x, pin1y), [self.id, 1]))
     
     def setImage(self, compType):
         svgRenderer = None
-        image = QtGui.QImage(170, 60, QtGui.QImage.Format_ARGB32)
+        image = QtGui.QImage(160, 60, QtGui.QImage.Format_ARGB32)
         image.fill(0x00000000)
         svgRenderer = QtSvg.QSvgRenderer("comp_img/"+compType+".svg")
         svgRenderer.render(QtGui.QPainter(image))
@@ -82,7 +82,7 @@ class Component(QtWidgets.QGraphicsRectItem):
         self.name = name
         self.compType = compType
         self.id = id
-        self.boundingBox = self.scene.addRect(0,0, 170, 95, pen)
+        self.boundingBox = self.scene.addRect(0,0, 170, 90, pen)
         self.widget = Widget(compType, self.name, self.scene, self.boundingBox, self.id)
         self.sceneWidget = self.scene.addWidget(self.widget)
         self.boundingBox.setFlag(QtWidgets.QGraphicsItem.ItemIsMovable)
@@ -138,6 +138,7 @@ class MainWindow(QMainWindow):
         self.ids = 2
         self.penColor = QtGui.QPen(QtCore.Qt.black)
         self.penColor.setWidth(3)
+        self.file = None
 
         self.components = []
         self.schematic = classes.Schematic()
@@ -223,6 +224,12 @@ class MainWindow(QMainWindow):
         self.ui.btn_label.clicked.connect(lambda: self.changeLabel())
         self.ui.btn_comment.clicked.connect(lambda: self.printSchematic())
         self.ui.btn_snip.clicked.connect(lambda: self.removeConnection())
+
+        self.ui.btn_create.clicked.connect(lambda:self.fileCreate())
+        self.ui.btn_open.clicked.connect(lambda:self.fileOpen())
+        self.ui.btn_save.clicked.connect(lambda:self.fileSave())
+        self.ui.btn_save_as.clicked.connect(lambda:self.fileSaveAs())
+
 
         self.scene.changed.connect(lambda: self.updatePositions())
 
@@ -373,6 +380,33 @@ class MainWindow(QMainWindow):
         print(color)
         self.toggleTools(50, "btn_pick_color")
 
+
+    # Opens a file
+    def fileOpen(self):
+        pass
+
+    # Creates a new file
+    def fileCreate(self):
+        pass
+
+    # Saves a file
+    def fileSave(self):
+        if self.file == None:
+            self.fileSaveAs()
+        else:
+            self.schematic.overwrite_save(self.file)     
+            self.ui.stacked_workspaces.setCurrentWidget(self.ui.page_design)
+
+    # Saves as a new file
+    def fileSaveAs(self):
+        fileName = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File','', 'Circuit (*.circ)')
+        print(fileName[0])
+        self.schematic.overwrite_save(fileName[0])
+        self.file = fileName[0]
+        self.ui.label_file_location.setText(self.file)
+        self.toggleMenu(200, True)
+        self.ui.stacked_workspaces.setCurrentWidget(self.ui.page_design)
+
     # Toggles the left pull out menu for the different screens
     def toggleMenu(self, maxWidth, enable):
         if enable:
@@ -415,12 +449,10 @@ class MainWindow(QMainWindow):
         elif button == "btn_add" and self.currentState == "Closed":
             enable = True
             self.currentState = self.menuStates[1]
-            self.ui.frame_top_extra_tools.setMaximumSize(QtCore.QSize(50, 350))
 
         elif button == "btn_colors" and self.currentState == "Closed":
             enable = True
             self.currentState = self.menuStates[2]
-            self.ui.frame_top_extra_tools.setMaximumSize(QtCore.QSize(50, 500))
         
         elif button == "btn_add" and self.currentState == "menuColors":
             enable = False
