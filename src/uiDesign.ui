@@ -508,8 +508,8 @@ QPushButton:hover{
                      </property>
                      <property name="iconSize">
                       <size>
-                       <width>30</width>
-                       <height>30</height>
+                       <width>35</width>
+                       <height>35</height>
                       </size>
                      </property>
                     </widget>
@@ -727,8 +727,8 @@ QPushButton:hover{
                      </property>
                      <property name="iconSize">
                       <size>
-                       <width>30</width>
-                       <height>30</height>
+                       <width>35</width>
+                       <height>35</height>
                       </size>
                      </property>
                     </widget>
@@ -946,8 +946,8 @@ QPushButton:hover{
                      </property>
                      <property name="iconSize">
                       <size>
-                       <width>24</width>
-                       <height>24</height>
+                       <width>35</width>
+                       <height>35</height>
                       </size>
                      </property>
                     </widget>
@@ -1903,41 +1903,6 @@ QPushButton:hover{
                   </widget>
                  </item>
                  <item>
-                  <widget class="QPushButton" name="btn_diode">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="minimumSize">
-                    <size>
-                     <width>0</width>
-                     <height>50</height>
-                    </size>
-                   </property>
-                   <property name="maximumSize">
-                    <size>
-                     <width>16777215</width>
-                     <height>50</height>
-                    </size>
-                   </property>
-                   <property name="text">
-                    <string/>
-                   </property>
-                   <property name="icon">
-                    <iconset>
-                     <normaloff>img/Diode.png</normaloff>img/Diode.png</iconset>
-                   </property>
-                   <property name="iconSize">
-                    <size>
-                     <width>50</width>
-                     <height>50</height>
-                    </size>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
                   <widget class="QPushButton" name="btn_capacitor">
                    <property name="enabled">
                     <bool>true</bool>
@@ -1966,6 +1931,41 @@ QPushButton:hover{
                    <property name="icon">
                     <iconset>
                      <normaloff>img/Capacitor.png</normaloff>img/Capacitor.png</iconset>
+                   </property>
+                   <property name="iconSize">
+                    <size>
+                     <width>50</width>
+                     <height>50</height>
+                    </size>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="btn_diode">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="minimumSize">
+                    <size>
+                     <width>0</width>
+                     <height>50</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>16777215</width>
+                     <height>50</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="icon">
+                    <iconset>
+                     <normaloff>img/Diode.png</normaloff>img/Diode.png</iconset>
                    </property>
                    <property name="iconSize">
                     <size>
