@@ -43,4 +43,15 @@ if __name__ == "__main__":
     #         f"Path: {path_id}\nPath nodes: {path_nodes}\nLength: {path_length}")
 
     # Test monte_carlo:
-    
+    sch.set_monte_carlo_parameters(6, 4, .3)
+    sch.monte_carlo(500)
+    for path in sch.paths:
+        path_id = path["path_id"]
+        path_nodes = path["path_nodes"]
+        path_length = path["length"]
+        print(
+            f"Path: {path_id}\nPath nodes: {path_nodes}\nLength: {path_length}")
+    if sch.paths == []:
+        print(f"No valid Layout")
+    else:
+        print(f"Layout Score: {sch.calculate_score(sch.paths)}")

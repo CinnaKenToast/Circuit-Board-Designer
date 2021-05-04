@@ -444,19 +444,21 @@ class Schematic:
         self.components = {}
         self.comments = {}
         self.paths = []
+        self.last_runs_score = -1
+        self.curr_runs_score = -1
+        self.better_by = .3
         self.pin_placement_dict = {}
         self.connections_list = []
         self.area_weight = .5
         self.path_length_weight = .5
         self.n_grid_spaces = 5
         self.a_star_grid_padding = 4
-        self.max_iters = 10
 
     # Allows for setting the monte carlo params so it can continue (-Jason)
-    def set_monte_carlo_parameters(self, n_grid_spaces=5, a_star_grid_padding=4, max_iters=10):
+    def set_monte_carlo_parameters(self, n_grid_spaces=5, a_star_grid_padding=4, better_by=.3):
         self.n_grid_spaces = n_grid_spaces
         self.a_star_grid_padding = a_star_grid_padding
-        self.max_iters = max_iters
+        self.better_by = better_by
 
     # Checks an id versus the list of component ids that exist and tells whether its unique (-Jason)
     def unique_component_id(self, id):
@@ -481,12 +483,14 @@ class Schematic:
             self.add_comment(comment)
 
         self.paths = schematic_dict["paths"]
+        self.last_runs_score = schematic_dict["last_runs_score"]
+        self.curr_runs_score = schematic_dict["curr_runs_score"]
         self.pin_placement_dict = schematic_dict["pin_placement_dict"]
         self.connections_list = schematic_dict["connections_list"]
         self.area_weight = schematic_dict["area_weight"]
         self.path_length_weight = schematic_dict["path_length_weight"]
         self.set_monte_carlo_parameters(
-            schematic_dict["n_grid_spaces"], schematic_dict["a_star_grid_padding"], schematic_dict["max_iters"])
+            schematic_dict["n_grid_spaces"], schematic_dict["a_star_grid_padding"], schematic_dict["better_by"])
 
     def add_component(self, component_dict):
         if self.unique_component_id(component_dict["id"]):
@@ -592,17 +596,14 @@ class Schematic:
             "components": components,
             "comments": comments,
             "paths": self.paths,
+            "last_runs_score": self.last_runs_score,
+            "curr_runs_score": self.curr_runs_score,
             "pin_placement_dict": self.pin_placement_dict,
             "connections_list": self.connections_list,
-            # "iteration_num": self.iteration_num,
-            # "connection_num": self.connection_num,
-            # "last_runs_score": self.last_runs_score,
-            # "curr_runs_score": self.curr_runs_score,
             "area_weight": self.area_weight,
             "path_length_weight": self.path_length_weight,
             "n_grid_spaces": self.n_grid_spaces,
-            "a_star_grid_padding": self.a_star_grid_padding,
-            "max_iters": self.max_iters
+            "a_star_grid_padding": self.a_star_grid_padding
         }
 
         return schematic_dict
@@ -751,14 +752,15 @@ class Schematic:
 
     # LOOK AT force base graph layout algorithms as an alternative to this (-Jason)
     # Metropolis' Monte Carlo method. (-Jason)
-    def monte_carlo(self, max_iters=1):
-        last_runs_score = 1
-        curr_runs_score = 0
+    def monte_carlo(self, max_iters=50):
+        paths = []
+        last_runs_score = 0
+        curr_runs_score = 1
         self.initialize_connections_list()
 
         # run the subsequent iterations up until the score is high enough or we've reached the max_iters
-        i = 1
-        while np.subtract(curr_runs_score, last_runs_score) > .3 and i < max_iters:
+        i = 0
+        while curr_runs_score-last_runs_score > self.better_by and i < max_iters:
             self.last_runs_score = curr_runs_score
             self.paths.clear()
             self.pin_placement_dict.clear()
@@ -767,10 +769,9 @@ class Schematic:
             self.initialize_pin_placement_dict()
             paths = self.run_a_star()
 
-            # Try connection list as is; if that doesn't work then randomize the order and try again - say 2 * number of connections.
+            # Try connection list as is; if that doesn't work then randomize the order and try again - say 4 * number of connections.
             j = 0
-            while paths == [] and j < 2*len(self.connections_list):
-                print("Trying different order for connections list")
+            while paths == [] and j < 4*len(self.connections_list):
                 np.random.shuffle(self.connections_list)
                 paths = self.run_a_star()
                 j += 1
@@ -790,7 +791,7 @@ class Schematic:
         max_y = self.n_grid_spaces + self.a_star_grid_padding
 
         for path in paths:
-            for path_node in path:
+            for path_node in path["path_nodes"]:
                 grid_x = path_node[0]
                 grid_y = path_node[1]
 
