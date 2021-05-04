@@ -2,7 +2,7 @@ from typing import Type
 import numpy as np
 import json
 from PyQt5 import QtWidgets, QtGui
-import PIL
+from PIL import Image, ImageDraw
 import os.path
 from xml.dom import minidom
 
@@ -60,10 +60,6 @@ class ComponentSVG:
 
 class Component:
     global SCHEM_ORIENTATIONS
-    # The component type field is what determines which sprite will be used
-    # and what component fields to pull from the .json database. As long as the
-    # database has the dimensions corresponding to type: component type,
-    # and the spritesheet has a picture for it, the component can be used. (-Jason)
 
     def __init__(self, id, label, num_pins, schem_position, schem_orientation, pcb_position, connections, svg_file_name):
         if self.valid_input({"id": id, "label": label, "schem_position": schem_position, "schem_orientation": schem_orientation}):
@@ -101,16 +97,10 @@ class Component:
         return True
 
     def set_connections(self, connections):
-        if len(connections) == 0:
-            keys = [f"{self.id}_{pin_num}" for pin_num in range(
-                0, self.num_pins)]
-            vals = [[] for i in range(0, self.num_pins)]
-            self.connections = {k: v for (k, v) in zip(keys, vals)}
-        else:
-            pin_ids = [[list(connections.keys())[0], str(that_pin_id)]
-                       for that_pin_id in list(connections.values())[0]]
-            for connection in pin_ids:
-                self.connect(connection[0], connection[1])
+        self.connections = {f"{self.id}_0": [], f"{self.id}_1": []}
+        for this_pin_id, connection_group in connections.items():
+            for that_pin_id in connection_group:
+                self.connections[this_pin_id].append(that_pin_id)
 
     def set_schematic_pos(self, pos):
         self.schem_position = pos
@@ -119,6 +109,7 @@ class Component:
         if this_pin_id in self.connections:
             self.connections[this_pin_id].append(that_pin_id)
 
+            # If this is the first connection, update the image
             if len(self.connections) == 1:
                 this_pin_num = this_pin_id.split("_")
                 self.active_svg_xml, self.pin_states[this_pin_num] = self.svg_obj.change_pin_state(
@@ -447,20 +438,22 @@ class Schematic:
         self.paths = []
         self.last_runs_score = -1
         self.curr_runs_score = -1
-        self.better_by = .3
-        self.target_score = .5
         self.pin_placement_dict = {}
         self.connections_list = []
-        self.area_weight = .7
-        self.path_length_weight = .3
-        self.n_grid_spaces = 5
-        self.a_star_grid_padding = 4
-
+        self.area_weight = .3
+        self.path_length_weight = .7
+        self.set_monte_carlo_parameters()
+        self.converted_image_bg_color = (0, 0, 0)
+        self.converted_image_color_mode = "RGB"
+        self.converted_image_scaling = 75
+        self.converted_image_trace_color = (135, 10, 99)
+        self.converted_image = None
     # Allows for setting the monte carlo params so it can continue (-Jason)
-    def set_monte_carlo_parameters(self, n_grid_spaces=5, a_star_grid_padding=4, better_by=.3):
+
+    def set_monte_carlo_parameters(self, n_grid_spaces=5, a_star_grid_padding=4, target_score=.5):
         self.n_grid_spaces = n_grid_spaces
         self.a_star_grid_padding = a_star_grid_padding
-        self.better_by = better_by
+        self.target_score = target_score
 
     # Checks an id versus the list of component ids that exist and tells whether its unique (-Jason)
     def unique_component_id(self, id):
@@ -487,14 +480,12 @@ class Schematic:
         self.paths = schematic_dict["paths"]
         self.last_runs_score = schematic_dict["last_runs_score"]
         self.curr_runs_score = schematic_dict["curr_runs_score"]
-        self.better_by = schematic_dict["better_by"]
-        self.target_score = schematic_dict["target_score"]
         self.pin_placement_dict = schematic_dict["pin_placement_dict"]
         self.connections_list = schematic_dict["connections_list"]
         self.area_weight = schematic_dict["area_weight"]
         self.path_length_weight = schematic_dict["path_length_weight"]
         self.set_monte_carlo_parameters(
-            schematic_dict["n_grid_spaces"], schematic_dict["a_star_grid_padding"], schematic_dict["better_by"])
+            schematic_dict["n_grid_spaces"], schematic_dict["a_star_grid_padding"], schematic_dict["target_score"])
 
     def add_component(self, component_dict):
         if self.unique_component_id(component_dict["id"]):
@@ -549,10 +540,10 @@ class Schematic:
             component_1_pin_id, component_2_pin_id)
 
     def append_to_connections_list(self, pin_1_id, pin_2_id):
-        self.connections_list.append([pin_1_id, pin_1_id])
+        self.connections_list.append([pin_1_id, pin_2_id])
 
     def remove_from_connections_list(self, pin_1_id, pin_2_id):
-        self.connections_list.append([pin_1_id, pin_1_id])
+        self.connections_list.append([pin_1_id, pin_2_id])
 
     def set_component_schematic_pos(self, component_id, pos):
         self.components[f"component_{component_id}"].set_schematic_pos(
@@ -602,7 +593,6 @@ class Schematic:
             "paths": self.paths,
             "last_runs_score": self.last_runs_score,
             "curr_runs_score": self.curr_runs_score,
-            "better_by": self.better_by,
             "target_score": self.target_score,
             "pin_placement_dict": self.pin_placement_dict,
             "connections_list": self.connections_list,
@@ -760,14 +750,13 @@ class Schematic:
     # Metropolis' Monte Carlo method. (-Jason)
     def monte_carlo(self, max_iters=50):
         paths = []
-        last_runs_score = 0
-        curr_runs_score = 1
+        curr_runs_score = 0
         self.initialize_connections_list()
+        best_layout = [-1, None]
 
-        # run the subsequent iterations up until the score is high enough or we've reached the max_iters
+        # run the subsequent iterations up until the score doesn't change much, isn't high enough, or we've reached the max_iters
         i = 0
-        while ((curr_runs_score - last_runs_score > self.better_by) and (i < max_iters)) or ((curr_runs_score < .85) and (i < max_iters)):
-            self.last_runs_score = curr_runs_score
+        while ((best_layout[0] < self.target_score) and (i < max_iters)):
             self.paths.clear()
             self.pin_placement_dict.clear()
 
@@ -777,7 +766,7 @@ class Schematic:
 
             # Try connection list as is; if that doesn't work then randomize the order and try again.
             j = 0
-            while paths == [] and j < 10*len(self.connections_list):
+            while paths == [] and j < 4*len(self.connections_list):
                 np.random.shuffle(self.connections_list)
                 paths = self.run_a_star()
                 j += 1
@@ -786,27 +775,30 @@ class Schematic:
                 continue
 
             curr_runs_score = self.calculate_score(paths)
+            if curr_runs_score > best_layout[0]:
+                best_layout[0] = curr_runs_score
+                best_layout[1] = paths
             i += 1
 
-        self.paths = paths
+        self.paths = best_layout[1]
 
     def pcb_area(self, paths):
-        min_x = int((self.n_grid_spaces + self.a_star_grid_padding)/2)
-        max_x = int((self.n_grid_spaces + self.a_star_grid_padding)/2)
-        min_y = int((self.n_grid_spaces + self.a_star_grid_padding)/2)
-        max_y = int((self.n_grid_spaces + self.a_star_grid_padding)/2)
+        min_j = int((self.n_grid_spaces + self.a_star_grid_padding)/2)
+        max_j = int((self.n_grid_spaces + self.a_star_grid_padding)/2)
+        min_i = int((self.n_grid_spaces + self.a_star_grid_padding)/2)
+        max_i = int((self.n_grid_spaces + self.a_star_grid_padding)/2)
 
         for path in paths:
             for path_node in path["path_nodes"]:
-                grid_x = path_node[0]
-                grid_y = path_node[1]
+                grid_i = path_node[0]
+                grid_j = path_node[1]
 
-                min_x = min(grid_x, min_x)
-                max_x = max(grid_x, max_x)
-                min_y = min(grid_y, min_y)
-                max_y = max(grid_y, max_y)
+                min_i = min(grid_i, min_i)
+                max_i = max(grid_i, max_i)
+                min_j = min(grid_j, min_j)
+                max_j = max(grid_j, max_j)
 
-        return (max_x - min_x) * (max_y - min_y)
+        return [min_i, max_i, min_j, max_j]
 
     # For calculating how good a set of paths (pcb layout) is.
     # It is based on total path length and total area (including paths)
@@ -814,14 +806,16 @@ class Schematic:
         worst_total_area = np.square(
             self.n_grid_spaces + self.a_star_grid_padding)
         best_total_area = len(paths)*2
-        worst_path_length = np.square(10*(
-            self.n_grid_spaces + self.a_star_grid_padding))  # based on taking every path in a grid
+        # based on taking every path in a grid
+        worst_path_length = 10 * \
+            np.square(self.n_grid_spaces + self.a_star_grid_padding)
         best_path_length = 10  # the pins are right next to one another
 
         total_path_length = 0
         for path in paths:
             total_path_length += path["length"]
-        total_area = self.pcb_area(paths)
+        min_max = self.pcb_area(paths)
+        total_area = (min_max[1]-min_max[0])*(min_max[1]-min_max[0])
 
         score = ((worst_total_area - total_area)/(worst_total_area-best_total_area))*self.area_weight + \
             (worst_path_length - total_path_length) / \
@@ -860,3 +854,62 @@ class Schematic:
             not_allowed.append(goal_pos)
 
         return paths
+
+    def trim_pcb_layout(self):
+        paths = self.paths.copy()
+        pcb_dims = self.pcb_area(paths)
+        for i in range(0, len(paths)):
+            nodes = paths[i]["path_nodes"]
+            for j in range(0, len(nodes)):
+                node = nodes[j]
+                paths[i]["path_nodes"][j] = np.add(np.subtract(
+                    node, (pcb_dims[0], pcb_dims[2])), [1, 1]).tolist()
+        return paths, pcb_dims
+
+    def convert_to_pcb_image(self):
+        # Get the settings:
+        mode = self.converted_image_color_mode
+        scale = self.converted_image_scaling
+        bg_color = self.converted_image_bg_color
+        trace_color = self.converted_image_trace_color
+
+        paths, pcb_dims = self.trim_pcb_layout()
+
+        # Set the size
+        ni = abs(pcb_dims[1] - pcb_dims[0])
+        nj = abs(pcb_dims[3] - pcb_dims[2])
+        width = scale*(nj+2)
+        height = scale*(ni+2)
+        size = (width, height)
+
+        # The objects to make the image
+        im = Image.new(mode, size, bg_color)
+        draw = ImageDraw.Draw(im)
+
+        # pin box dimension
+        box_w_h = 10
+
+        # draw each path from point to point
+        for path in paths:
+            nodes = path["path_nodes"]
+
+            # setup and draw the pads
+            i_start, j_start = nodes[0]
+            i_start = scale*i_start - box_w_h/2
+            j_start = scale*j_start - box_w_h/2
+            i_goal, j_goal = nodes[-1]
+            i_goal = scale*i_goal - box_w_h/2
+            j_goal = scale*j_goal - box_w_h/2
+            draw.rectangle((j_start, i_start, j_start+box_w_h,
+                            i_start+box_w_h), fill=trace_color, width=0)
+            draw.rectangle((j_goal, i_goal, j_goal+box_w_h, i_goal +
+                            box_w_h), fill=trace_color, width=0)
+
+            # draw the lines for the traces
+            for i in range(0, len(nodes) - 1):
+                i1, j1 = nodes[i]
+                i2, j2 = nodes[i+1]
+                draw.line((scale*j1, scale*i1, scale*j2, scale*i2),
+                          fill=trace_color, width=5)
+
+        self.converted_image = im
