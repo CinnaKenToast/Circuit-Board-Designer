@@ -527,6 +527,8 @@ class Schematic:
         self.components[f"component_{component_2_id}"].connect(
             component_2_pin_id, component_1_pin_id)
 
+        self.append_to_connections_list(component_1_pin_id, component_2_pin_id)
+
     def remove_connection(self, component_1_pin_id, component_2_pin_id):
         component_1_id = int(component_1_pin_id.split("_")[0])
         component_2_id = int(component_2_pin_id.split("_")[0])
@@ -535,7 +537,13 @@ class Schematic:
         self.components[f"component_{component_2_id}"].disconnect(
             component_2_pin_id, component_1_pin_id)
 
-    def update_connections_list(self, pin_1_id, pin_2_id):
+        self.remove_from_connections_list(
+            component_1_pin_id, component_2_pin_id)
+
+    def append_to_connections_list(self, pin_1_id, pin_2_id):
+        self.connections_list.append([pin_1_id, pin_1_id])
+
+    def remove_from_connections_list(self, pin_1_id, pin_2_id):
         self.connections_list.append([pin_1_id, pin_1_id])
 
     def set_component_schematic_pos(self, component_id, pos):
