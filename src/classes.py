@@ -610,30 +610,30 @@ class Schematic:
 
     def save(self, file_name):
         schematic_dict = self.to_dict()
-        fn = f"{file_name}.circ"
+        fn = f"{file_name}"
         if not os.path.exists(fn):
             with open(fn, 'x') as f:
                 json.dump(schematic_dict, f)
         else:
             i = 0
-            fn = f"{file_name}({i}).circ"
+            fn = f"{file_name}({i})"
             while os.path.exists(fn):
                 if i > 254:
                     raise FileExistsError(
-                        f"\"{file_name}.circ\" exists and there are too many with its base name (255)")
+                        f"\"{file_name}\" exists and there are too many with its base name (255)")
                 i += 1
-                fn = f"{file_name}({i}).circ"
+                fn = f"{file_name}({i})"
             with open(fn, 'x') as f:
                 json.dump(schematic_dict, f)
 
     def overwrite_save(self, file_name):
         schematic_dict = self.to_dict()
-        fn = f"{file_name}.circ"
+        fn = f"{file_name}"
         with open(fn, 'w') as f:
             json.dump(schematic_dict, f)
 
     def load(self, file_name):  # need to implement some safegard to be sure that the user wants to load in something (in case they had not saved the current schematic) (-Jason)
-        fn = f"{file_name}.circ"
+        fn = f"{file_name}"
         if os.path.exists(fn):
             f = open(fn, "r")
             schematic_dict = json.load(f)
