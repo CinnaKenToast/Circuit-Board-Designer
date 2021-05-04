@@ -167,7 +167,7 @@ class MainWindow(QMainWindow):
                 "red" : QtCore.Qt.red,
                 "orange" : QtGui.QColor(255, 166, 0), 
                 "yellow" : QtCore.Qt.yellow,
-                "green" : QtCore.Qt.green,
+                "green" : QtGui.QColor(0,255,0),
                 "blue" : QtCore.Qt.blue,
                 "purple" : QtGui.QColor(221, 101, 247), 
                 "pink" : QtGui.QColor(255, 186, 244), 
@@ -193,17 +193,35 @@ class MainWindow(QMainWindow):
         self.ui.btn_convert.clicked.connect(lambda: self.ui.stacked_workspaces.setCurrentWidget(self.ui.page_convert))
         self.ui.btn_file.clicked.connect(lambda: self.ui.stacked_workspaces.setCurrentWidget(self.ui.page_file))
 
+        self.ui.btn_add.clicked.connect(lambda: self.toggleTools(100, "btn_add"))
+        self.ui.btn_color.clicked.connect(lambda: self.toggleTools(100, "btn_colors"))
         self.ui.btn_wire.clicked.connect(lambda: self.toggleTools(50, "btn_wire"))
         self.ui.btn_snip.clicked.connect(lambda: self.toggleTools(50, "btn_snip"))
         self.ui.btn_delete.clicked.connect(lambda: self.toggleTools(50, "btn_delete"))
         self.ui.btn_label.clicked.connect(lambda: self.toggleTools(50, "btn_clicked"))
         self.ui.btn_comment.clicked.connect(lambda: self.toggleTools(50, "btn_comment"))
+        self.ui.btn_resistor.clicked.connect(lambda: self.toggleTools(50, "btn_resistor"))
+        self.ui.btn_capacitor.clicked.connect(lambda: self.toggleTools(50, "btn_capacitor"))
+        self.ui.btn_diode.clicked.connect(lambda: self.toggleTools(50, "btn_diode"))
+        self.ui.btn_led.clicked.connect(lambda: self.toggleTools(50, "btn_led"))
+        self.ui.btn_inductor.clicked.connect(lambda: self.toggleTools(50, "btn_inductor"))
+        self.ui.btn_switch.clicked.connect(lambda: self.toggleTools(50, "btn_switch"))
+        self.ui.btn_voltage.clicked.connect(lambda: self.toggleTools(50, "btn_voltage"))
+        self.ui.btn_black.clicked.connect(lambda: self.toggleTools(50, "btn_black"))
+        self.ui.btn_red.clicked.connect(lambda: self.toggleTools(50, "btn_red"))
+        self.ui.btn_orange.clicked.connect(lambda: self.toggleTools(50, "btn_orange"))
+        self.ui.btn_yellow.clicked.connect(lambda: self.toggleTools(50, "btn_yellow"))
+        self.ui.btn_green.clicked.connect(lambda: self.toggleTools(50, "btn_green"))
+        self.ui.btn_blue.clicked.connect(lambda: self.toggleTools(50, "btn_blue"))
+        self.ui.btn_purple.clicked.connect(lambda: self.toggleTools(50, "btn_purple"))
+        self.ui.btn_pink.clicked.connect(lambda: self.toggleTools(50, "btn_pink"))
+        self.ui.btn_cyan.clicked.connect(lambda: self.toggleTools(50, "btn_cyan"))
+        self.ui.btn_brown.clicked.connect(lambda: self.toggleTools(50, "btn_brown"))
 
         self.ui.btn_add.clicked.connect(lambda: self.ui.stacked_tools.setCurrentWidget(self.ui.page_components))
         self.ui.btn_color.clicked.connect(lambda: self.ui.stacked_tools.setCurrentWidget(self.ui.page_colors))
 
-        self.ui.btn_add.clicked.connect(lambda: self.toggleTools(100, "btn_add"))
-        self.ui.btn_color.clicked.connect(lambda: self.toggleTools(100, "btn_colors"))
+        
         
         self.ui.btn_add.clicked.connect(lambda: self.ui.stacked_tools.setCurrentWidget(self.ui.page_components))
         self.ui.btn_color.clicked.connect(lambda: self.ui.stacked_tools.setCurrentWidget(self.ui.page_colors))
@@ -249,8 +267,10 @@ class MainWindow(QMainWindow):
     def printSchematic(self):
         for component in self.schematic.components.values():
             print(component.to_string())
-        print("connections:", self.connections)
-        print("components:", self.components)
+        for connections in self.schematic.connections_list:
+            print(connections)
+        #print("connections:", self.connections)
+        #print("components:", self.components)
 
     # Add component to the scene
     def addComponent(self, component, name = '', posX = 1500, posY = 1000):
@@ -370,7 +390,7 @@ class MainWindow(QMainWindow):
                 component2.pin0Connection = None
             else:
                 component2.pin1Connection = None
-            
+                
     # Change the label on a component
     def changeLabel(self):
         if len(self.scene.selectedItems()) == 0:
@@ -419,9 +439,11 @@ class MainWindow(QMainWindow):
 
     def clearSchematic(self):
         for component in self.components:
-            compId = component.id
-            self.schematic.remove_component(compId)
             del component
+        for connection in self.connections:
+            del connection
+        del self.schematic
+        self.schematic = classes.Schematic()
         self.components.clear()
         self.connections.clear()
         self.scene.clear()
@@ -464,7 +486,7 @@ class MainWindow(QMainWindow):
 
     # Saves as a new file
     def fileSaveAs(self):
-        ileName = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File','', 'Circuit Data (*.circ)')
+        fileName = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File','', 'Circuit Data (*.circ)')
         print(fileName[0])
         self.schematic.overwrite_save(fileName[0])
         self.file = fileName[0]
@@ -495,7 +517,9 @@ class MainWindow(QMainWindow):
     # Toggles the right pull out menu for the tools
     def toggleTools(self, maxWidth, button):
         enable = False
-        buttons = ["btn_wire", "btn_snip", "btn_delete", "btn_clicked", "btn_comment", "btn_pick_color"]
+        buttons = ["btn_wire", "btn_snip", "btn_delete", "btn_clicked", "btn_comment", "btn_pick_color", 
+        "btn_resistor", "btn_capacitor", "btn_diode", "btn_led", "btn_inductor", "btn_switch", "btn_voltage", 
+        "btn_black", "btn_red", "btn_orange", "btn_yellow", "btn_green", "btn_blue", "btn_purple", "btn_pink", "btn_cyan", "btn_brown"]
         
         # print("Start:", button, "|", self.currentState)
 
