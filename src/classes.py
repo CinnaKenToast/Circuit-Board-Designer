@@ -1,3 +1,4 @@
+from typing import Type
 import numpy as np
 import json
 from PyQt5 import QtWidgets, QtGui
@@ -353,16 +354,17 @@ class PcbGrid:
         if str(pos) in self.nodes.keys():
             return self.nodes[str(pos)]
 
+    # need to fix because it allows diagonal moves (we can't do that)
     def get_neighbors(self, node):
         neighbors = []
 
         for i in range(-1, 2):
             for j in range(-1, 2):
-                if i == 0 and j == 0:
+                if (i == 0 and j == 0) or (i*j != 0):
                     continue
                 neighbor_node_pos = [node.pos[0] + i, node.pos[1] + j]
                 if neighbor_node_pos[0] >= 0 and neighbor_node_pos[0] < self.dims and neighbor_node_pos[1] >= 0 and neighbor_node_pos[1] < self.dims:
-                    neighbor_node = self.node_at(neighbor_node_pos)
+                    neighbor_node = self.nodes[str(neighbor_node_pos)]
                     neighbors.append(neighbor_node)
 
         return neighbors
@@ -376,42 +378,41 @@ class PcbGrid:
             return 14 * di + 10 * (dj - di)
         return 14 * dj + 10 * (di - dj)
 
-    def remake_path(self, start_node, goal_node):
-        path = []
-        this_node = goal_node
+    def retrace_path(self, start_node, goal_node):
+        lst = []
+        node = goal_node
 
-        while this_node != start_node:
-            path.append(this_node)
-            this_node = this_node.parent
-        path = path.reverse()
+        while node != start_node:
+            # print(node.pos, node.parent)
+            lst.append(node.pos)
+            node = node.parent
+        else:
+            lst.append(start_node.pos)
 
-        return path
+        lst.reverse()
+        return lst
 
     # A* as defined by Sebastian Lague (-Jason)
     def a_star(self, start_node, goal_node):
-        path_dict = {}
-        open_nodes = [start_node]
+        open_nodes = [self.nodes[str(start_node.pos)]]
         closed_nodes = []
 
         while len(open_nodes) > 0:
             # find node with lowest f_cost
             this_node = open_nodes[0]
             for that_node in open_nodes[1:]:
-                if (that_node.f_cost() < this_node.f_cost()) or (that_node.f_cost() == this_node.f_cost() and that_node.h_cost < this_node.h_cost):
+                if (that_node.f_cost() < this_node.f_cost()) or ((that_node.f_cost() == this_node.f_cost()) and (that_node.h_cost < this_node.h_cost)):
                     this_node = that_node
 
             # place node in closed list
             open_nodes.remove(this_node)
             closed_nodes.append(this_node)
 
-            test1 = start_node in closed_nodes
-            test2 = goal_node in closed_nodes
-
             if this_node == goal_node:
-                break
+                return False
 
             for neighbor in self.get_neighbors(this_node):
-                if (not neighbor.taken) or (neighbor in closed_nodes):
+                if neighbor.taken or (neighbor in closed_nodes):
                     continue
 
                 tentative_g_cost = this_node.g_cost + \
@@ -424,13 +425,8 @@ class PcbGrid:
 
                     if not(neighbor in open_nodes):
                         open_nodes.append(neighbor)
-
-        start_node = closed_nodes[closed_nodes.index(start_node)]
-        goal_node = closed_nodes[closed_nodes.index(start_node)]
-        path_dict["grid_nodes"] = self.remake_path(start_node, goal_node)
-        path_dict["length"] = goal_node.g_cost
-
-        return path_dict
+        if self.nodes[str(goal_node.pos)].parent == None:
+            return True
 
 
 class Schematic:
@@ -450,20 +446,16 @@ class Schematic:
         self.paths = []
         self.pin_placement_dict = {}
         self.connections_list = []
-        self.iteration_num = -1
-        self.connection_num = -1
         self.area_weight = .5
         self.path_length_weight = .5
-        self.last_runs_score = 1.0
-        self.curr_runs_score = 0.0
         self.n_grid_spaces = 5
-        self.grid_padding = 4
+        self.a_star_grid_padding = 4
         self.max_iters = 10
 
     # Allows for setting the monte carlo params so it can continue (-Jason)
-    def set_monte_carlo_parameters(self, n_grid_spaces=5, grid_padding=4, max_iters=10):
+    def set_monte_carlo_parameters(self, n_grid_spaces=5, a_star_grid_padding=4, max_iters=10):
         self.n_grid_spaces = n_grid_spaces
-        self.grid_padding = grid_padding
+        self.a_star_grid_padding = a_star_grid_padding
         self.max_iters = max_iters
 
     # Checks an id versus the list of component ids that exist and tells whether its unique (-Jason)
@@ -491,15 +483,10 @@ class Schematic:
         self.paths = schematic_dict["paths"]
         self.pin_placement_dict = schematic_dict["pin_placement_dict"]
         self.connections_list = schematic_dict["connections_list"]
-        self.pcb_grid = schematic_dict["pcb_grid"]
-        self.iteration_num = schematic_dict["iteration_num"]
-        self.connection_num = schematic_dict["connection_num"]
-        self.last_runs_score = schematic_dict["last_runs_score"]
-        self.curr_runs_score = schematic_dict["curr_runs_score"]
         self.area_weight = schematic_dict["area_weight"]
         self.path_length_weight = schematic_dict["path_length_weight"]
         self.set_monte_carlo_parameters(
-            schematic_dict["n_grid_spaces"], schematic_dict["grid_padding"], schematic_dict["max_iters"])
+            schematic_dict["n_grid_spaces"], schematic_dict["a_star_grid_padding"], schematic_dict["max_iters"])
 
     def add_component(self, component_dict):
         if self.unique_component_id(component_dict["id"]):
@@ -547,6 +534,9 @@ class Schematic:
             component_1_pin_id, component_2_pin_id)
         self.components[f"component_{component_2_id}"].disconnect(
             component_2_pin_id, component_1_pin_id)
+
+    def update_connections_list(self, pin_1_id, pin_2_id):
+        self.connections_list.append([pin_1_id, pin_1_id])
 
     def set_component_schematic_pos(self, component_id, pos):
         self.components[f"component_{component_id}"].set_schematic_pos(
@@ -596,14 +586,14 @@ class Schematic:
             "paths": self.paths,
             "pin_placement_dict": self.pin_placement_dict,
             "connections_list": self.connections_list,
-            "iteration_num": self.iteration_num,
-            "connection_num": self.connection_num,
-            "last_runs_score": self.last_runs_score,
-            "curr_runs_score": self.curr_runs_score,
+            # "iteration_num": self.iteration_num,
+            # "connection_num": self.connection_num,
+            # "last_runs_score": self.last_runs_score,
+            # "curr_runs_score": self.curr_runs_score,
             "area_weight": self.area_weight,
             "path_length_weight": self.path_length_weight,
             "n_grid_spaces": self.n_grid_spaces,
-            "grid_padding": self.grid_padding,
+            "a_star_grid_padding": self.a_star_grid_padding,
             "max_iters": self.max_iters
         }
 
@@ -611,82 +601,37 @@ class Schematic:
 
     def save(self, file_name):
         schematic_dict = self.to_dict()
-        fn = f"{file_name}.json"
+        fn = f"{file_name}.circ"
         if not os.path.exists(fn):
             with open(fn, 'x') as f:
                 json.dump(schematic_dict, f)
         else:
             i = 0
-            fn = f"{file_name}({i}).json"
+            fn = f"{file_name}({i}).circ"
             while os.path.exists(fn):
                 if i > 254:
                     raise FileExistsError(
-                        f"\"{file_name}.json\" exists and there are too many with its base name (255)")
+                        f"\"{file_name}.circ\" exists and there are too many with its base name (255)")
                 i += 1
-                fn = f"{file_name}({i}).json"
+                fn = f"{file_name}({i}).circ"
             with open(fn, 'x') as f:
                 json.dump(schematic_dict, f)
 
     def overwrite_save(self, file_name):
         schematic_dict = self.to_dict()
-        fn = f"{file_name}.json"
+        fn = f"{file_name}.circ"
         with open(fn, 'w') as f:
             json.dump(schematic_dict, f)
 
     def load(self, file_name):  # need to implement some safegard to be sure that the user wants to load in something (in case they had not saved the current schematic) (-Jason)
-        if os.path.exists(file_name):
-            f = open(file_name, "r")
+        fn = f"{file_name}.circ"
+        if os.path.exists(fn):
+            f = open(fn, "r")
             schematic_dict = json.load(f)
             self.Schematic(schematic_dict)
         # notify user that file does not exist and ask if they want to reenter a filename (-Jason)
         else:
-            raise FileNotFoundError(f"No file \"{file_name}\"")
-
-    # LOOK AT force base graph layout algorithms as an alternative to this (-Jason)
-    # Metropolis' Monte Carlo method. (-Jason)
-    def monte_carlo(self, max_iters):
-        # Might not need to do this first one - just set last run's score to infinity and this runs score to zero then do the loop? (-Jason)
-        # Create backup just in case
-        self.overwrite_save("tmp_monte_carlo.json")
-
-        # run first iteration
-        self.paths.clear()
-        # First get random layout
-        self.randomize_layout()
-        # Next, setup a few lookup lists
-        self.initialize_pin_placement_dict()
-        self.initialize_connections_list()
-        # Lastly, get the paths.
-        # paths will be a dict whos keys are "startId:goalId" and the values
-        # correspond to dicts of info for that path (length; grid points;
-        # and maybe max x, min x, max y, min y)
-        paths = self.run_a_star()
-
-        # Set the last run's score to inf
-        self.last_runs_score = np.inf
-        # Calculate this run's score based on average/total path length
-        # and pcb surface area (obviously including the paths)
-        self.curr_runs_score = self.calculate_score(
-            paths)
-
-        # run the subsequent iterations up until the score is high enough or we've reached the max_iters
-        self.iteration_num = 1
-        while np.subtract(self.curr_runs_score, self.last_runs_score) > .3 and self.iteration_num < max_iters:
-            self.last_runs_score = self.curr_runs_score
-            self.paths.clear()
-            self.pin_placement_dict.clear()
-            self.connections_list.clear()
-
-            self.randomize_layout()
-            self.initialize_pin_placement_dict()
-            self.initialize_connections_list()
-            paths = self.run_a_star()
-
-            self.curr_runs_score = self.calculate_score(
-                paths)
-            self.iteration_num += 1
-
-        self.paths = paths
+            raise FileNotFoundError(f"No file \"{fn}\"")
 
     def not_allowed_pcb_spots(self):
         not_allowed = []
@@ -756,7 +701,6 @@ class Schematic:
 
         i = 0
         while rn_pos[0] in not_allowed_pcb_spots or rn_pos[1] in not_allowed_pcb_spots:
-            # print("redoing pin1 and pin2")
             rn_pos_1 = self.get_pin1_pos()
             rn_pos_2 = self.get_pin2_pos(rn_pos_1)
             rn_pos = [rn_pos_1, rn_pos_2]
@@ -767,12 +711,12 @@ class Schematic:
     # Will make a layout where no pins overlap
     # and are adjusted by some padding (-Jason)
     def randomize_layout(self):
-        not_allowed_pcb_spots = []
         for component in self.components.values():
-            rn_spot = self.get_valid_spot(not_allowed_pcb_spots)
-            rn_spot = np.add(
-                rn_spot, [int(self.grid_padding/2), int(self.grid_padding)]).tolist()
+            rn_spot = self.get_valid_spot(self.not_allowed_pcb_spots())
             component.pcb_position = rn_spot
+        for component in self.components.values():
+            component.pcb_position = np.add(
+                component.pcb_position, [int(self.a_star_grid_padding/2), int(self.a_star_grid_padding/2)]).tolist()
 
     # This gets a list for the position for every pin
     def initialize_pin_placement_dict(self):
@@ -797,16 +741,50 @@ class Schematic:
 
         self.connections_list = connections_list
 
+    # LOOK AT force base graph layout algorithms as an alternative to this (-Jason)
+    # Metropolis' Monte Carlo method. (-Jason)
+    def monte_carlo(self, max_iters=1):
+        last_runs_score = 1
+        curr_runs_score = 0
+        self.initialize_connections_list()
+
+        # run the subsequent iterations up until the score is high enough or we've reached the max_iters
+        i = 1
+        while np.subtract(curr_runs_score, last_runs_score) > .3 and i < max_iters:
+            self.last_runs_score = curr_runs_score
+            self.paths.clear()
+            self.pin_placement_dict.clear()
+
+            self.randomize_layout()
+            self.initialize_pin_placement_dict()
+            paths = self.run_a_star()
+
+            # Try connection list as is; if that doesn't work then randomize the order and try again - say 2 * number of connections.
+            j = 0
+            while paths == [] and j < 2*len(self.connections_list):
+                print("Trying different order for connections list")
+                np.random.shuffle(self.connections_list)
+                paths = self.run_a_star()
+                j += 1
+            if paths == []:
+                i += 1
+                continue
+
+            curr_runs_score = self.calculate_score(paths)
+            i += 1
+
+        self.paths = paths
+
     def pcb_area(self, paths):
         min_x = 0
-        max_x = self.n_grid_spaces + self.grid_padding
+        max_x = self.n_grid_spaces + self.a_star_grid_padding
         min_y = 0
-        max_y = self.n_grid_spaces + self.grid_padding
+        max_y = self.n_grid_spaces + self.a_star_grid_padding
 
         for path in paths:
-            for grid_node in path:
-                grid_x = grid_node[0]
-                grid_y = grid_node[1]
+            for path_node in path:
+                grid_x = path_node[0]
+                grid_y = path_node[1]
 
                 min_x = min(grid_x, min_x)
                 max_x = max(grid_x, max_x)
@@ -834,19 +812,31 @@ class Schematic:
     def run_a_star(self):
         paths = []
         not_allowed = self.not_allowed_pcb_spots()
-        grid = PcbGrid(self.n_grid_spaces + self.grid_padding, not_allowed)
 
         for start_id, goal_id in self.connections_list:
+            path = {}
             start_pos = self.pin_placement_dict[start_id]
             goal_pos = self.pin_placement_dict[goal_id]
+            not_allowed.remove(start_pos)
+            not_allowed.remove(goal_pos)
+            grid = PcbGrid(self.n_grid_spaces +
+                           self.a_star_grid_padding, not_allowed)
 
-            start_node = grid.node_at(start_pos)
-            goal_node = grid.node_at(goal_pos)
+            start_node = grid.nodes[str(start_pos)]
+            goal_node = grid.nodes[str(goal_pos)]
 
-            path = grid.a_star(start_node, start_id, goal_node, goal_id)
-            not_allowed += path["grid_nodes"]
+            no_paths = grid.a_star(start_node, goal_node)
+            if no_paths:
+                return []
+
+            path["path_nodes"] = grid.retrace_path(start_node, goal_node)
+
+            not_allowed += path["path_nodes"]
+            path["length"] = goal_node.g_cost
             path["path_id"] = f"{start_id}->{goal_id}"
+
             paths.append(path)
-            grid = PcbGrid(self.n_grid_spaces + self.grid_padding, not_allowed)
+            not_allowed.append(start_pos)
+            not_allowed.append(goal_pos)
 
         return paths
