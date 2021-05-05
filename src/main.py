@@ -306,7 +306,11 @@ class MainWindow(QMainWindow):
         self.schematic.converted_image_trace_color = self.trace
         self.schematic.set_monte_carlo_parameters(self.grid, self.padding, self.target)
         #print("HELLO1")
-        if self.checkConnections:
+        if not self.checkConnections():
+            self.popupError("Ensure that all the components are connected to each other and form a closed loop.")
+        elif len(self.components) == 0:
+            self.popupError("The circuit is empty. Please design a circuit.")
+        else:
             self.schematic.monte_carlo()
             if self.schematic.paths == None:
                 self.popupError("Cannot generate layout. Circuit may be impossible on single layer PCB. Try to change grid settings.")
@@ -321,8 +325,6 @@ class MainWindow(QMainWindow):
                 #print("HELLO!")
                 self.ui.label_pcb_image.setPixmap(image)
                 #print("HELLO?")
-        else:
-            self.popupError("Ensure that all the components are connected to each other and form a closed loop.")
 
     def saveImage(self):
         fileName = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File', '', 'PNG (*.png)')
@@ -334,10 +336,11 @@ class MainWindow(QMainWindow):
 
     # Checks if all the components have connections
     def checkConnections(self):
+        allConnected = True
         for component in self.components:
             if component.pin0Connection == None or component.pin1Connection == None:
-                return False
-        return True
+                allConnected = False
+        return allConnected
     # Update the positions of the components
     def updatePositions(self):
         for component in self.components:
@@ -348,8 +351,8 @@ class MainWindow(QMainWindow):
     # Print all components in schematic
     def printSchematic(self):
         self.schematic.print_all_components_strings()
-        #print("connections:", self.connections)
-        #print("components:", self.components)
+        print("connections:", self.connections)
+        print("components:", self.components)
 
     # Add component to the scene
     def addComponent(self, component, name='', posX=1500, posY=1000, compId = None, loading = False):
