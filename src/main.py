@@ -379,27 +379,32 @@ class MainWindow(QMainWindow):
         #print("components:", self.components)
 
     # Add component to the scene
-    def addComponent(self, component, name='', posX=1500, posY=1000):
-        ok = True
-        if name == '':
-            name, ok = QtWidgets.QInputDialog.getText(
-                self, 'Component Name', 'Enter component name:')
-        if ok:
-            newComponent = Component(
-                self.scene, self.outlineColor, component, name, self.ids)
-            newComponent.boundingBox.moveBy(posX, posY)
-            newComponent.schematicArgs = {
-                "id": self.ids, "label": newComponent.name, "component_type": component}
-            newComponent.id = self.ids
-            self.schematic.add_component(newComponent.schematicArgs)
-            self.schematic.set_component_schematic_pos(
-                self.ids, [newComponent.boundingBox.pos().x(), newComponent.boundingBox.pos().y()])
-            #print(self.component1.boundingBox.pos().x(), self.component1.boundingBox.pos().y())
-            self.components.append(newComponent)
-            self.ids += 1
+    def addComponent(self, component, name='', posX=1500, posY=1000, compId = None, loading = False):
+        if not loading:
+            ok = True
+            if name == '':
+                name, ok = QtWidgets.QInputDialog.getText(
+                    self, 'Component Name', 'Enter component name:')
+            if ok:
+                newComponent = Component(
+                    self.scene, self.outlineColor, component, name, self.ids)
+                newComponent.boundingBox.moveBy(posX, posY)
+                newComponent.schematicArgs = {
+                    "id": self.ids, "label": newComponent.name, "component_type": component}
+                newComponent.id = self.ids
+                self.schematic.add_component(newComponent.schematicArgs)
+                self.schematic.set_component_schematic_pos(
+                    self.ids, [newComponent.boundingBox.pos().x(), newComponent.boundingBox.pos().y()])
+                #print(self.component1.boundingBox.pos().x(), self.component1.boundingBox.pos().y())
+                self.components.append(newComponent)
+                self.ids += 1
 
-        #for component in self.schematic.components.values():
-            #print(component.to_string())
+    # Created components when loading in
+    def loadComponent(self, compType, compId, name, posX, posY):
+        newComponent = Component(self.scene, self.outlineColor, compType, name, compId)
+        newComponent.boundingBox.moveBy(posX, posY)
+        #print(self.component1.boundingBox.pos().x(), self.component1.boundingBox.pos().y())
+        self.components.append(newComponent)
 
     # Deleted selected component from scene
     def deleteComponent(self):
@@ -577,7 +582,7 @@ class MainWindow(QMainWindow):
             self, 'Open File', '', 'Circuit Data (*.circ)')
         self.schematic.load(fileName[0])
         for component in self.schematic.components.values():
-            self.addComponent(component.__class__.__name__, component.label, component.schem_position[0], component.schem_position[1])
+            self.loadComponent(component.__class__.__name__, component.id, component.label, component.schem_position[0], component.schem_position[1])
             if component.id > self.ids:
                 self.ids = component.id
         for connection in self.schematic.connections_list:
