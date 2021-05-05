@@ -207,6 +207,8 @@ class MainWindow(QMainWindow):
         self.ui.btn_design.clicked.connect(lambda: self.ui.stacked_workspaces.setCurrentWidget(self.ui.page_design))
         self.ui.btn_convert.clicked.connect(lambda: self.ui.stacked_workspaces.setCurrentWidget(self.ui.page_convert))
         self.ui.btn_file.clicked.connect(lambda: self.ui.stacked_workspaces.setCurrentWidget(self.ui.page_file))
+        self.ui.btn_layout_settings.clicked.connect(lambda:self.ui.stacked_workspaces.setCurrentWidget(self.ui.page_convert))
+        self.ui.btn_generate.clicked.connect(lambda:self.ui.stacked_workspaces.setCurrentWidget(self.ui.page_generated))
 
         self.ui.btn_add.clicked.connect(lambda: self.toggleTools(100, "btn_add"))
         self.ui.btn_color.clicked.connect(lambda: self.toggleTools(100, "btn_colors"))
@@ -247,14 +249,11 @@ class MainWindow(QMainWindow):
 
         self.ui.btn_black.clicked.connect(lambda: self.changePenColor("black"))
         self.ui.btn_red.clicked.connect(lambda: self.changePenColor("red"))
-        self.ui.btn_orange.clicked.connect(
-            lambda: self.changePenColor("orange"))
-        self.ui.btn_yellow.clicked.connect(
-            lambda: self.changePenColor("yellow"))
+        self.ui.btn_orange.clicked.connect(lambda: self.changePenColor("orange"))
+        self.ui.btn_yellow.clicked.connect(lambda: self.changePenColor("yellow"))
         self.ui.btn_green.clicked.connect(lambda: self.changePenColor("green"))
         self.ui.btn_blue.clicked.connect(lambda: self.changePenColor("blue"))
-        self.ui.btn_purple.clicked.connect(
-            lambda: self.changePenColor("purple"))
+        self.ui.btn_purple.clicked.connect(lambda: self.changePenColor("purple"))
         self.ui.btn_pink.clicked.connect(lambda: self.changePenColor("pink"))
         self.ui.btn_cyan.clicked.connect(lambda: self.changePenColor("cyan"))
         self.ui.btn_brown.clicked.connect(lambda: self.changePenColor("brown"))
@@ -272,6 +271,25 @@ class MainWindow(QMainWindow):
 
         self.show()
 
+# ------------------- SET CONVERT/GENERATE PAGE ------------------- 
+        self.ui.label_grid_value.setText(str(self.ui.slider_grid.value()))
+        self.ui.slider_grid.valueChanged.connect(lambda: self.updateSliderValue(self.ui.label_grid_value, self.ui.slider_grid))
+
+        self.ui.label_padding_value.setText(str(self.ui.slider_padding.value()))
+        self.ui.slider_padding.valueChanged.connect(lambda: self.updateSliderValue(self.ui.label_padding_value, self.ui.slider_padding))
+
+        self.ui.label_target_value.setText(str(0.01))
+        self.ui.slider_target.valueChanged.connect(lambda: self.updateSliderValue(self.ui.label_target_value, self.ui.slider_target, True))
+
+        self.ui.label_scaling_value.setText(str(self.ui.slider_scaling.value()))
+        self.ui.slider_scaling.valueChanged.connect(lambda: self.updateSliderValue(self.ui.label_scaling_value, self.ui.slider_scaling))
+    
+    def updateSliderValue(self, label, slider, target = False):
+        if target:
+            label.setText(str((slider.value()/100)))
+        else:
+            label.setText(str(slider.value()))
+# -----------------------------------------------------------------
 
 # ------------------- BUTTON FUNCTIONS -------------------
     # Update the positions of the components
