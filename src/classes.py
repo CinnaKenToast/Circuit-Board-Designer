@@ -985,7 +985,5 @@ class Schematic:
             elif dj == 0:
                 reading_room = 0
 
-            print(text_size, pin_positions, label_center_i, label_center_j)
-
             draw.text((label_center_j, label_center_i + reading_room), label_text,
                       fill=trace_color, font=font)
