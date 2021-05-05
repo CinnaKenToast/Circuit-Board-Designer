@@ -208,7 +208,6 @@ class MainWindow(QMainWindow):
         self.ui.btn_convert.clicked.connect(lambda: self.ui.stacked_workspaces.setCurrentWidget(self.ui.page_convert))
         self.ui.btn_file.clicked.connect(lambda: self.ui.stacked_workspaces.setCurrentWidget(self.ui.page_file))
         self.ui.btn_layout_settings.clicked.connect(lambda:self.ui.stacked_workspaces.setCurrentWidget(self.ui.page_convert))
-        self.ui.btn_generate.clicked.connect(lambda:self.ui.stacked_workspaces.setCurrentWidget(self.ui.page_generated))
 
         self.ui.btn_add.clicked.connect(lambda: self.toggleTools(100, "btn_add"))
         self.ui.btn_color.clicked.connect(lambda: self.toggleTools(100, "btn_colors"))
@@ -272,6 +271,23 @@ class MainWindow(QMainWindow):
         self.show()
 
 # ------------------- SET CONVERT/GENERATE PAGE ------------------- 
+        
+
+        self.backgroundGroup = QtWidgets.QButtonGroup()
+        self.traceGroup = QtWidgets.QButtonGroup()
+        self.backgroundGroup.addButton(self.ui.radio_black)
+        self.backgroundGroup.addButton(self.ui.radio_navy)
+        self.backgroundGroup.addButton(self.ui.radio_light_gray)
+        self.backgroundGroup.addButton(self.ui.radio_dark_gray)
+        self.traceGroup.addButton(self.ui.radio_white)
+        self.traceGroup.addButton(self.ui.radio_yellow)
+        self.traceGroup.addButton(self.ui.radio_red)
+        self.traceGroup.addButton(self.ui.radio_green)
+        self.traceGroup.addButton(self.ui.radio_purple)
+        self.traceGroup.addButton(self.ui.radio_cyan)
+        self.ui.radio_black.setChecked(True)
+        self.ui.radio_white.setChecked(True)
+
         self.ui.label_grid_value.setText(str(self.ui.slider_grid.value()))
         self.ui.slider_grid.valueChanged.connect(lambda: self.updateSliderValue(self.ui.label_grid_value, self.ui.slider_grid))
 
@@ -283,12 +299,53 @@ class MainWindow(QMainWindow):
 
         self.ui.label_scaling_value.setText(str(self.ui.slider_scaling.value()))
         self.ui.slider_scaling.valueChanged.connect(lambda: self.updateSliderValue(self.ui.label_scaling_value, self.ui.slider_scaling))
+
+        self.ui.btn_generate.clicked.connect(lambda: self.runMonteCarlo())
     
     def updateSliderValue(self, label, slider, target = False):
         if target:
             label.setText(str((slider.value()/100)))
         else:
             label.setText(str(slider.value()))
+
+    def runMonteCarlo(self):
+        self.grid = self.ui.slider_grid.value()
+        self.padding = self.ui.slider_padding.value()
+        self.target = self.ui.slider_target.value()/100
+        self.scaling = self.ui.slider_target.value()
+        backgroundBtn = self.backgroundGroup.checkedButton()
+        traceBtn = self.traceGroup.checkedButton()
+        if backgroundBtn == self.ui.radio_black:
+            self.background = (255,255,255)
+        elif backgroundBtn == self.ui.radio_navy:
+            self.background = (38, 81, 111)
+        elif backgroundBtn == self.ui.radio_dark_gray:
+            self.background = (124, 124, 124)
+        else:
+            self.background = (167, 167, 167)
+
+        if traceBtn == self.ui.radio_white:
+            self.trace = (0,0,0)
+        elif traceBtn == self.ui.radio_red:
+            self.trace = (255, 0, 0)
+        elif traceBtn == self.ui.radio_yellow:
+            self.trace = (255, 255, 0)
+        elif traceBtn == self.ui.radio_green:
+            self.trace = (0, 255, 0)
+        elif traceBtn == self.ui.radio_cyan:
+            self.trace = (0, 255, 255)
+        else:
+            self.trace = (255, 0, 255)
+        print(self.background)
+        print(self.trace)
+        self.schematic.set_monte_carlo_parameters(self.grid, self.padding, self.target)
+        self.schematic.monte_carlo()
+        if self.schematic.paths == []:
+            self.ui.label_convert_settings.setText("Cannot generate layout. Circuit may be impossible on single layer PCB. Try to change grid settings.")
+        else:
+            self.schematic.convert_to_pcb_image()
+            self.ui.stacked_workspaces.setCurrentWidget(self.ui.page_generated)
+            self.ui.label_pcb_image.setPixmap(self.schematic.converted_image)
 # -----------------------------------------------------------------
 
 # ------------------- BUTTON FUNCTIONS -------------------
