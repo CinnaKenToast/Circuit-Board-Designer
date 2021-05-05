@@ -12,6 +12,9 @@ This directory includes all of the documents throughout the CSCI 4805 Course. Th
 
 This directory is solely used to give the user examples on how to use different parts of the backend program. It is also used for testing purposes by the developers. 
 
+## readmeImg
+
+This directory is just to contain the images used in this README.
 ## src
 
 This is the source directory of the entire project.
@@ -45,6 +48,63 @@ Navigate to the src folder in cmd and the run **python3 main.py** in cmd.
 ![Select](/readmeImg/select.png)
 
 In order to select a component, click on the label of said component. 
+
+![Select Pin](/readmeImg/pin.png)
+
+When selecting a pins to connect, click on the open circle of the corresponding pin on the component. 
+
+![Toggle](/readmeImg/toggle.png)
+
+Press the this button to get the option to change the page of the program. A slideout menu will appear to change the screen.
+
+![Menus](/readmeImg/pages.png)
+
+Press one of the page buttons in the slideout menu after pressing the toggle menu to change to the different screens of the program. 
+**Circuit Designer - Design a circuit by adding components to a workspace.**
+**Circuit/PCB Converter - Convert the designed circuit to a PCB Layout.**
+**File Management - Create, open, and save circuit diagrams.**
+
+![Wire](/readmeImg/wire.png)
+
+Press this button to connect two pins of different components. **You must select two pins to connect components, and they cannot be from the same component.**
+
+![Snip](/readmeImg/snip.png)
+
+Press this button to remove the connection from two pins of different components. **You must select two pins to disconnect components, and they cannot be from the same component.**
+
+![Add](/readmeImg/add.png)
+
+Press this button to get the option to add a component to the scene. A slideout menu will appear to allow you to choose a component.
+
+![Delete](/readmeImg/delete.png)
+
+Press this button to delete a component from the scene. **You must select a component to delete by clicking on its label. Deleting a component with connections will not remove the connections. This feature is not implemented yet.**
+
+![Label](readmeImg/label.png)
+
+Press this button to change the label of a component. **You must select a component to change its label by clicking on its label.**
+
+![Comment](readmeImg/label.png)
+
+**This feature is not yet added to the program.** Press this button to add a comment to the scene.
+
+![Color](readmeImg/color.png)
+
+Press this button to get the option to change the color any new wires that are added to the scene. A slideout menu will appear to change the color of the wires.
+
+![ZoomHome](readmeImg/zoomHome.png)
+
+Press this button to set the scene back to its deafult zoom setting.
+
+![ZoomIn](readmeImg/zoomIn.png)
+
+Press this button to zoom into the scene. The scene will only zoom into to a certain distance.
+
+![ZoomHome](readmeImg/zoomOut.png)
+
+Press this button to zoom out of the scene. The scene will only zoom out to a certain distance.
+
+
 
 
 ## Licenses
