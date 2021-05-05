@@ -16,4 +16,15 @@ Stuff
 
 This is the source of directory of the entire project.
 
-<ins>text</ins>
+<ins>color_img</ins>
+Contains all of the different .png files for the color-related buttons on the GUI.
+
+<ins>comp_img</ins>
+Contains all of the different .svg files for the components on the workspace of the GUI.
+
+<ins>img</ins>
+Contains all of the different .png files for the other buttons not included in the color_img folder.
+
+The classes.py file contains all of the class data related to the monte carlo and A* methods for the PCB Optimization
+
+The main.py file contains all of the class data related to the GUI, file management, and the driver function of the program.
