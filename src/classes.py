@@ -864,6 +864,7 @@ class Schematic:
         return paths
 
     def trim_pcb_layout(self):
+        print(self.paths)
         pcb_dims = self.pcb_area(self.paths)
         for i in range(0, len(self.paths)):
             nodes = self.paths[i]["path_nodes"]
