@@ -86,8 +86,7 @@ class Component(QtWidgets.QGraphicsRectItem):
         self.compType = compType
         self.id = id
         self.boundingBox = self.scene.addRect(0, 0, 170, 90, pen)
-        self.widget = Widget(compType, self.name,
-                             self.scene, self.boundingBox, self.id)
+        self.widget = Widget(compType, self.name, self.scene, self.boundingBox, self.id)
         self.sceneWidget = self.scene.addWidget(self.widget)
         self.boundingBox.setFlag(QtWidgets.QGraphicsItem.ItemIsMovable)
         self.boundingBox.setFlag(QtWidgets.QGraphicsItem.ItemIsSelectable)
@@ -110,8 +109,7 @@ class MainWindow(QMainWindow):
         self.zoom = 100
         self.scene.setSceneRect(0.0, 0.0, 3000.0, 2000.0)
         self.ui.window_canvas.move(1500.0, 1000.0)
-        self.ui.window_canvas.setDragMode(
-            QtWidgets.QGraphicsView.DragMode.ScrollHandDrag)
+        self.ui.window_canvas.setDragMode(QtWidgets.QGraphicsView.DragMode.ScrollHandDrag)
         self.ui.window_canvas.centerOn(1500.0, 1000.0)
         self.ids = 2
         self.outlineColor = QtGui.QPen(QtCore.Qt.black)
@@ -125,24 +123,18 @@ class MainWindow(QMainWindow):
         self.connections = []
 
 # ------------------ Test Components ------------------
-        self.component1 = Component(
-            self.scene, self.outlineColor, "Resistor", "r1", 0)
+        self.component1 = Component(self.scene, self.outlineColor, "Resistor", "r1", 0)
         self.component1.boundingBox.moveBy(1000, 1000)
-        self.component1.schematicArgs = {
-            "id": 0, "label": self.component1.name, "component_type": "Resistor"}
+        self.component1.schematicArgs = {"id": 0, "label": self.component1.name, "component_type": "Resistor"}
         self.schematic.add_component(self.component1.schematicArgs)
-        self.schematic.set_component_schematic_pos(
-            0, [self.component1.boundingBox.pos().x(), self.component1.boundingBox.pos().y()])
+        self.schematic.set_component_schematic_pos(0, [self.component1.boundingBox.pos().x(), self.component1.boundingBox.pos().y()])
         self.components.append(self.component1)
 
-        self.component2 = Component(
-            self.scene, self.outlineColor, "Diode", "d1", 1)
+        self.component2 = Component(self.scene, self.outlineColor, "Diode", "d1", 1)
         self.component2.boundingBox.moveBy(1500, 1000)
-        self.component2.schematicArgs = {
-            "id": 1, "label": self.component2.name, "component_type": "Diode"}
+        self.component2.schematicArgs = {"id": 1, "label": self.component2.name, "component_type": "Diode"}
         self.schematic.add_component(self.component2.schematicArgs)
-        self.schematic.set_component_schematic_pos(
-            1, [self.component2.boundingBox.pos().x(), self.component2.boundingBox.pos().y()])
+        self.schematic.set_component_schematic_pos(1, [self.component2.boundingBox.pos().x(), self.component2.boundingBox.pos().y()])
         self.components.append(self.component2)
 # -----------------------------------------------------
 
@@ -160,17 +152,13 @@ class MainWindow(QMainWindow):
         }
 
         # Connect buttons to functions
-        self.ui.btn_resistor.clicked.connect(
-            lambda: self.addComponent("Resistor"))
-        self.ui.btn_capacitor.clicked.connect(
-            lambda: self.addComponent("Capacitor"))
+        self.ui.btn_resistor.clicked.connect(lambda: self.addComponent("Resistor"))
+        self.ui.btn_capacitor.clicked.connect(lambda: self.addComponent("Capacitor"))
         self.ui.btn_diode.clicked.connect(lambda: self.addComponent("Diode"))
         self.ui.btn_led.clicked.connect(lambda: self.addComponent("Led"))
-        self.ui.btn_inductor.clicked.connect(
-            lambda: self.addComponent("Inductor"))
+        self.ui.btn_inductor.clicked.connect(lambda: self.addComponent("Inductor"))
         self.ui.btn_switch.clicked.connect(lambda: self.addComponent("Switch"))
-        self.ui.btn_voltage.clicked.connect(
-            lambda: self.addComponent("VoltageSource"))
+        self.ui.btn_voltage.clicked.connect(lambda: self.addComponent("VoltageSource"))
 
         self.ui.btn_delete.clicked.connect(lambda: self.deleteComponent())
 
@@ -267,7 +255,6 @@ class MainWindow(QMainWindow):
         self.ui.label_padding_value.setText(str(self.ui.slider_padding.value()))
         self.ui.slider_padding.valueChanged.connect(lambda: self.updateSliderValue(self.ui.label_padding_value, self.ui.slider_padding))
 
-        #self.ui.slider_target.setSliderPosition(50)
         self.ui.label_target_value.setText(str(0.05))
         self.ui.slider_target.valueChanged.connect(lambda: self.updateSliderValue(self.ui.label_target_value, self.ui.slider_target, True))
 
@@ -319,31 +306,38 @@ class MainWindow(QMainWindow):
         self.schematic.converted_image_trace_color = self.trace
         self.schematic.set_monte_carlo_parameters(self.grid, self.padding, self.target)
         #print("HELLO1")
-        self.schematic.monte_carlo()
-        if self.schematic.paths == None:
-            self.ui.label_convert_settings.setText("Cannot generate layout. Circuit may be impossible on single layer PCB. Try to change grid settings.")
+        if self.checkConnections:
+            self.schematic.monte_carlo()
+            if self.schematic.paths == None:
+                self.popupError("Cannot generate layout. Circuit may be impossible on single layer PCB. Try to change grid settings.")
+            else:
+                self.schematic.convert_to_pcb_image()
+                self.ui.stacked_workspaces.setCurrentWidget(self.ui.page_generated)
+                #print(self.schematic.converted_image)
+                #print("HELLO")
+                img = ImageQt.ImageQt(self.schematic.converted_image)
+                #print("HELLO@")
+                image = QtGui.QPixmap.fromImage(img)
+                #print("HELLO!")
+                self.ui.label_pcb_image.setPixmap(image)
+                #print("HELLO?")
         else:
-            self.schematic.convert_to_pcb_image()
-            self.ui.stacked_workspaces.setCurrentWidget(self.ui.page_generated)
-            #print(self.schematic.converted_image)
-            #print("HELLO")
-            img = ImageQt.ImageQt(self.schematic.converted_image)
-            #print("HELLO@")
-            image = QtGui.QPixmap.fromImage(img)
-            #print("HELLO!")
-            self.ui.label_pcb_image.setPixmap(image)
-            #print("HELLO?")
+            self.popupError("Ensure that all the components are connected to each other and form a closed loop.")
 
     def saveImage(self):
-        print("HELLO")
         fileName = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File', '', 'PNG (*.png)')
-        print("BYE")
         #print(fileName[0])
         self.schematic.converted_image.save(fileName[0])
-        print("GET OUTTA HERE ALREADY")
 # -----------------------------------------------------------------
 
 # ------------------- BUTTON FUNCTIONS -------------------
+
+    # Checks if all the components have connections
+    def checkConnections(self):
+        for component in self.components:
+            if component.pin0Connection == None or component.pin1Connection == None:
+                return False
+        return True
     # Update the positions of the components
     def updatePositions(self):
         for component in self.components:
@@ -387,22 +381,27 @@ class MainWindow(QMainWindow):
 
     # Deleted selected component from scene
     def deleteComponent(self):
-        for component in self.components:
-            if component.boundingBox.pos() == self.scene.selectedItems()[0].pos():
-                compId = component.id
-                self.scene.removeItem(self.scene.selectedItems()[0])
-                comp = component
-                self.components.remove(comp)
-                self.schematic.remove_component(compId)
-                del comp
+        if len(self.scene.selectedItems()) == 0:
+            self.popupError("Please select a component to delete.")
+        elif len(self.scene.selectedItems()) > 1:
+            self.popupError("Please only delete one component at a time.")
+        else:
+            for component in self.components:
+                if component.boundingBox.pos() == self.scene.selectedItems()[0].pos():
+                    compId = component.id
+                    self.scene.removeItem(self.scene.selectedItems()[0])
+                    comp = component
+                    self.components.remove(comp)
+                    self.schematic.remove_component(compId)
+                    del comp
 
     # Adds connection between two components
     def addConnection(self, comp0Id=None, comp1Id=None):
         if comp0Id == None and comp1Id == None:
             if len(eventList) < 2:
-                print("Not enough events")
+                self.popupError("Please click two component pins to add their connection.")
             elif eventList[0][0] == eventList[1][0]:
-                print("Can't connect the pins of same component")
+                self.popupError("There can't be a connection between pins of the same component.")
             else:
                 line = self.scene.addLine(QtCore.QLineF(
                     eventList[0][1], eventList[1][1]), self.penColor)
@@ -464,9 +463,9 @@ class MainWindow(QMainWindow):
     # Delete the connection between two components
     def removeConnection(self):
         if len(eventList) < 2:
-            print("Not enough events")
+            self.popupError("Please click two component pins to remove their connection.")
         elif eventList[0][0] == eventList[1][0]:
-            print("There can't be a connection between pins of the same component.")
+            self.popupError("There can't be a connection between pins of the same component.")
         else:
             pinId0 = str(eventList[0][2][0]) + "_" + str(eventList[0][2][1])
             pinId1 = str(eventList[1][2][0]) + "_" + str(eventList[1][2][1])
@@ -496,7 +495,7 @@ class MainWindow(QMainWindow):
     # Change the label on a component
     def changeLabel(self):
         if len(self.scene.selectedItems()) == 0:
-            print("Nothing selected")
+            self.popupError("Please select a component to label.")
         else:
             name, ok = QtWidgets.QInputDialog.getText(
                 self, 'Component Name', 'Enter component name:')
@@ -597,6 +596,14 @@ class MainWindow(QMainWindow):
         self.ui.label_file_location.setText(self.file)
         self.ui.window_canvas.centerOn(1500.0, 1000.0)
         self.ui.stacked_workspaces.setCurrentWidget(self.ui.page_design)
+
+    # Calls popup error message box
+    def popupError(self, text):
+        msg = QtWidgets.QMessageBox()
+        msg.setWindowTitle("Error")
+        msg.setText(text)
+        msg.setIcon(QtWidgets.QMessageBox.Warning)
+        x = msg.exec_()
 
     # Toggles the left pull out menu for the different screens
     def toggleMenu(self, maxWidth, enable):
