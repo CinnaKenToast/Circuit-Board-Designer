@@ -454,8 +454,8 @@ class Schematic:
         self.converted_image_scaling = 50
         self.converted_image_trace_color = (135, 10, 99)
         self.converted_image = None
+        
     # Allows for setting the monte carlo params so it can continue (-Jason)
-
     def set_monte_carlo_parameters(self, n_grid_spaces=5, a_star_grid_padding=4, target_score=.5):
         self.n_grid_spaces = n_grid_spaces
         self.a_star_grid_padding = a_star_grid_padding
