@@ -4,6 +4,7 @@ from PySide2 import QtCore, QtGui, QtWidgets, QtSvg
 from PySide2.QtCore import (QCoreApplication, QPropertyAnimation, QDate, QDateTime, QMetaObject, QObject, QPoint, QRect, QSize, QTime, QUrl, Qt, QEvent)
 from PySide2.QtGui import (QBrush, QColor, QConicalGradient, QCursor, QFont, QFontDatabase, QIcon, QKeySequence, QLinearGradient, QPalette, QPainter, QPixmap, QRadialGradient)
 from PySide2.QtWidgets import *
+from PIL import ImageQt
 
 # GUI FILE
 from ui_main import Ui_MainWindow
@@ -208,7 +209,6 @@ class MainWindow(QMainWindow):
         self.ui.btn_convert.clicked.connect(lambda: self.ui.stacked_workspaces.setCurrentWidget(self.ui.page_convert))
         self.ui.btn_file.clicked.connect(lambda: self.ui.stacked_workspaces.setCurrentWidget(self.ui.page_file))
         self.ui.btn_layout_settings.clicked.connect(lambda:self.ui.stacked_workspaces.setCurrentWidget(self.ui.page_convert))
-        self.ui.btn_generate.clicked.connect(lambda:self.ui.stacked_workspaces.setCurrentWidget(self.ui.page_generated))
 
         self.ui.btn_add.clicked.connect(lambda: self.toggleTools(100, "btn_add"))
         self.ui.btn_color.clicked.connect(lambda: self.toggleTools(100, "btn_colors"))
@@ -272,23 +272,94 @@ class MainWindow(QMainWindow):
         self.show()
 
 # ------------------- SET CONVERT/GENERATE PAGE ------------------- 
+        
+        
+        self.backgroundGroup = QtWidgets.QButtonGroup()
+        self.traceGroup = QtWidgets.QButtonGroup()
+        self.backgroundGroup.addButton(self.ui.radio_black)
+        self.backgroundGroup.addButton(self.ui.radio_navy)
+        self.backgroundGroup.addButton(self.ui.radio_light_gray)
+        self.backgroundGroup.addButton(self.ui.radio_dark_gray)
+        self.traceGroup.addButton(self.ui.radio_white)
+        self.traceGroup.addButton(self.ui.radio_yellow)
+        self.traceGroup.addButton(self.ui.radio_red)
+        self.traceGroup.addButton(self.ui.radio_green)
+        self.traceGroup.addButton(self.ui.radio_purple)
+        self.traceGroup.addButton(self.ui.radio_cyan)
+        self.ui.radio_black.setChecked(True)
+        self.ui.radio_white.setChecked(True)
+
         self.ui.label_grid_value.setText(str(self.ui.slider_grid.value()))
         self.ui.slider_grid.valueChanged.connect(lambda: self.updateSliderValue(self.ui.label_grid_value, self.ui.slider_grid))
 
         self.ui.label_padding_value.setText(str(self.ui.slider_padding.value()))
         self.ui.slider_padding.valueChanged.connect(lambda: self.updateSliderValue(self.ui.label_padding_value, self.ui.slider_padding))
 
-        self.ui.label_target_value.setText(str(0.01))
+        #self.ui.slider_target.setSliderPosition(50)
+        self.ui.label_target_value.setText(str(0.05))
         self.ui.slider_target.valueChanged.connect(lambda: self.updateSliderValue(self.ui.label_target_value, self.ui.slider_target, True))
 
         self.ui.label_scaling_value.setText(str(self.ui.slider_scaling.value()))
         self.ui.slider_scaling.valueChanged.connect(lambda: self.updateSliderValue(self.ui.label_scaling_value, self.ui.slider_scaling))
+
+        self.ui.btn_generate.clicked.connect(lambda: self.setupMonteCarlo())
+        self.ui.btn_generate_new.clicked.connect(lambda: self.setupMonteCarlo())
     
     def updateSliderValue(self, label, slider, target = False):
         if target:
             label.setText(str((slider.value()/100)))
         else:
             label.setText(str(slider.value()))
+
+    def setupMonteCarlo(self):
+        print("HELLO0")
+        self.grid = self.ui.slider_grid.value()
+        self.padding = self.ui.slider_padding.value()
+        self.target = self.ui.slider_target.value()/100
+        self.scaling = self.ui.slider_target.value()
+        backgroundBtn = self.backgroundGroup.checkedButton()
+        traceBtn = self.traceGroup.checkedButton()
+        if backgroundBtn == self.ui.radio_black:
+            self.background = (0,0,0)
+        elif backgroundBtn == self.ui.radio_navy:
+            self.background = (38, 81, 111)
+        elif backgroundBtn == self.ui.radio_dark_gray:
+            self.background = (124, 124, 124)
+        else:
+            self.background = (167, 167, 167)
+
+        if traceBtn == self.ui.radio_white:
+            self.trace = (255,255,255)
+        elif traceBtn == self.ui.radio_red:
+            self.trace = (255, 0, 0)
+        elif traceBtn == self.ui.radio_yellow:
+            self.trace = (255, 255, 0)
+        elif traceBtn == self.ui.radio_green:
+            self.trace = (0, 255, 0)
+        elif traceBtn == self.ui.radio_cyan:
+            self.trace = (0, 255, 255)
+        else:
+            self.trace = (255, 0, 255)
+        print(self.background)
+        print(self.trace)
+        self.schematic.converted_image_bg_color = self.background
+        self.schematic.converted_image_trace_color = self.trace
+        self.schematic.set_monte_carlo_parameters(self.grid, self.padding, self.target)
+        print("HELLO1")
+        self.schematic.monte_carlo()
+        if self.schematic.paths == []:
+            self.ui.label_convert_settings.setText("Cannot generate layout. Circuit may be impossible on single layer PCB. Try to change grid settings.")
+        else:
+            self.schematic.convert_to_pcb_image()
+            self.ui.stacked_workspaces.setCurrentWidget(self.ui.page_generated)
+            #print(self.schematic.converted_image)
+            print("HELLO")
+            img = ImageQt.ImageQt(self.schematic.converted_image)
+            print("HELLO@")
+            image = QtGui.QPixmap.fromImage(img)
+            print("HELLO!")
+            self.ui.label_pcb_image.setPixmap(image)
+            print("HELLO?")
 # -----------------------------------------------------------------
 
 # ------------------- BUTTON FUNCTIONS -------------------
@@ -374,8 +445,13 @@ class MainWindow(QMainWindow):
                         else:
                             component.pin1Connection = line
         else:  # This is only run when the program is loading in a file
-            comp0Id, comp0Btn = int(comp0Id.split("_"))
-            comp1Id, comp1Btn = int(comp1Id.split("_"))
+            comp0Id, comp0Btn = comp0Id.split("_")
+            comp1Id, comp1Btn = comp1Id.split("_")
+            comp0Id = int(comp0Id)
+            comp0Btn = int(comp0Btn)
+            comp1Id = int(comp1Id)
+            comp1Btn = int(comp1Btn)
+            print(comp0Id, comp0Btn, comp1Id, comp1Btn)
             for component in self.components:
                 if component.id == comp0Id:
                     if comp0Btn == 0:
@@ -391,8 +467,7 @@ class MainWindow(QMainWindow):
                     else:
                         pin1x = component.boundingBox.pos().x() + 170 - 12
                         pin1y = component.boundingBox.pos().y() + 25 + 60/2
-            line = self.scene.addLine(QtCore.QLineF(
-                pin0x, pin0y, pin1x, pin1y, self.penColor))
+            line = self.scene.addLine(QtCore.QLineF(pin0x, pin0y, pin1x, pin1y), self.penColor)
             self.connections.append(line)
             for component in self.components:
                 if component.id == comp0Id:
@@ -438,6 +513,7 @@ class MainWindow(QMainWindow):
                 component2.pin0Connection = None
             else:
                 component2.pin1Connection = None
+    
     # Change the label on a component
     def changeLabel(self):
         if len(self.scene.selectedItems()) == 0:
@@ -506,13 +582,12 @@ class MainWindow(QMainWindow):
             self, 'Open File', '', 'Circuit Data (*.circ)')
         self.schematic.load(fileName[0])
         for component in self.schematic.components.values():
-            self.addComponent(component.__class__.__name__, component.label,
-                              component.schem_position[0], component.schem_position[1])
+            self.addComponent(component.__class__.__name__, component.label, component.schem_position[0], component.schem_position[1])
             if component.id > self.ids:
                 self.ids = component.id
-        # for connection in self.schematic.connections_list:
-            # print("HERE")
-            #self.addConnection(connection[0], connection[1])
+        for connection in self.schematic.connections_list:
+            print(connection[0], connection[1])
+            self.addConnection(connection[0], connection[1])
 
         # self.printSchematic()
         self.file = fileName[0]
