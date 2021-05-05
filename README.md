@@ -29,5 +29,14 @@ The classes.py file contains all of the class data related to the monte carlo an
 
 The main.py file contains all of the class data related to the GUI, file management, and the driver function of the program.
 
-# Installation
+# Required Libraries and Installation (Windows Only)
+* Install the latest version of Python3 and make sure to include python3 to your PATH
+* Install Git and make sure to include git to your PATH
+* In cmd run **pip3 install PyQt5**
+* In cmd run **pip3 install PySide2**
+* In cmd run **pip3 install numpy**
+* In cmd run **pip3 install Pillow**
+* In cmd run **git clone **
 
+# Run the Program
+Navigate to the src folder in cmd and the run **python3 main.py** in cmd.
