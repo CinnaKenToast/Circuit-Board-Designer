@@ -33,8 +33,8 @@ class Widget(QtWidgets.QWidget):
         self.ui = Ui_Form()
         self.ui.setupUi(self)
         self.ui.label_name.setText(name)
-        self.ui.btn_pin0.clicked.connect(lambda: self.printLeftButtonPos())
-        self.ui.btn_pin1.clicked.connect(lambda: self.printRightButtonPos())
+        self.ui.btn_pin0.clicked.connect(lambda: self.addLeftButtonPos())
+        self.ui.btn_pin1.clicked.connect(lambda: self.addRightButtonPos())
         self.boundingBox = boundingBox
         self.scene = scene
         self.id = id
@@ -54,14 +54,14 @@ class Widget(QtWidgets.QWidget):
         elif compType == "VoltageSource":
             self.setImage("VoltageSource")
 
-    def printLeftButtonPos(self):
+    def addLeftButtonPos(self):
         # self.boundingBox.setSelected(True)
         # print(self.boundingBox.pos())
         pin0x = self.boundingBox.pos().x() + 12
         pin0y = self.boundingBox.pos().y() + 25 + 60/2
         addToEvent((self.boundingBox, QPoint(pin0x, pin0y), [self.id, 0]))
 
-    def printRightButtonPos(self):
+    def addRightButtonPos(self):
         # self.boundingBox.setSelected(True)
         # print(self.boundingBox.pos())
         pin1x = self.boundingBox.pos().x() + 170 - 12
@@ -541,6 +541,7 @@ class MainWindow(QMainWindow):
         #print(color)
         self.toggleTools(50, "btn_pick_color")
 
+    # Clears the schematic class and the scene
     def clearSchematic(self):
         for component in self.components:
             del component
