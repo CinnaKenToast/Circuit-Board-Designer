@@ -52,7 +52,7 @@ class Widget(QtWidgets.QWidget):
         elif compType == "Switch":
             self.setImage("Switch")
         elif compType == "VoltageSource":
-            self.setImage("Voltage Source")
+            self.setImage("VoltageSource")
 
     def printLeftButtonPos(self):
         # self.boundingBox.setSelected(True)
@@ -95,34 +95,6 @@ class Component(QtWidgets.QGraphicsRectItem):
         self.schematicArgs = {}
         self.pin0Connection = None
         self.pin1Connection = None
-
-    # #def mousePressEvent(self, event):
-    #     #print("Hello")
-    #     #self.boundingBox.setSelected(False)
-
-    # def addLine(self, line, ispoint):
-    #     self.line = line
-    #     self.isPoint = ispoint
-
-    # def itemChange(self, change, value):
-    #     #print("HELLO")
-    #     if change == self.ItemPositionChange and self.scene():
-    #         newPos = value
-    #         self.moveLineToCenter(newPos)
-
-    #     return super(Component, self).itemChange(change, value)
-
-    # def moveLineToCenter(self, newPos):
-    #     xOffset = self.rect().x() + self.rect().width()/2
-    #     yOffset = self.rect().y() + self.rect().height()/2
-
-    #     newCenterPos = QtCore.QPointF(newPos.x()+xOffset, newPos.y()+yOffset)
-
-    #     p1 = newCenterPos if self.isPoint else self.line.line().p1()
-    #     p2 = self.line.line().p2() if self.isPoint else newCenterPos
-
-    #     self.line.setLine(QtCore.QLineF(p1, p2))
-
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -304,6 +276,7 @@ class MainWindow(QMainWindow):
 
         self.ui.btn_generate.clicked.connect(lambda: self.setupMonteCarlo())
         self.ui.btn_generate_new.clicked.connect(lambda: self.setupMonteCarlo())
+        self.ui.btn_save_layout.clicked.connect(lambda: self.saveImage())
     
     def updateSliderValue(self, label, slider, target = False):
         if target:
@@ -347,7 +320,7 @@ class MainWindow(QMainWindow):
         self.schematic.set_monte_carlo_parameters(self.grid, self.padding, self.target)
         #print("HELLO1")
         self.schematic.monte_carlo()
-        if self.schematic.paths == []:
+        if self.schematic.paths == None:
             self.ui.label_convert_settings.setText("Cannot generate layout. Circuit may be impossible on single layer PCB. Try to change grid settings.")
         else:
             self.schematic.convert_to_pcb_image()
@@ -360,12 +333,18 @@ class MainWindow(QMainWindow):
             #print("HELLO!")
             self.ui.label_pcb_image.setPixmap(image)
             #print("HELLO?")
+
+    def saveImage(self):
+        print("HELLO")
+        fileName = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File', '', 'PNG (*.png)')
+        print("BYE")
+        #print(fileName[0])
+        self.schematic.converted_image.save(fileName[0])
+        print("GET OUTTA HERE ALREADY")
 # -----------------------------------------------------------------
 
 # ------------------- BUTTON FUNCTIONS -------------------
     # Update the positions of the components
-
-
     def updatePositions(self):
         for component in self.components:
             compId = component.id
@@ -578,8 +557,7 @@ class MainWindow(QMainWindow):
     # Opens a file
     def fileOpen(self):
         self.clearSchematic()
-        fileName = QtWidgets.QFileDialog.getOpenFileName(
-            self, 'Open File', '', 'Circuit Data (*.circ)')
+        fileName = QtWidgets.QFileDialog.getOpenFileName(self, 'Open File', '', 'Circuit Data (*.circ)')
         self.schematic.load(fileName[0])
         for component in self.schematic.components.values():
             self.loadComponent(component.__class__.__name__, component.id, component.label, component.schem_position[0], component.schem_position[1])
