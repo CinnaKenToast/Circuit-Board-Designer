@@ -36,7 +36,7 @@ The main.py file contains all of the class data related to the GUI, file managem
 * In cmd run **pip3 install PySide2**
 * In cmd run **pip3 install numpy**
 * In cmd run **pip3 install Pillow**
-* In cmd run **git clone **
+* In cmd run **git clone https://github.com/CinnaKenToast/Circuit-Board-Designer.git**
 
 # Run the Program
 Navigate to the src folder in cmd and the run **python3 main.py** in cmd.
