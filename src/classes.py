@@ -2,7 +2,7 @@ from typing import Type
 import numpy as np
 import json
 from PyQt5 import QtWidgets, QtGui
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFont
 import os.path
 from xml.dom import minidom
 
@@ -748,7 +748,7 @@ class Schematic:
 
     # LOOK AT force base graph layout algorithms as an alternative to this (-Jason)
     # Metropolis' Monte Carlo method. (-Jason)
-    def monte_carlo(self, max_iters=50):
+    def monte_carlo(self, max_iters=1000):
         paths = []
         curr_runs_score = 0
         self.initialize_connections_list()
@@ -856,15 +856,23 @@ class Schematic:
         return paths
 
     def trim_pcb_layout(self):
-        paths = self.paths.copy()
-        pcb_dims = self.pcb_area(paths)
-        for i in range(0, len(paths)):
-            nodes = paths[i]["path_nodes"]
+        pcb_dims = self.pcb_area(self.paths)
+        for i in range(0, len(self.paths)):
+            nodes = self.paths[i]["path_nodes"]
             for j in range(0, len(nodes)):
                 node = nodes[j]
-                paths[i]["path_nodes"][j] = np.add(np.subtract(
+                self.paths[i]["path_nodes"][j] = np.add(np.subtract(
                     node, (pcb_dims[0], pcb_dims[2])), [1, 1]).tolist()
-        return paths, pcb_dims
+
+            # component_id_1 = self.paths[i]["path_id"].split("->")[0]
+            # component_id_2 = self.paths[i]["path_id"].split("->")[1]
+            # self.components[f"component_{component_id_1}"].pcb_postion = np.add(np.subtract(
+            #     node, (pcb_dims[0], pcb_dims[2])), [1, 1]).tolist()
+
+        return pcb_dims
+
+    # def update_all_pin_positions_to_trimmed_layout(self):
+    #     for path in self.paths:
 
     def convert_to_pcb_image(self):
         # Get the settings:
@@ -873,7 +881,7 @@ class Schematic:
         bg_color = self.converted_image_bg_color
         trace_color = self.converted_image_trace_color
 
-        paths, pcb_dims = self.trim_pcb_layout()
+        pcb_dims = self.trim_pcb_layout()
 
         # Set the size
         ni = abs(pcb_dims[1] - pcb_dims[0])
@@ -885,12 +893,25 @@ class Schematic:
         # The objects to make the image
         im = Image.new(mode, size, bg_color)
         draw = ImageDraw.Draw(im)
+        font = ImageFont.truetype("Roboto-Regular.ttf", 22)
 
         # pin box dimension
         box_w_h = 10
 
         # draw each path from point to point
-        for path in paths:
+        for path in self.paths:
+            nodes = path["path_nodes"]
+            points = []
+
+            # draw the lines for the traces
+            for i in range(0, len(nodes) - 1):
+                i1, j1 = nodes[i]
+                i2, j2 = nodes[i+1]
+                draw.line((scale*j1, scale*i1, scale*j2, scale*i2),
+                          fill=trace_color, width=5)
+
+        # draw each pad
+        for path in self.paths:
             nodes = path["path_nodes"]
 
             # setup and draw the pads
@@ -905,11 +926,9 @@ class Schematic:
             draw.rectangle((j_goal, i_goal, j_goal+box_w_h, i_goal +
                             box_w_h), fill=trace_color, width=0)
 
-            # draw the lines for the traces
-            for i in range(0, len(nodes) - 1):
-                i1, j1 = nodes[i]
-                i2, j2 = nodes[i+1]
-                draw.line((scale*j1, scale*i1, scale*j2, scale*i2),
-                          fill=trace_color, width=5)
+        # print(font.getsize("SW1"))
 
         self.converted_image = im
+
+    # def get_offset_for_label(self, paths, text, font):
+    #     for path in self.paths:

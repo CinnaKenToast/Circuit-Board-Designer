@@ -13,13 +13,15 @@ def main():
 
     do_monte_carlo(sch)
     convert_to_pcb_image(sch, "test_layout_conversion.png")
+    # sch.update_all_pin_positions_to_trimmed_layout()
+
     sch.overwrite_save("test_conversion.json")
 
 
 def do_monte_carlo(sch):
     # Monte_carlo w/ output:
-    sch.set_monte_carlo_parameters(4, 4, .75)
-    sch.monte_carlo(3000)
+    sch.set_monte_carlo_parameters(3, 0, .99)
+    sch.monte_carlo(300)
 
 
 def convert_to_pcb_image(sch, file_name):
