@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1280</width>
-    <height>720</height>
+    <height>804</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -128,7 +128,7 @@ QPushButton:hover{
             </property>
             <property name="icon">
              <iconset>
-              <normaloff>img/menu.png</normaloff>img/menu.png</iconset>
+              <normaloff>../../../Circuit-Board-Designer/src/img/menu.png</normaloff>../../../Circuit-Board-Designer/src/img/menu.png</iconset>
             </property>
             <property name="iconSize">
              <size>
@@ -504,7 +504,7 @@ QPushButton:hover{
                      </property>
                      <property name="icon">
                       <iconset>
-                       <normaloff>img/prototype.png</normaloff>img/prototype.png</iconset>
+                       <normaloff>../../../Circuit-Board-Designer/src/img/prototype.png</normaloff>../../../Circuit-Board-Designer/src/img/prototype.png</iconset>
                      </property>
                      <property name="iconSize">
                       <size>
@@ -723,7 +723,7 @@ QPushButton:hover{
                      </property>
                      <property name="icon">
                       <iconset>
-                       <normaloff>img/circuit-board.png</normaloff>img/circuit-board.png</iconset>
+                       <normaloff>../../../Circuit-Board-Designer/src/img/circuit-board.png</normaloff>../../../Circuit-Board-Designer/src/img/circuit-board.png</iconset>
                      </property>
                      <property name="iconSize">
                       <size>
@@ -942,7 +942,7 @@ QPushButton:hover{
                      </property>
                      <property name="icon">
                       <iconset>
-                       <normaloff>img/floppy-disk.png</normaloff>img/floppy-disk.png</iconset>
+                       <normaloff>../../../Circuit-Board-Designer/src/img/floppy-disk.png</normaloff>../../../Circuit-Board-Designer/src/img/floppy-disk.png</iconset>
                      </property>
                      <property name="iconSize">
                       <size>
@@ -1087,7 +1087,7 @@ QPushButton:hover{
              <string notr="true">background-color: rgb(224, 224, 224);</string>
             </property>
             <property name="currentIndex">
-             <number>1</number>
+             <number>3</number>
             </property>
             <widget class="QWidget" name="page_design">
              <layout class="QVBoxLayout" name="verticalLayout_28">
@@ -1173,6 +1173,9 @@ QPushButton:hover{
                          </property>
                          <property name="alignment">
                           <set>Qt::AlignBottom|Qt::AlignHCenter</set>
+                         </property>
+                         <property name="wordWrap">
+                          <bool>true</bool>
                          </property>
                         </widget>
                        </item>
@@ -1957,6 +1960,9 @@ QPushButton:hover{
                                   <property name="maximum">
                                    <number>100</number>
                                   </property>
+                                  <property name="sliderPosition">
+                                   <number>50</number>
+                                  </property>
                                   <property name="orientation">
                                    <enum>Qt::Horizontal</enum>
                                   </property>
@@ -2480,6 +2486,9 @@ QPushButton:hover{
                                <property name="text">
                                 <string>Black</string>
                                </property>
+                               <property name="checked">
+                                <bool>true</bool>
+                               </property>
                               </widget>
                              </item>
                             </layout>
@@ -2984,6 +2993,9 @@ QPushButton:hover{
                                </property>
                                <property name="text">
                                 <string>White</string>
+                               </property>
+                               <property name="checked">
+                                <bool>true</bool>
                                </property>
                               </widget>
                              </item>
@@ -3932,7 +3944,7 @@ QPushButton:hover{
                          </property>
                          <property name="icon">
                           <iconset>
-                           <normaloff>img/files.png</normaloff>img/files.png</iconset>
+                           <normaloff>../../../Circuit-Board-Designer/src/img/files.png</normaloff>../../../Circuit-Board-Designer/src/img/files.png</iconset>
                          </property>
                          <property name="iconSize">
                           <size>
@@ -4052,7 +4064,7 @@ QPushButton:hover{
                          </property>
                          <property name="icon">
                           <iconset>
-                           <normaloff>img/open-folder.png</normaloff>img/open-folder.png</iconset>
+                           <normaloff>../../../Circuit-Board-Designer/src/img/open-folder.png</normaloff>../../../Circuit-Board-Designer/src/img/open-folder.png</iconset>
                          </property>
                          <property name="iconSize">
                           <size>
@@ -4127,7 +4139,7 @@ QPushButton:hover{
                          </property>
                          <property name="icon">
                           <iconset>
-                           <normaloff>img/Save.png</normaloff>img/Save.png</iconset>
+                           <normaloff>../../../Circuit-Board-Designer/src/img/Save.png</normaloff>../../../Circuit-Board-Designer/src/img/Save.png</iconset>
                          </property>
                          <property name="iconSize">
                           <size>
@@ -4244,7 +4256,7 @@ QPushButton:hover{
                          </property>
                          <property name="icon">
                           <iconset>
-                           <normaloff>img/Save As.png</normaloff>img/Save As.png</iconset>
+                           <normaloff>../../../Circuit-Board-Designer/src/img/Save As.png</normaloff>../../../Circuit-Board-Designer/src/img/Save As.png</iconset>
                          </property>
                          <property name="iconSize">
                           <size>
@@ -4536,7 +4548,7 @@ QPushButton:hover{
                    </property>
                    <property name="icon">
                     <iconset>
-                     <normaloff>img/resistor.png</normaloff>img/resistor.png</iconset>
+                     <normaloff>../../../Circuit-Board-Designer/src/img/resistor.png</normaloff>../../../Circuit-Board-Designer/src/img/resistor.png</iconset>
                    </property>
                    <property name="iconSize">
                     <size>
@@ -4571,7 +4583,7 @@ QPushButton:hover{
                    </property>
                    <property name="icon">
                     <iconset>
-                     <normaloff>img/Diode.png</normaloff>img/Diode.png</iconset>
+                     <normaloff>../../../Circuit-Board-Designer/src/img/Diode.png</normaloff>../../../Circuit-Board-Designer/src/img/Diode.png</iconset>
                    </property>
                    <property name="iconSize">
                     <size>
@@ -4609,7 +4621,7 @@ QPushButton:hover{
                    </property>
                    <property name="icon">
                     <iconset>
-                     <normaloff>img/Capacitor.png</normaloff>img/Capacitor.png</iconset>
+                     <normaloff>../../../Circuit-Board-Designer/src/img/Capacitor.png</normaloff>../../../Circuit-Board-Designer/src/img/Capacitor.png</iconset>
                    </property>
                    <property name="iconSize">
                     <size>
@@ -4644,7 +4656,7 @@ QPushButton:hover{
                    </property>
                    <property name="icon">
                     <iconset>
-                     <normaloff>img/Led.png</normaloff>img/Led.png</iconset>
+                     <normaloff>../../../Circuit-Board-Designer/src/img/Led.png</normaloff>../../../Circuit-Board-Designer/src/img/Led.png</iconset>
                    </property>
                    <property name="iconSize">
                     <size>
@@ -4679,7 +4691,7 @@ QPushButton:hover{
                    </property>
                    <property name="icon">
                     <iconset>
-                     <normaloff>img/Inductor.png</normaloff>img/Inductor.png</iconset>
+                     <normaloff>../../../Circuit-Board-Designer/src/img/Inductor.png</normaloff>../../../Circuit-Board-Designer/src/img/Inductor.png</iconset>
                    </property>
                    <property name="iconSize">
                     <size>
@@ -4714,7 +4726,7 @@ QPushButton:hover{
                    </property>
                    <property name="icon">
                     <iconset>
-                     <normaloff>img/Switch.png</normaloff>img/Switch.png</iconset>
+                     <normaloff>../../../Circuit-Board-Designer/src/img/Switch.png</normaloff>../../../Circuit-Board-Designer/src/img/Switch.png</iconset>
                    </property>
                    <property name="iconSize">
                     <size>
@@ -4752,7 +4764,7 @@ QPushButton:hover{
                    </property>
                    <property name="icon">
                     <iconset>
-                     <normaloff>img/VoltageSource.png</normaloff>img/VoltageSource.png</iconset>
+                     <normaloff>../../../Circuit-Board-Designer/src/img/VoltageSource.png</normaloff>../../../Circuit-Board-Designer/src/img/VoltageSource.png</iconset>
                    </property>
                    <property name="iconSize">
                     <size>
@@ -4831,7 +4843,7 @@ QPushButton:hover{
                    </property>
                    <property name="icon">
                     <iconset>
-                     <normaloff>color_img/black.png</normaloff>color_img/black.png</iconset>
+                     <normaloff>../../../Circuit-Board-Designer/src/color_img/black.png</normaloff>../../../Circuit-Board-Designer/src/color_img/black.png</iconset>
                    </property>
                    <property name="iconSize">
                     <size>
@@ -4860,7 +4872,7 @@ QPushButton:hover{
                    </property>
                    <property name="icon">
                     <iconset>
-                     <normaloff>color_img/red.png</normaloff>color_img/red.png</iconset>
+                     <normaloff>../../../Circuit-Board-Designer/src/color_img/red.png</normaloff>../../../Circuit-Board-Designer/src/color_img/red.png</iconset>
                    </property>
                    <property name="iconSize">
                     <size>
@@ -4889,7 +4901,7 @@ QPushButton:hover{
                    </property>
                    <property name="icon">
                     <iconset>
-                     <normaloff>color_img/orange.png</normaloff>color_img/orange.png</iconset>
+                     <normaloff>../../../Circuit-Board-Designer/src/color_img/orange.png</normaloff>../../../Circuit-Board-Designer/src/color_img/orange.png</iconset>
                    </property>
                    <property name="iconSize">
                     <size>
@@ -4918,7 +4930,7 @@ QPushButton:hover{
                    </property>
                    <property name="icon">
                     <iconset>
-                     <normaloff>color_img/yellow.png</normaloff>color_img/yellow.png</iconset>
+                     <normaloff>../../../Circuit-Board-Designer/src/color_img/yellow.png</normaloff>../../../Circuit-Board-Designer/src/color_img/yellow.png</iconset>
                    </property>
                    <property name="iconSize">
                     <size>
@@ -4947,7 +4959,7 @@ QPushButton:hover{
                    </property>
                    <property name="icon">
                     <iconset>
-                     <normaloff>color_img/green.png</normaloff>color_img/green.png</iconset>
+                     <normaloff>../../../Circuit-Board-Designer/src/color_img/green.png</normaloff>../../../Circuit-Board-Designer/src/color_img/green.png</iconset>
                    </property>
                    <property name="iconSize">
                     <size>
@@ -4976,7 +4988,7 @@ QPushButton:hover{
                    </property>
                    <property name="icon">
                     <iconset>
-                     <normaloff>color_img/blue.png</normaloff>color_img/blue.png</iconset>
+                     <normaloff>../../../Circuit-Board-Designer/src/color_img/blue.png</normaloff>../../../Circuit-Board-Designer/src/color_img/blue.png</iconset>
                    </property>
                    <property name="iconSize">
                     <size>
@@ -5005,7 +5017,7 @@ QPushButton:hover{
                    </property>
                    <property name="icon">
                     <iconset>
-                     <normaloff>color_img/purple.png</normaloff>color_img/purple.png</iconset>
+                     <normaloff>../../../Circuit-Board-Designer/src/color_img/purple.png</normaloff>../../../Circuit-Board-Designer/src/color_img/purple.png</iconset>
                    </property>
                    <property name="iconSize">
                     <size>
@@ -5034,7 +5046,7 @@ QPushButton:hover{
                    </property>
                    <property name="icon">
                     <iconset>
-                     <normaloff>color_img/pink.png</normaloff>color_img/pink.png</iconset>
+                     <normaloff>../../../Circuit-Board-Designer/src/color_img/pink.png</normaloff>../../../Circuit-Board-Designer/src/color_img/pink.png</iconset>
                    </property>
                    <property name="iconSize">
                     <size>
@@ -5063,7 +5075,7 @@ QPushButton:hover{
                    </property>
                    <property name="icon">
                     <iconset>
-                     <normaloff>color_img/cyan.png</normaloff>color_img/cyan.png</iconset>
+                     <normaloff>../../../Circuit-Board-Designer/src/color_img/cyan.png</normaloff>../../../Circuit-Board-Designer/src/color_img/cyan.png</iconset>
                    </property>
                    <property name="iconSize">
                     <size>
@@ -5092,7 +5104,7 @@ QPushButton:hover{
                    </property>
                    <property name="icon">
                     <iconset>
-                     <normaloff>color_img/brown.png</normaloff>color_img/brown.png</iconset>
+                     <normaloff>../../../Circuit-Board-Designer/src/color_img/brown.png</normaloff>../../../Circuit-Board-Designer/src/color_img/brown.png</iconset>
                    </property>
                    <property name="iconSize">
                     <size>
@@ -5172,7 +5184,7 @@ QPushButton:hover{
                </property>
                <property name="icon">
                 <iconset>
-                 <normaloff>img/wires.png</normaloff>img/wires.png</iconset>
+                 <normaloff>../../../Circuit-Board-Designer/src/img/wires.png</normaloff>../../../Circuit-Board-Designer/src/img/wires.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -5214,7 +5226,7 @@ QPushButton:hover{
                </property>
                <property name="icon">
                 <iconset>
-                 <normaloff>img/cut.png</normaloff>img/cut.png</iconset>
+                 <normaloff>../../../Circuit-Board-Designer/src/img/cut.png</normaloff>../../../Circuit-Board-Designer/src/img/cut.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -5256,7 +5268,7 @@ QPushButton:hover{
                </property>
                <property name="icon">
                 <iconset>
-                 <normaloff>img/circuit.png</normaloff>img/circuit.png</iconset>
+                 <normaloff>../../../Circuit-Board-Designer/src/img/circuit.png</normaloff>../../../Circuit-Board-Designer/src/img/circuit.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -5298,7 +5310,7 @@ QPushButton:hover{
                </property>
                <property name="icon">
                 <iconset>
-                 <normaloff>img/delete.png</normaloff>img/delete.png</iconset>
+                 <normaloff>../../../Circuit-Board-Designer/src/img/delete.png</normaloff>../../../Circuit-Board-Designer/src/img/delete.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -5343,7 +5355,7 @@ QPushButton:hover{
                </property>
                <property name="icon">
                 <iconset>
-                 <normaloff>img/tag.png</normaloff>img/tag.png</iconset>
+                 <normaloff>../../../Circuit-Board-Designer/src/img/tag.png</normaloff>../../../Circuit-Board-Designer/src/img/tag.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -5385,7 +5397,7 @@ QPushButton:hover{
                </property>
                <property name="icon">
                 <iconset>
-                 <normaloff>img/comment.png</normaloff>img/comment.png</iconset>
+                 <normaloff>../../../Circuit-Board-Designer/src/img/comment.png</normaloff>../../../Circuit-Board-Designer/src/img/comment.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -5427,7 +5439,7 @@ QPushButton:hover{
                </property>
                <property name="icon">
                 <iconset>
-                 <normaloff>color_img/blackIcon.png</normaloff>color_img/blackIcon.png</iconset>
+                 <normaloff>../../../Circuit-Board-Designer/src/color_img/blackIcon.png</normaloff>../../../Circuit-Board-Designer/src/color_img/blackIcon.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -5486,7 +5498,7 @@ QPushButton:hover{
                </property>
                <property name="icon">
                 <iconset>
-                 <normaloff>img/home-searching.png</normaloff>img/home-searching.png</iconset>
+                 <normaloff>../../../Circuit-Board-Designer/src/img/home-searching.png</normaloff>../../../Circuit-Board-Designer/src/img/home-searching.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -5529,7 +5541,7 @@ QPushButton:hover{
                </property>
                <property name="icon">
                 <iconset>
-                 <normaloff>img/add-searching.png</normaloff>img/add-searching.png</iconset>
+                 <normaloff>../../../Circuit-Board-Designer/src/img/add-searching.png</normaloff>../../../Circuit-Board-Designer/src/img/add-searching.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -5571,7 +5583,7 @@ QPushButton:hover{
                </property>
                <property name="icon">
                 <iconset>
-                 <normaloff>img/delete-searching.png</normaloff>img/delete-searching.png</iconset>
+                 <normaloff>../../../Circuit-Board-Designer/src/img/delete-searching.png</normaloff>../../../Circuit-Board-Designer/src/img/delete-searching.png</iconset>
                </property>
                <property name="iconSize">
                 <size>
