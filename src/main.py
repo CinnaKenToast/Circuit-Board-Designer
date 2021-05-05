@@ -96,32 +96,32 @@ class Component(QtWidgets.QGraphicsRectItem):
         self.pin0Connection = None
         self.pin1Connection = None
 
-    def mousePressEvent(self, event):
-        print("Hello")
-        self.boundingBox.setSelected(False)
+    # #def mousePressEvent(self, event):
+    #     #print("Hello")
+    #     #self.boundingBox.setSelected(False)
 
-    def addLine(self, line, ispoint):
-        self.line = line
-        self.isPoint = ispoint
+    # def addLine(self, line, ispoint):
+    #     self.line = line
+    #     self.isPoint = ispoint
 
-    def itemChange(self, change, value):
-        print("HELLO")
-        if change == self.ItemPositionChange and self.scene():
-            newPos = value
-            self.moveLineToCenter(newPos)
+    # def itemChange(self, change, value):
+    #     #print("HELLO")
+    #     if change == self.ItemPositionChange and self.scene():
+    #         newPos = value
+    #         self.moveLineToCenter(newPos)
 
-        return super(Component, self).itemChange(change, value)
+    #     return super(Component, self).itemChange(change, value)
 
-    def moveLineToCenter(self, newPos):
-        xOffset = self.rect().x() + self.rect().width()/2
-        yOffset = self.rect().y() + self.rect().height()/2
+    # def moveLineToCenter(self, newPos):
+    #     xOffset = self.rect().x() + self.rect().width()/2
+    #     yOffset = self.rect().y() + self.rect().height()/2
 
-        newCenterPos = QtCore.QPointF(newPos.x()+xOffset, newPos.y()+yOffset)
+    #     newCenterPos = QtCore.QPointF(newPos.x()+xOffset, newPos.y()+yOffset)
 
-        p1 = newCenterPos if self.isPoint else self.line.line().p1()
-        p2 = self.line.line().p2() if self.isPoint else newCenterPos
+    #     p1 = newCenterPos if self.isPoint else self.line.line().p1()
+    #     p2 = self.line.line().p2() if self.isPoint else newCenterPos
 
-        self.line.setLine(QtCore.QLineF(p1, p2))
+    #     self.line.setLine(QtCore.QLineF(p1, p2))
 
 
 class MainWindow(QMainWindow):
@@ -312,7 +312,7 @@ class MainWindow(QMainWindow):
             label.setText(str(slider.value()))
 
     def setupMonteCarlo(self):
-        print("HELLO0")
+        #print("HELLO0")
         self.grid = self.ui.slider_grid.value()
         self.padding = self.ui.slider_padding.value()
         self.target = self.ui.slider_target.value()/100
@@ -340,12 +340,12 @@ class MainWindow(QMainWindow):
             self.trace = (0, 255, 255)
         else:
             self.trace = (255, 0, 255)
-        print(self.background)
-        print(self.trace)
+        #print(self.background)
+        #print(self.trace)
         self.schematic.converted_image_bg_color = self.background
         self.schematic.converted_image_trace_color = self.trace
         self.schematic.set_monte_carlo_parameters(self.grid, self.padding, self.target)
-        print("HELLO1")
+        #print("HELLO1")
         self.schematic.monte_carlo()
         if self.schematic.paths == []:
             self.ui.label_convert_settings.setText("Cannot generate layout. Circuit may be impossible on single layer PCB. Try to change grid settings.")
@@ -353,13 +353,13 @@ class MainWindow(QMainWindow):
             self.schematic.convert_to_pcb_image()
             self.ui.stacked_workspaces.setCurrentWidget(self.ui.page_generated)
             #print(self.schematic.converted_image)
-            print("HELLO")
+            #print("HELLO")
             img = ImageQt.ImageQt(self.schematic.converted_image)
-            print("HELLO@")
+            #print("HELLO@")
             image = QtGui.QPixmap.fromImage(img)
-            print("HELLO!")
+            #print("HELLO!")
             self.ui.label_pcb_image.setPixmap(image)
-            print("HELLO?")
+            #print("HELLO?")
 # -----------------------------------------------------------------
 
 # ------------------- BUTTON FUNCTIONS -------------------
@@ -374,10 +374,7 @@ class MainWindow(QMainWindow):
 
     # Print all components in schematic
     def printSchematic(self):
-        for component in self.schematic.components.values():
-            print(component.to_string())
-        for connections in self.schematic.connections_list:
-            print(connections)
+        self.schematic.print_all_components_strings()
         #print("connections:", self.connections)
         #print("components:", self.components)
 
@@ -401,8 +398,8 @@ class MainWindow(QMainWindow):
             self.components.append(newComponent)
             self.ids += 1
 
-        for component in self.schematic.components.values():
-            print(component.to_string())
+        #for component in self.schematic.components.values():
+            #print(component.to_string())
 
     # Deleted selected component from scene
     def deleteComponent(self):
@@ -451,7 +448,6 @@ class MainWindow(QMainWindow):
             comp0Btn = int(comp0Btn)
             comp1Id = int(comp1Id)
             comp1Btn = int(comp1Btn)
-            print(comp0Id, comp0Btn, comp1Id, comp1Btn)
             for component in self.components:
                 if component.id == comp0Id:
                     if comp0Btn == 0:
@@ -480,7 +476,6 @@ class MainWindow(QMainWindow):
                         component.pin0Connection = line
                     else:
                         component.pin1Connection = line
-        print(self.connections)
 
     # Delete the connection between two components
     def removeConnection(self):
@@ -497,10 +492,10 @@ class MainWindow(QMainWindow):
             for component in self.components:
                 if component.boundingBox == eventList[0][0]:
                     component1 = component
-                    print("component1", component1)
+                    #print("component1", component1)
                 if component.boundingBox == eventList[1][0]:
                     component2 = component
-                    print("component2", component2)
+                    #print("component2", component2)
             if not(component1.pin0Connection == None):
                 self.scene.removeItem(component1.pin0Connection)
                 self.connections.remove(component1.pin0Connection)
@@ -559,7 +554,7 @@ class MainWindow(QMainWindow):
         icon.addPixmap(QtGui.QPixmap("color_img/"+color+"Icon.png"),
                        QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.ui.btn_color.setIcon(icon)
-        print(color)
+        #print(color)
         self.toggleTools(50, "btn_pick_color")
 
     def clearSchematic(self):
@@ -586,7 +581,6 @@ class MainWindow(QMainWindow):
             if component.id > self.ids:
                 self.ids = component.id
         for connection in self.schematic.connections_list:
-            print(connection[0], connection[1])
             self.addConnection(connection[0], connection[1])
 
         # self.printSchematic()
@@ -613,7 +607,7 @@ class MainWindow(QMainWindow):
     # Saves as a new file
     def fileSaveAs(self):
         fileName = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File', '', 'Circuit Data (*.circ)')
-        print(fileName[0])
+        #print(fileName[0])
         self.schematic.overwrite_save(fileName[0])
         self.file = fileName[0]
         self.ui.label_file_location.setText(self.file)
