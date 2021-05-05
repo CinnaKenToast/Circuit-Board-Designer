@@ -43,6 +43,7 @@ Navigate to the src folder in cmd and the run **python3 main.py** in cmd.
 
 # Important Program Controls
 ![Select](/readmeImg/select.png)
+
 In order to select a component, click on the label of said component. 
 
 
