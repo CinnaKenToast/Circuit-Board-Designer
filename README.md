@@ -40,3 +40,11 @@ The main.py file contains all of the class data related to the GUI, file managem
 
 # Run the Program
 Navigate to the src folder in cmd and the run **python3 main.py** in cmd.
+
+# Important Program Controls
+![Select](/readmeImg/select.png)
+In order to select a component, click on the label of said component. 
+
+
+## Licenses
+The base of the repo contains **license.txt** that contains all required licenses information and credit for any icons used in the program. 
