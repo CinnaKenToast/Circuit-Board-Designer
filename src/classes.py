@@ -97,13 +97,19 @@ class Component:
         return True
 
     def set_connections(self, connections):
-        self.connections = {f"{self.id}_0": [], f"{self.id}_1": []}
-        for this_pin_id, connection_group in connections.items():
-            for that_pin_id in connection_group:
-                self.connections[this_pin_id].append(that_pin_id)
+        if connections == {}:
+            self.connections = {f"{self.id}_0": [], f"{self.id}_1": []}
+        else:
+            self.connections = {f"{self.id}_0": [], f"{self.id}_1": []}
+            for this_pin_id, connection_list in connections.items():
+                for that_pin_id in connection_list:
+                    self.connections[this_pin_id].append(that_pin_id)
 
     def set_schematic_pos(self, pos):
         self.schem_position = pos
+
+    def set_pcb_pos(self, pos):
+        self.pcb_position = pos
 
     def connect(self, this_pin_id, that_pin_id):
         if this_pin_id in self.connections:
@@ -445,7 +451,7 @@ class Schematic:
         self.set_monte_carlo_parameters()
         self.converted_image_bg_color = (0, 0, 0)
         self.converted_image_color_mode = "RGB"
-        self.converted_image_scaling = 75
+        self.converted_image_scaling = 50
         self.converted_image_trace_color = (135, 10, 99)
         self.converted_image = None
     # Allows for setting the monte carlo params so it can continue (-Jason)
@@ -496,10 +502,12 @@ class Schematic:
 
             component_type = component_dict["component_type"]
             component_dict.pop("component_type")
-            component = self.COMPONENT_CLASSES[component_type](
+            component_id = component_dict["id"]
+            self.components[f"component_{component_id}"] = self.COMPONENT_CLASSES[component_type](
                 **component_dict)
-            component.set_connections(connections)
-            self.components[f"component_{component.id}"] = component
+            self.components[f"component_{component_id}"].set_connections(
+                connections)
+
         else:
             raise ValueError("Component id not unique")
 
@@ -716,12 +724,12 @@ class Schematic:
     # Will make a layout where no pins overlap
     # and are adjusted by some padding (-Jason)
     def randomize_layout(self):
-        for component in self.components.values():
+        for component in self.components:
             rn_spot = self.get_valid_spot(self.not_allowed_pcb_spots())
-            component.pcb_position = rn_spot
-        for component in self.components.values():
-            component.pcb_position = np.add(
-                component.pcb_position, [int(self.a_star_grid_padding/2), int(self.a_star_grid_padding/2)]).tolist()
+            self.components[component].set_pcb_pos(rn_spot)
+        for component in self.components:
+            self.components[component].set_pcb_pos(np.add(
+                self.components[component].pcb_position, [int(self.a_star_grid_padding/2), int(self.a_star_grid_padding/2)]).tolist())
 
     # This gets a list for the position for every pin
     def initialize_pin_placement_dict(self):
@@ -756,7 +764,7 @@ class Schematic:
 
         # run the subsequent iterations up until the score doesn't change much, isn't high enough, or we've reached the max_iters
         i = 0
-        while ((best_layout[0] < self.target_score) and (i < max_iters)):
+        while (best_layout[0] < self.target_score) and (i < max_iters):
             self.paths.clear()
             self.pin_placement_dict.clear()
 
@@ -864,15 +872,11 @@ class Schematic:
                 self.paths[i]["path_nodes"][j] = np.add(np.subtract(
                     node, (pcb_dims[0], pcb_dims[2])), [1, 1]).tolist()
 
-            # component_id_1 = self.paths[i]["path_id"].split("->")[0]
-            # component_id_2 = self.paths[i]["path_id"].split("->")[1]
-            # self.components[f"component_{component_id_1}"].pcb_postion = np.add(np.subtract(
-            #     node, (pcb_dims[0], pcb_dims[2])), [1, 1]).tolist()
+        for component in self.components.values():
+            self.components[f"component_{component.id}"].set_pcb_pos(np.subtract(
+                component.pcb_position, (pcb_dims[0], pcb_dims[2])).tolist())
 
         return pcb_dims
-
-    # def update_all_pin_positions_to_trimmed_layout(self):
-    #     for path in self.paths:
 
     def convert_to_pcb_image(self):
         # Get the settings:
@@ -882,13 +886,16 @@ class Schematic:
         trace_color = self.converted_image_trace_color
 
         pcb_dims = self.trim_pcb_layout()
+        print(pcb_dims)
 
         # Set the size
-        ni = abs(pcb_dims[1] - pcb_dims[0])
         nj = abs(pcb_dims[3] - pcb_dims[2])
+        ni = abs(pcb_dims[1] - pcb_dims[0])
+        print(f"ni: {ni}\nnj: {nj}")
         width = scale*(nj+2)
         height = scale*(ni+2)
         size = (width, height)
+        print(f"height, width: {height}, {width}")
 
         # The objects to make the image
         im = Image.new(mode, size, bg_color)
@@ -930,5 +937,7 @@ class Schematic:
 
         self.converted_image = im
 
-    # def get_offset_for_label(self, paths, text, font):
-    #     for path in self.paths:
+    # def get_offset_for_label(self):
+    #     for component in self.components:
+    #         pin_positions = self.components[component].pcb_position
+    #         di = ()
