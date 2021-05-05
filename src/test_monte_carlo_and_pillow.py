@@ -10,11 +10,10 @@ def main():
     sch = classes.Schematic()
     # Use gui generated schematic:
     sch.load("jason_test_monte_through_gui.circ")
-    sch.print_all_components_strings()
+    # sch.print_all_components_strings()
 
     do_monte_carlo(sch)
     convert_to_pcb_image(sch, "test_layout_conversion.png")
-    sch.get_offset_for_label()
 
     sch.overwrite_save("test_conversion.json")
 

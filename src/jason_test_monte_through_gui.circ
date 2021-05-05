@@ -41,7 +41,7 @@
         "component_2": {
             "id": 2,
             "component_type": "VoltageSource",
-            "label": "V1",
+            "label": "V12",
             "schem_position": [
                 1428.0,
                 977.0

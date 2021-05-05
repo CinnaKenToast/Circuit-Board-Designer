@@ -886,20 +886,20 @@ class Schematic:
         trace_color = self.converted_image_trace_color
 
         pcb_dims = self.trim_pcb_layout()
-        print(pcb_dims)
+        # print(pcb_dims)
 
         # Set the size
         nj = abs(pcb_dims[3] - pcb_dims[2])
         ni = abs(pcb_dims[1] - pcb_dims[0])
-        print(f"ni: {ni}\nnj: {nj}")
+        # print(f"ni: {ni}\nnj: {nj}")
         width = scale*(nj+2)
         height = scale*(ni+2)
         size = (width, height)
-        print(f"height, width: {height}, {width}")
+        # print(f"height, width: {height}, {width}")
 
         # The objects to make the image
-        im = Image.new(mode, size, bg_color)
-        draw = ImageDraw.Draw(im)
+        image = Image.new(mode, size, bg_color)
+        draw = ImageDraw.Draw(image)
         font = ImageFont.truetype("Roboto-Regular.ttf", 22)
 
         # pin box dimension
@@ -933,11 +933,59 @@ class Schematic:
             draw.rectangle((j_goal, i_goal, j_goal+box_w_h, i_goal +
                             box_w_h), fill=trace_color, width=0)
 
-        # print(font.getsize("SW1"))
+        self.set_labels(image, draw, font, height)
 
-        self.converted_image = im
+        self.converted_image = image
 
-    # def get_offset_for_label(self):
-    #     for component in self.components:
-    #         pin_positions = self.components[component].pcb_position
-    #         di = ()
+    def set_labels(self, image, draw, font, height):
+        for component in self.components:
+            scale = self.converted_image_scaling
+            trace_color = self.converted_image_trace_color
+
+            pin_positions = self.components[component].pcb_position
+            di = (pin_positions[0][0] - pin_positions[1][0])
+            dj = (pin_positions[0][1] - pin_positions[1][1])
+
+            # moved along j(columns)
+            if di == 0:
+                # moved physically upward
+                if dj < 0:
+                    label_center_j = pin_positions[1][1]+float(dj)/2.0
+                    label_center_i = pin_positions[0][0]
+                # moved physically downward
+                else:
+                    label_center_j = pin_positions[1][1]+float(dj)/2.0
+                    label_center_i = pin_positions[0][0]
+            # moved along i(rows)
+            elif dj == 0:
+                if di < 0:
+                    label_center_j = pin_positions[0][1]
+                    label_center_i = pin_positions[1][0]+float(di)/2.0
+                else:
+                    label_center_j = pin_positions[0][1]
+                    label_center_i = pin_positions[1][0]+float(di)/2.0
+
+            label_center_i = (1 + label_center_i) * scale
+            label_center_j = (1 + label_center_j) * scale
+
+            label_text = self.components[component].label
+            text_size = font.getsize(label_text)
+            offset = [float(text_size[1])/2,
+                      float(text_size[0])/2]
+
+            label_center_i -= offset[0]
+            label_center_j -= offset[1]
+
+            if di == 0:
+                if label_center_i > height/2:
+                    reading_room = 2*offset[0]
+                else:
+                    reading_room = -2*offset[0]
+
+            elif dj == 0:
+                reading_room = 0
+
+            print(text_size, pin_positions, label_center_i, label_center_j)
+
+            draw.text((label_center_j, label_center_i + reading_room), label_text,
+                      fill=trace_color, font=font)
