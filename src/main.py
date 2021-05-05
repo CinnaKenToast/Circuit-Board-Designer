@@ -12,21 +12,19 @@ from twoPin import Ui_Form
 
 import classes
 
-# IMPORT FUNCTIONS
-# from ui_functions import *
-
+# List of button events for connecting or disconnecting components
 eventList = []
 
-
+# Gets called when a component button is pressed to connect or disconnect 
 def addToEvent(item):
-    if len(eventList) == 2:
+    if len(eventList) == 2: # Keeps the size of the list to 2
         eventList[0] = eventList[1]
         eventList[1] = item
     else:
         eventList.append(item)
     # print(eventList)
 
-
+# The widget class allows the ability to add the widget to the scene
 class Widget(QtWidgets.QWidget):
     def __init__(self, compType, name, scene, boundingBox, id, parent=None):
         super().__init__(parent)
@@ -39,6 +37,7 @@ class Widget(QtWidgets.QWidget):
         self.scene = scene
         self.id = id
 
+        # Check which type of component and set proper image background
         if compType == "Resistor":
             self.setImage("Resistor")
         elif compType == "Capacitor":
@@ -54,22 +53,25 @@ class Widget(QtWidgets.QWidget):
         elif compType == "VoltageSource":
             self.setImage("VoltageSource")
 
+    # Adds the left pin position to the eventList above
     def addLeftButtonPos(self):
         # self.boundingBox.setSelected(True)
         # print(self.boundingBox.pos())
-        pin0x = self.boundingBox.pos().x() + 12
+        pin0x = self.boundingBox.pos().x() + 12 # Position values are hard coded
         pin0y = self.boundingBox.pos().y() + 25 + 60/2
         addToEvent((self.boundingBox, QPoint(pin0x, pin0y), [self.id, 0]))
 
+    # Adds the right pin position to the eventList above
     def addRightButtonPos(self):
         # self.boundingBox.setSelected(True)
         # print(self.boundingBox.pos())
-        pin1x = self.boundingBox.pos().x() + 170 - 12
+        pin1x = self.boundingBox.pos().x() + 170 - 12 # Position values are hard coded
         pin1y = self.boundingBox.pos().y() + 25 + 60/2
         addToEvent((self.boundingBox, QPoint(pin1x, pin1y), [self.id, 1]))
 
+    # Sets the image of the widget to the proper component type
     def setImage(self, compType):
-        svgRenderer = None
+        svgRenderer = None # This is some magic that I don't quite understand but it works
         image = QtGui.QImage(160, 60, QtGui.QImage.Format_ARGB32)
         image.fill(0x00000000)
         svgRenderer = QtSvg.QSvgRenderer("comp_img/"+compType+".svg")
@@ -77,7 +79,7 @@ class Widget(QtWidgets.QWidget):
         pixmap = QtGui.QPixmap.fromImage(image)
         self.ui.lable_image.setPixmap(pixmap)
 
-
+# Wrapper class for the widget class. Add to the scene to view widget
 class Component(QtWidgets.QGraphicsRectItem):
     def __init__(self, scene, pen, compType, name, id):
         super().__init__()
@@ -91,13 +93,13 @@ class Component(QtWidgets.QGraphicsRectItem):
         self.boundingBox.setFlag(QtWidgets.QGraphicsItem.ItemIsMovable)
         self.boundingBox.setFlag(QtWidgets.QGraphicsItem.ItemIsSelectable)
         self.sceneWidget.setParentItem(self.boundingBox)
-        self.schematicArgs = {}
+        self.schematicArgs = {} # This is for the backend schematic
         self.pin0Connection = None
         self.pin1Connection = None
 
 class MainWindow(QMainWindow):
     def __init__(self):
-        # Window set up
+# ------------- Window set up
         QMainWindow.__init__(self)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
@@ -122,22 +124,6 @@ class MainWindow(QMainWindow):
         self.schematic = classes.Schematic()
         self.connections = []
 
-# ------------------ Test Components ------------------
-        self.component1 = Component(self.scene, self.outlineColor, "Resistor", "r1", 0)
-        self.component1.boundingBox.moveBy(1000, 1000)
-        self.component1.schematicArgs = {"id": 0, "label": self.component1.name, "component_type": "Resistor"}
-        self.schematic.add_component(self.component1.schematicArgs)
-        self.schematic.set_component_schematic_pos(0, [self.component1.boundingBox.pos().x(), self.component1.boundingBox.pos().y()])
-        self.components.append(self.component1)
-
-        self.component2 = Component(self.scene, self.outlineColor, "Diode", "d1", 1)
-        self.component2.boundingBox.moveBy(1500, 1000)
-        self.component2.schematicArgs = {"id": 1, "label": self.component2.name, "component_type": "Diode"}
-        self.schematic.add_component(self.component2.schematicArgs)
-        self.schematic.set_component_schematic_pos(1, [self.component2.boundingBox.pos().x(), self.component2.boundingBox.pos().y()])
-        self.components.append(self.component2)
-# -----------------------------------------------------
-
         self.penColors = {
                 "black" : QtCore.Qt.black,
                 "red" : QtCore.Qt.red,
@@ -151,7 +137,23 @@ class MainWindow(QMainWindow):
                 "brown" : QtGui.QColor(119, 90, 49)
         }
 
-        # Connect buttons to functions
+# ------------------ Test Components ------------------
+        # self.component1 = Component(self.scene, self.outlineColor, "Resistor", "r1", 0)
+        # self.component1.boundingBox.moveBy(1000, 1000)
+        # self.component1.schematicArgs = {"id": 0, "label": self.component1.name, "component_type": "Resistor"}
+        # self.schematic.add_component(self.component1.schematicArgs)
+        # self.schematic.set_component_schematic_pos(0, [self.component1.boundingBox.pos().x(), self.component1.boundingBox.pos().y()])
+        # self.components.append(self.component1)
+
+        # self.component2 = Component(self.scene, self.outlineColor, "Diode", "d1", 1)
+        # self.component2.boundingBox.moveBy(1500, 1000)
+        # self.component2.schematicArgs = {"id": 1, "label": self.component2.name, "component_type": "Diode"}
+        # self.schematic.add_component(self.component2.schematicArgs)
+        # self.schematic.set_component_schematic_pos(1, [self.component2.boundingBox.pos().x(), self.component2.boundingBox.pos().y()])
+        # self.components.append(self.component2)
+# -----------------------------------------------------
+
+# ---------------------- Connect buttons to functions
         self.ui.btn_resistor.clicked.connect(lambda: self.addComponent("Resistor"))
         self.ui.btn_capacitor.clicked.connect(lambda: self.addComponent("Capacitor"))
         self.ui.btn_diode.clicked.connect(lambda: self.addComponent("Diode"))
@@ -197,9 +199,7 @@ class MainWindow(QMainWindow):
 
         self.ui.btn_add.clicked.connect(lambda: self.ui.stacked_tools.setCurrentWidget(self.ui.page_components))
         self.ui.btn_color.clicked.connect(lambda: self.ui.stacked_tools.setCurrentWidget(self.ui.page_colors))
-
-        
-        
+ 
         self.ui.btn_add.clicked.connect(lambda: self.ui.stacked_tools.setCurrentWidget(self.ui.page_components))
         self.ui.btn_color.clicked.connect(lambda: self.ui.stacked_tools.setCurrentWidget(self.ui.page_colors))
 
@@ -227,13 +227,13 @@ class MainWindow(QMainWindow):
         self.ui.btn_save.clicked.connect(lambda: self.fileSave())
         self.ui.btn_save_as.clicked.connect(lambda: self.fileSaveAs())
 
+# --------- Update position when scene is changed
         self.scene.changed.connect(lambda: self.updatePositions())
 
+# ---------- Show window
         self.show()
 
-# ------------------- SET CONVERT/GENERATE PAGE ------------------- 
-        
-        
+# ------------------- SET CONVERT/GENERATE PAGE -------------------    
         self.backgroundGroup = QtWidgets.QButtonGroup()
         self.traceGroup = QtWidgets.QButtonGroup()
         self.backgroundGroup.addButton(self.ui.radio_black)
@@ -265,12 +265,14 @@ class MainWindow(QMainWindow):
         self.ui.btn_generate_new.clicked.connect(lambda: self.setupMonteCarlo())
         self.ui.btn_save_layout.clicked.connect(lambda: self.saveImage())
     
+    # Updates the setting labels to their respective slider values
     def updateSliderValue(self, label, slider, target = False):
         if target:
             label.setText(str((slider.value()/100)))
         else:
             label.setText(str(slider.value()))
 
+    # Prepare the schematic to run Monte Carlo and A*
     def setupMonteCarlo(self):
         #print("HELLO0")
         self.grid = self.ui.slider_grid.value()
@@ -326,6 +328,7 @@ class MainWindow(QMainWindow):
                 self.ui.label_pcb_image.setPixmap(image)
                 #print("HELLO?")
 
+    # Save the PCB layout image
     def saveImage(self):
         fileName = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File', '', 'PNG (*.png)')
         #print(fileName[0])
