@@ -12,11 +12,11 @@ spot.png: Icon made by Pixel perfect from www.flaticon.com
 menu.png: Icon made by Pixel perfect from www.flaticon.com
 paintbrush: Icon made by Freepik from www.flaticon.com
 files.png: Icon made by Smartline from www.flaticon.com
-sketch: Icon made by Smartline from www.flaticon.com
-file: Icon made by Smartline from www.flaticon.com
-blueprint: Icon made by Smartline from www.flaticon.com
-floppy-disk: Icon made by Those Icons from www.flaticon.com
-prototype: Icon made by wanicon from www.flaticon.com
+sketch.png: Icon made by Smartline from www.flaticon.com
+file.png: Icon made by Smartline from www.flaticon.com
+blueprint.png: Icon made by Smartline from www.flaticon.com
+floppy-disk.png: Icon made by Those Icons from www.flaticon.com
+prototype.png: Icon made by wanicon from www.flaticon.com
 add-searching.png: Icon made by Freepik from www.flaticon.com
 delete-searching.png: Icon made by Freepik from www.flaticon.com
 home-searching.png: Icon made by Freepik from www.flaticon.com
